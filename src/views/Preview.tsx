@@ -24,6 +24,14 @@ export function Preview() {
   const cursorRef = useRef<HTMLDivElement>(null)
   const rippleRef = useRef<HTMLDivElement>(null)
   const animTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [vpRect, setVpRect] = useState<DOMRect | null>(null)
+
+  // Keep vpRect in sync with viewport position
+  const updateVpRect = useCallback(() => {
+    if (viewportRef.current) {
+      setVpRect(viewportRef.current.getBoundingClientRect())
+    }
+  }, [])
 
   // Load all step HTML upfront
   useEffect(() => {
@@ -47,7 +55,9 @@ export function Preview() {
     viewportRef.current.style.height = `${vh}px`
     viewportRef.current.style.transform = `scale(${scale})`
     viewportRef.current.style.transformOrigin = 'center center'
-  }, [])
+    // Update vpRect after the scale change takes effect
+    requestAnimationFrame(updateVpRect)
+  }, [updateVpRect])
 
   function animateCursor(cfg: CursorConfig) {
     if (!cursorRef.current || !rippleRef.current) return
@@ -105,6 +115,8 @@ export function Preview() {
         setTimeout(() => {
           renderStep(idx, data)
           if (viewportRef.current) viewportRef.current.style.opacity = '1'
+          // Update rect after transition completes
+          setTimeout(updateVpRect, 350)
         }, 300)
       }
     } else if (transition === 'slide-left') {
@@ -119,6 +131,7 @@ export function Preview() {
             viewportRef.current.style.opacity = ''
           }
           renderStep(idx, data)
+          setTimeout(updateVpRect, 50)
         }, 300)
       }
     }
@@ -140,12 +153,15 @@ export function Preview() {
     return () => window.removeEventListener('keydown', handler)
   }, [currentIdx, steps])
 
-  // Resize
+  // Resize — update both viewport scale and click zone rect
   useEffect(() => {
-    const handler = () => scaleViewport(currentIdx, steps)
+    const handler = () => {
+      scaleViewport(currentIdx, steps)
+      setTimeout(updateVpRect, 50)
+    }
     window.addEventListener('resize', handler)
     return () => window.removeEventListener('resize', handler)
-  }, [currentIdx, steps])
+  }, [currentIdx, steps, updateVpRect])
 
   if (!currentDemo) return null
 
@@ -189,9 +205,8 @@ export function Preview() {
         />
       </div>
 
-      {/* Click zone overlay — only covers the specific zone area, rest of page stays interactive */}
-      {currentStepData?.step.clickZone && currentIdx < steps.length - 1 && viewportRef.current && (() => {
-        const vpRect = viewportRef.current.getBoundingClientRect()
+      {/* Click zone overlay — positioned using tracked vpRect state */}
+      {currentStepData?.step.clickZone && currentIdx < steps.length - 1 && vpRect && (() => {
         const zone = currentStepData.step.clickZone
         return (
           <div
@@ -203,7 +218,7 @@ export function Preview() {
               height: (zone.height / 100) * vpRect.height,
               cursor: 'pointer',
               zIndex: 999,
-              borderRadius: 4,
+              borderRadius: '50%',
               transition: 'background 0.2s',
             }}
             className="hover:bg-blue-500/10"

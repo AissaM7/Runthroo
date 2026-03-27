@@ -85,8 +85,10 @@ const RUNTIME_JS = `
     zoneOverlay.innerHTML = '';
     zoneOverlay.style.transform = '';
 
-    const template = document.getElementById('step-' + index);
-    frame.srcdoc = template.innerHTML;
+    var template = document.getElementById('step-' + index);
+    // Use textContent for script[type=text/html] containers — unlike <template>,
+    // script tags don't parse inner HTML, avoiding nested-template DOM breakage.
+    frame.srcdoc = template.textContent;
 
     scaleViewport();
 
@@ -263,9 +265,12 @@ export async function exportDemo(demo: Demo, options: ExportOptions): Promise<st
       html = await reencodeImages(html, options.imageQuality)
     }
 
-    // Escape any </template> in captured html
-    const safeHtml = html.replace(/<\/template>/gi, '<\\/template>')
-    stepTemplates.push(`<template id="step-${i}">${safeHtml}</template>`)
+    // Use <script type="text/html"> instead of <template> to avoid DOM parsing issues.
+    // Captured pages (e.g. GitHub) contain their own <template> tags which nest inside
+    // our container and break the DOM. <script type="text/html"> treats content as raw text.
+    // We only need to escape </script sequences in the captured HTML.
+    const safeHtml = html.replace(/<\/script/gi, '\\x3c/script')
+    stepTemplates.push('<script type="text/html" id="step-' + i + '">' + safeHtml + '<' + '/script>')
 
     const capture = dbGetCapture(step.captureId)
     stepConfigs.push({
