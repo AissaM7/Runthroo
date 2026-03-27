@@ -563,7 +563,7 @@ function AddStepModal({ onClose, onAdd }: { onClose: () => void; onAdd: (capture
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// STEP TIMELINE — Bottom filmstrip with live previews
+// STEP TIMELINE — Bottom filmstrip with pointer-based drag reorder
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function Timeline({ steps, selectedStepId, onSelectStep, onAddStep }: {
   steps: DemoStep[]
@@ -573,48 +573,105 @@ function Timeline({ steps, selectedStepId, onSelectStep, onAddStep }: {
 }) {
   const { reorderSteps } = useDemoStore()
   const { captures } = useCaptureStore()
-  const [dragId, setDragId] = useState<string | null>(null)
-  const [dragOverId, setDragOverId] = useState<string | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const stepRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+  const [dragState, setDragState] = useState<{
+    dragging: boolean
+    dragId: string | null
+    dragOverId: string | null
+    startX: number
+    startY: number
+    currentX: number
+    currentY: number
+    didMove: boolean
+  }>({ dragging: false, dragId: null, dragOverId: null, startX: 0, startY: 0, currentX: 0, currentY: 0, didMove: false })
 
   function getCapture(captureId: string) {
     return captures.find(c => c.id === captureId)
   }
 
-  function onDragStart(e: React.DragEvent, id: string) {
-    setDragId(id)
-    e.dataTransfer.effectAllowed = 'move'
-    // Required for drag to actually work in Electron/Chromium
-    e.dataTransfer.setData('text/plain', id)
-    // Set a transparent drag image so we see our custom opacity styling
-    const img = new Image()
-    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
-    e.dataTransfer.setDragImage(img, 0, 0)
-  }
-  function onDragOver(e: React.DragEvent, id: string) {
+  // Pointer-based drag — works in Electron unlike HTML5 DnD
+  function handlePointerDown(e: React.PointerEvent, stepId: string) {
+    // Only left mouse button
+    if (e.button !== 0) return
     e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-    if (dragOverId !== id) setDragOverId(id)
+      ; (e.target as HTMLElement).setPointerCapture(e.pointerId)
+    setDragState({
+      dragging: true,
+      dragId: stepId,
+      dragOverId: null,
+      startX: e.clientX,
+      startY: e.clientY,
+      currentX: e.clientX,
+      currentY: e.clientY,
+      didMove: false,
+    })
   }
-  function onDrop(e: React.DragEvent, targetId: string) {
-    e.preventDefault()
-    if (!dragId || dragId === targetId) { setDragId(null); setDragOverId(null); return }
-    const ids = steps.map(s => s.id)
-    const fromIdx = ids.indexOf(dragId)
-    const toIdx = ids.indexOf(targetId)
-    if (fromIdx === -1 || toIdx === -1) { setDragId(null); setDragOverId(null); return }
-    // Swap the two positions
-    const newIds = [...ids]
-    newIds[fromIdx] = ids[toIdx]
-    newIds[toIdx] = ids[fromIdx]
-    reorderSteps(newIds)
-    setDragId(null)
-    setDragOverId(null)
-  }
-  function onDragEnd() { setDragId(null); setDragOverId(null) }
+
+  useEffect(() => {
+    if (!dragState.dragging || !dragState.dragId) return
+
+    function onPointerMove(e: PointerEvent) {
+      const dx = e.clientX - dragState.startX
+      const dy = e.clientY - dragState.startY
+      const moved = Math.abs(dx) > 5 || Math.abs(dy) > 5
+
+      // Find which step we're hovering over
+      let hoverId: string | null = null
+      for (const [id, el] of stepRefs.current) {
+        if (id === dragState.dragId) continue
+        const rect = el.getBoundingClientRect()
+        if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+          hoverId = id
+          break
+        }
+      }
+
+      setDragState(prev => ({
+        ...prev,
+        currentX: e.clientX,
+        currentY: e.clientY,
+        didMove: prev.didMove || moved,
+        dragOverId: hoverId,
+      }))
+    }
+
+    function onPointerUp() {
+      if (dragState.didMove && dragState.dragId && dragState.dragOverId) {
+        const ids = steps.map(s => s.id)
+        const fromIdx = ids.indexOf(dragState.dragId)
+        const toIdx = ids.indexOf(dragState.dragOverId)
+        if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+          // Move the dragged item to the target position (insert, not swap)
+          const newIds = [...ids]
+          newIds.splice(fromIdx, 1)
+          newIds.splice(toIdx, 0, dragState.dragId)
+          reorderSteps(newIds)
+        }
+      }
+      // If we didn't move much, treat as a click
+      if (!dragState.didMove && dragState.dragId) {
+        onSelectStep(dragState.dragId)
+      }
+      setDragState({ dragging: false, dragId: null, dragOverId: null, startX: 0, startY: 0, currentX: 0, currentY: 0, didMove: false })
+    }
+
+    document.addEventListener('pointermove', onPointerMove)
+    document.addEventListener('pointerup', onPointerUp)
+    return () => {
+      document.removeEventListener('pointermove', onPointerMove)
+      document.removeEventListener('pointerup', onPointerUp)
+    }
+  }, [dragState.dragging, dragState.dragId, dragState.didMove, dragState.dragOverId, dragState.startX, dragState.startY, steps])
+
+  // Calculate floating clone position
+  const dragDeltaX = dragState.currentX - dragState.startX
+  const dragDeltaY = dragState.currentY - dragState.startY
 
   return (
     <div
-      className="h-[100px] flex items-center gap-3 px-4 overflow-x-auto shrink-0"
+      ref={containerRef}
+      className="h-[100px] flex items-center gap-3 px-4 overflow-x-auto shrink-0 relative"
       style={{
         background: 'linear-gradient(180deg, rgba(38,38,42,0.97) 0%, rgba(32,32,36,0.97) 100%)',
         borderTop: '1px solid rgba(255,255,255,0.06)',
@@ -627,40 +684,40 @@ function Timeline({ steps, selectedStepId, onSelectStep, onAddStep }: {
       {steps.map((step, i) => {
         const cap = getCapture(step.captureId)
         const isSelected = step.id === selectedStepId
-        const isDragging = step.id === dragId
-        const isDragOver = step.id === dragOverId
+        const isDragging = dragState.didMove && step.id === dragState.dragId
+        const isDragOver = dragState.didMove && step.id === dragState.dragOverId
 
         return (
           <React.Fragment key={step.id}>
             <div
-              draggable
-              onDragStart={e => onDragStart(e, step.id)}
-              onDragOver={e => onDragOver(e, step.id)}
-              onDrop={e => onDrop(e, step.id)}
-              onDragEnd={onDragEnd}
-              onClick={() => onSelectStep(step.id)}
-              className="relative flex-shrink-0 cursor-pointer select-none transition-all duration-200"
+              ref={el => { if (el) stepRefs.current.set(step.id, el); else stepRefs.current.delete(step.id) }}
+              onPointerDown={e => handlePointerDown(e, step.id)}
+              className="relative flex-shrink-0 select-none transition-all duration-150"
               style={{
                 width: 140,
                 height: 76,
                 borderRadius: 10,
                 overflow: 'hidden',
-                border: isSelected
+                cursor: isDragging ? 'grabbing' : 'grab',
+                border: isDragOver
                   ? '2px solid #0A84FF'
-                  : isDragOver
-                    ? '2px solid rgba(10,132,255,0.5)'
+                  : isSelected
+                    ? '2px solid #0A84FF'
                     : '2px solid transparent',
-                boxShadow: isSelected
-                  ? '0 0 0 3px rgba(10,132,255,0.15), 0 4px 12px rgba(0,0,0,0.3)'
-                  : '0 2px 8px rgba(0,0,0,0.2)',
+                boxShadow: isDragOver
+                  ? '0 0 0 3px rgba(10,132,255,0.3), 0 4px 12px rgba(0,0,0,0.3)'
+                  : isSelected
+                    ? '0 0 0 3px rgba(10,132,255,0.15), 0 4px 12px rgba(0,0,0,0.3)'
+                    : '0 2px 8px rgba(0,0,0,0.2)',
                 opacity: isDragging ? 0.3 : isSelected ? 1 : 0.7,
-                transform: isDragOver ? 'scale(1.03)' : 'none',
+                transform: isDragOver ? 'scale(1.05)' : 'none',
+                touchAction: 'none', // Required for pointer events
               }}
               onMouseEnter={e => {
-                if (!isSelected) (e.currentTarget as HTMLElement).style.opacity = '0.9'
+                if (!isSelected && !isDragging) (e.currentTarget as HTMLElement).style.opacity = '0.9'
               }}
               onMouseLeave={e => {
-                if (!isSelected) (e.currentTarget as HTMLElement).style.opacity = '0.7'
+                if (!isSelected && !isDragging) (e.currentTarget as HTMLElement).style.opacity = '0.7'
               }}
             >
               {/* Live preview */}
@@ -708,8 +765,6 @@ function Timeline({ steps, selectedStepId, onSelectStep, onAddStep }: {
                 </div>
               )}
             </div>
-
-
 
             {/* Arrow between steps */}
             {i < steps.length - 1 && (

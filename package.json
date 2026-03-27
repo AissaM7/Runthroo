@@ -1,6 +1,6 @@
 {
   "name": "runthroo",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Interactive click-through product demo builder",
   "main": "out/main/index.js",
   "scripts": {

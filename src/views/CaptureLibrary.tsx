@@ -561,9 +561,27 @@ export function CaptureLibrary() {
             {/* Steps — glassmorphism cards */}
             <div className="w-full max-w-md space-y-3 mb-10">
               {[
-                { step: '1', title: 'Install the Extension', desc: 'Load from chrome://extensions with Developer Mode on', icon: '🧩' },
-                { step: '2', title: 'Navigate to Any Web App', desc: 'Open the page you want to capture in Chrome', icon: '🌐' },
-                { step: '3', title: 'Click "Capture This Page"', desc: 'The page will appear here in your library instantly', icon: '📸' },
+                {
+                  step: '1', title: 'Install the Extension', desc: 'Load from chrome://extensions with Developer Mode on', icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A84FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
+                    </svg>
+                  )
+                },
+                {
+                  step: '2', title: 'Navigate to Any Web App', desc: 'Open the page you want to capture in Chrome', icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A84FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                  )
+                },
+                {
+                  step: '3', title: 'Click "Capture This Page"', desc: 'The page will appear here in your library instantly', icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A84FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" />
+                    </svg>
+                  )
+                },
               ].map((item, idx) => (
                 <div
                   key={item.step}
