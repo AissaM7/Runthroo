@@ -166,10 +166,8 @@ function LeftPanel({ onRequestAddStep }: { onRequestAddStep: () => void }) {
             </div>
             <button
               onClick={() => {
-                if (confirm('Are you sure you want to delete this demo and all its steps? This cannot be undone.')) {
-                  deleteDemo(currentDemo.id)
-                  setView('demos')
-                }
+                deleteDemo(currentDemo.id)
+                setView('demos')
               }}
               className="w-full h-9 text-[13px] text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-200 cursor-pointer mt-1"
             >
@@ -284,11 +282,7 @@ function RightInspector({ step, onUpdate, onRemove }: {
       {/* Actions */}
       <div className="mt-auto p-4">
         <button
-          onClick={() => {
-            if (confirm('Are you sure you want to remove this step? This cannot be undone.')) {
-              onRemove()
-            }
-          }}
+          onClick={onRemove}
           className="w-full h-10 text-[13px] font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer"
           style={{ border: '1px solid rgba(255,59,48,0.2)' }}
         >

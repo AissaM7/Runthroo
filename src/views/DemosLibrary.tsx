@@ -38,11 +38,13 @@ function getPlatformColor(platform: string) {
 }
 
 // ─── Demo Card ────────────────────────────────────────────────────────────────
-function DemoCard({ demo, captures, onOpen, onDelete }: {
+function DemoCard({ demo, captures, onOpen, onDelete, isSelected, onToggleSelect }: {
     demo: Demo
     captures: Capture[]
     onOpen: () => void
     onDelete: () => void
+    isSelected: boolean
+    onToggleSelect: (e: React.MouseEvent) => void
 }) {
     const color = getPlatformColor(demo.platform)
     const stepCaptures = demo.steps
@@ -52,9 +54,22 @@ function DemoCard({ demo, captures, onOpen, onDelete }: {
 
     return (
         <div
-            className="group bg-[#2c2c2c] rounded-lg overflow-hidden cursor-pointer relative transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] border border-[#3a3a3a] hover:border-[#505050]"
+            className={`group bg-[#2c2c2c] rounded-lg overflow-hidden cursor-pointer relative transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] border ${isSelected ? 'border-[#0A84FF] ring-2 ring-[#0A84FF]' : 'border-[#3a3a3a] hover:border-[#505050]'}`}
             onClick={onOpen}
         >
+            {/* Selection checkbox */}
+            <button
+                className={`absolute top-2 left-2 z-10 w-5 h-5 rounded flex items-center justify-center transition-all duration-150 cursor-pointer ${isSelected ? 'bg-[#0A84FF] opacity-100' : 'bg-black/50 opacity-0 group-hover:opacity-100'}`}
+                style={{ opacity: isSelected ? 1 : undefined }}
+                onClick={onToggleSelect}
+                title="Select demo"
+            >
+                {isSelected && (
+                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                )}
+            </button>
             {/* Preview thumbnail — show first step's page */}
             <div className="aspect-[16/10] bg-[#151515] relative overflow-hidden">
                 {previewCapture ? (
@@ -194,6 +209,7 @@ export function DemosLibrary() {
     const { setView } = useUIStore()
     const [search, setSearch] = useState('')
     const [openFolder, setOpenFolder] = useState<string | null>(null)
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
     useEffect(() => { fetchDemos(); fetchCaptures() }, [])
 
@@ -206,13 +222,33 @@ export function DemosLibrary() {
     const unsorted = demos.filter(d => !d.platform || d.platform === '' || d.platform === 'unknown')
 
     function handleOpenDemo(demo: Demo) {
+        if (selectedIds.size > 0) {
+            toggleSelect({ stopPropagation: () => { } } as React.MouseEvent, demo.id)
+            return
+        }
         loadDemo(demo.id)
         setView('editor')
     }
 
     function handleDeleteDemo(id: string) {
-        if (!confirm('Are you sure you want to delete this demo and all its steps? This cannot be undone.')) return
         deleteDemo(id)
+    }
+
+    function toggleSelect(e: React.MouseEvent, id: string) {
+        e.stopPropagation()
+        setSelectedIds(prev => {
+            const next = new Set(prev)
+            if (next.has(id)) next.delete(id)
+            else next.add(id)
+            return next
+        })
+    }
+
+    function deleteSelected() {
+        for (const id of selectedIds) {
+            deleteDemo(id)
+        }
+        setSelectedIds(new Set())
     }
 
     // ─── Inside a folder ────────────────────────────────────────────────────
@@ -265,6 +301,8 @@ export function DemosLibrary() {
                                 captures={captures}
                                 onOpen={() => handleOpenDemo(demo)}
                                 onDelete={() => handleDeleteDemo(demo.id)}
+                                isSelected={selectedIds.has(demo.id)}
+                                onToggleSelect={e => toggleSelect(e, demo.id)}
                             />
                         ))}
                     </div>
@@ -279,122 +317,153 @@ export function DemosLibrary() {
     )
 
     return (
-        <div className="flex-1 flex flex-col bg-[#1e1e1e] overflow-hidden">
-            {/* Filter bar */}
-            <div className="bg-[#2c2c2c] px-4 py-2.5 flex items-center gap-3 border-b border-[#3a3a3a] shrink-0">
-                <div className="relative">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6e6e6e] pointer-events-none"><SearchIcon size={13} /></span>
-                    <input
-                        className="w-64 h-7 bg-[#1e1e1e] border border-[#3a3a3a] rounded-md pl-7 pr-3 text-[12px] text-white placeholder-[#6e6e6e] outline-none transition-all duration-150 hover:border-[#505050] focus:border-[#0A84FF] focus:ring-1 focus:ring-[#0A84FF]/30"
-                        placeholder="Search demos…"
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                    />
-                </div>
+        <>
+            <div className="flex-1 flex flex-col bg-[#1e1e1e] overflow-hidden">
+                {/* Filter bar */}
+                <div className="bg-[#2c2c2c] px-4 py-2.5 flex items-center gap-3 border-b border-[#3a3a3a] shrink-0">
+                    <div className="relative">
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6e6e6e] pointer-events-none"><SearchIcon size={13} /></span>
+                        <input
+                            className="w-64 h-7 bg-[#1e1e1e] border border-[#3a3a3a] rounded-md pl-7 pr-3 text-[12px] text-white placeholder-[#6e6e6e] outline-none transition-all duration-150 hover:border-[#505050] focus:border-[#0A84FF] focus:ring-1 focus:ring-[#0A84FF]/30"
+                            placeholder="Search demos…"
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                        />
+                    </div>
 
-                <div className="ml-auto flex items-center gap-3">
-                    <span className="text-[11px] text-[#6e6e6e] whitespace-nowrap tabular-nums">
-                        {demos.length} demo{demos.length !== 1 ? 's' : ''}
-                    </span>
-                    <button
-                        onClick={() => setView('editor')}
-                        className="h-9 px-4 flex items-center gap-2 text-[13px] font-semibold rounded-lg transition-all duration-200 cursor-pointer text-white hover:scale-[1.03] active:scale-[0.97]"
-                        style={{ background: 'linear-gradient(135deg, #0A84FF, #0066cc)', boxShadow: '0 2px 10px rgba(10,132,255,0.3)' }}
-                    >
-                        + New Demo
-                    </button>
-                </div>
-            </div>
-
-            {/* Main content */}
-            <div className="flex-1 overflow-y-auto p-4">
-                {demos.length === 0 ? (
-                    <div className="flex-1 flex flex-col items-center justify-center h-full min-h-[320px]">
-                        <div
-                            className="w-20 h-20 rounded-2xl flex items-center justify-center mb-5"
-                            style={{ background: 'linear-gradient(135deg, rgba(10,132,255,0.15), rgba(10,132,255,0.05))' }}
-                        >
-                            <PlayIcon size={36} />
-                        </div>
-                        <p className="text-[17px] font-semibold text-white mb-1">No demos yet</p>
-                        <p className="text-[12px] text-[#6e6e6e] mb-6 text-center max-w-xs">
-                            Create a demo from the Editor tab by adding captured pages and stringing them together.
-                        </p>
+                    <div className="ml-auto flex items-center gap-3">
+                        <span className="text-[11px] text-[#6e6e6e] whitespace-nowrap tabular-nums">
+                            {demos.length} demo{demos.length !== 1 ? 's' : ''}
+                        </span>
                         <button
                             onClick={() => setView('editor')}
-                            className="h-8 px-4 text-white text-[12px] font-medium rounded transition-all duration-150 cursor-pointer"
-                            style={{ background: 'linear-gradient(to right, #0A84FF, #0066cc)' }}
+                            className="h-9 px-4 flex items-center gap-2 text-[13px] font-semibold rounded-lg transition-all duration-200 cursor-pointer text-white hover:scale-[1.03] active:scale-[0.97]"
+                            style={{ background: 'linear-gradient(135deg, #0A84FF, #0066cc)', boxShadow: '0 2px 10px rgba(10,132,255,0.3)' }}
                         >
-                            Go to Editor
+                            + New Demo
                         </button>
                     </div>
-                ) : (
-                    <div className="space-y-6">
-                        {/* Platform folders */}
-                        {knownPlatforms.length > 0 && (
-                            <div>
-                                <div className="flex items-center gap-2 mb-3">
-                                    <span className="text-[12px] font-semibold text-[#ababab] uppercase tracking-[0.08em]">Platforms</span>
-                                    <span className="text-[10px] text-[#505050]">{knownPlatforms.length} folder{knownPlatforms.length !== 1 ? 's' : ''}</span>
-                                </div>
-                                <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
-                                    {knownPlatforms.map(platform => (
-                                        <DemoFolder
-                                            key={platform}
-                                            platform={platform}
-                                            demos={platformGroups[platform]}
-                                            captures={captures}
-                                            onClick={() => { setOpenFolder(platform); setSearch('') }}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                </div>
 
-                        {/* Unsorted demos */}
-                        {unsorted.length > 0 && (
-                            <div>
-                                <div className="flex items-center gap-2 mb-3">
-                                    <span className="text-[12px] font-semibold text-[#ababab] uppercase tracking-[0.08em]">Unsorted</span>
-                                    <span className="text-[10px] text-[#505050]">{unsorted.length} demo{unsorted.length !== 1 ? 's' : ''}</span>
-                                </div>
-                                <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
-                                    {unsorted.map(demo => (
-                                        <DemoCard
-                                            key={demo.id}
-                                            demo={demo}
-                                            captures={captures}
-                                            onOpen={() => handleOpenDemo(demo)}
-                                            onDelete={() => handleDeleteDemo(demo.id)}
-                                        />
-                                    ))}
-                                </div>
+                {/* Main content */}
+                <div className="flex-1 overflow-y-auto p-4">
+                    {demos.length === 0 ? (
+                        <div className="flex-1 flex flex-col items-center justify-center h-full min-h-[320px]">
+                            <div
+                                className="w-20 h-20 rounded-2xl flex items-center justify-center mb-5"
+                                style={{ background: 'linear-gradient(135deg, rgba(10,132,255,0.15), rgba(10,132,255,0.05))' }}
+                            >
+                                <PlayIcon size={36} />
                             </div>
-                        )}
+                            <p className="text-[17px] font-semibold text-white mb-1">No demos yet</p>
+                            <p className="text-[12px] text-[#6e6e6e] mb-6 text-center max-w-xs">
+                                Create a demo from the Editor tab by adding captured pages and stringing them together.
+                            </p>
+                            <button
+                                onClick={() => setView('editor')}
+                                className="h-8 px-4 text-white text-[12px] font-medium rounded transition-all duration-150 cursor-pointer"
+                                style={{ background: 'linear-gradient(to right, #0A84FF, #0066cc)' }}
+                            >
+                                Go to Editor
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            {/* Platform folders */}
+                            {knownPlatforms.length > 0 && (
+                                <div>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <span className="text-[12px] font-semibold text-[#ababab] uppercase tracking-[0.08em]">Platforms</span>
+                                        <span className="text-[10px] text-[#505050]">{knownPlatforms.length} folder{knownPlatforms.length !== 1 ? 's' : ''}</span>
+                                    </div>
+                                    <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
+                                        {knownPlatforms.map(platform => (
+                                            <DemoFolder
+                                                key={platform}
+                                                platform={platform}
+                                                demos={platformGroups[platform]}
+                                                captures={captures}
+                                                onClick={() => { setOpenFolder(platform); setSearch('') }}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
-                        {/* All demos flat list */}
-                        {knownPlatforms.length > 0 && (
-                            <div>
-                                <div className="flex items-center gap-2 mb-3">
-                                    <span className="text-[12px] font-semibold text-[#ababab] uppercase tracking-[0.08em]">All Demos</span>
-                                    <span className="text-[10px] text-[#505050]">{searchedDemos.length} total</span>
+                            {/* Unsorted demos */}
+                            {unsorted.length > 0 && (
+                                <div>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <span className="text-[12px] font-semibold text-[#ababab] uppercase tracking-[0.08em]">Unsorted</span>
+                                        <span className="text-[10px] text-[#505050]">{unsorted.length} demo{unsorted.length !== 1 ? 's' : ''}</span>
+                                    </div>
+                                    <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
+                                        {unsorted.map(demo => (
+                                            <DemoCard
+                                                key={demo.id}
+                                                demo={demo}
+                                                captures={captures}
+                                                onOpen={() => handleOpenDemo(demo)}
+                                                onDelete={() => handleDeleteDemo(demo.id)}
+                                                isSelected={selectedIds.has(demo.id)}
+                                                onToggleSelect={e => toggleSelect(e, demo.id)}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
-                                <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
-                                    {searchedDemos.map(demo => (
-                                        <DemoCard
-                                            key={demo.id}
-                                            demo={demo}
-                                            captures={captures}
-                                            onOpen={() => handleOpenDemo(demo)}
-                                            onDelete={() => handleDeleteDemo(demo.id)}
-                                        />
-                                    ))}
+                            )}
+
+                            {/* All demos flat list */}
+                            {knownPlatforms.length > 0 && (
+                                <div>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <span className="text-[12px] font-semibold text-[#ababab] uppercase tracking-[0.08em]">All Demos</span>
+                                        <span className="text-[10px] text-[#505050]">{searchedDemos.length} total</span>
+                                    </div>
+                                    <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
+                                        {searchedDemos.map(demo => (
+                                            <DemoCard
+                                                key={demo.id}
+                                                demo={demo}
+                                                captures={captures}
+                                                onOpen={() => handleOpenDemo(demo)}
+                                                onDelete={() => handleDeleteDemo(demo.id)}
+                                                isSelected={selectedIds.has(demo.id)}
+                                                onToggleSelect={e => toggleSelect(e, demo.id)}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-                    </div>
-                )}
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+            {/* Selection action bar */}
+            {selectedIds.size > 0 && (
+                <div
+                    className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2.5 rounded-xl border border-[#4a4a4a] shadow-2xl"
+                    style={{ background: '#2c2c2c', backdropFilter: 'blur(12px)' }}
+                >
+                    <span className="text-[12px] text-[#ababab]">
+                        {selectedIds.size} demo{selectedIds.size > 1 ? 's' : ''} selected
+                    </span>
+                    <div className="w-px h-4 bg-[#3a3a3a]" />
+                    <button
+                        onClick={deleteSelected}
+                        className="h-7 px-3 flex items-center gap-1.5 text-red-400 text-[12px] font-medium rounded transition-all duration-150 cursor-pointer hover:bg-red-500/15"
+                        style={{ border: '1px solid rgba(255,59,48,0.3)' }}
+                    >
+                        Delete
+                    </button>
+                    <button
+                        onClick={() => setSelectedIds(new Set())}
+                        className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#404040] text-[#6e6e6e] hover:text-white transition-all duration-150 cursor-pointer"
+                    >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                    </button>
+                </div>
+            )}
+        </>
     )
 }

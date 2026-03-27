@@ -51,7 +51,6 @@ function CapturePreviewCard({ capture, onClick, isSelected, onToggleSelect, onDe
 
   function handleDelete(e: React.MouseEvent) {
     e.stopPropagation()
-    if (!confirm('Are you sure you want to delete this capture? If it\'s used in any demos, those steps will also be removed.')) return
     onDelete()
   }
 
@@ -213,7 +212,14 @@ export function CaptureLibrary() {
   const { setView } = useUIStore()
   const [previewCapture, setPreviewCapture] = useState<Capture | null>(null)
   const [previewHtml, setPreviewHtml] = useState('')
-  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    return !localStorage.getItem('runthroo_onboarding_seen')
+  })
+
+  function closeOnboarding() {
+    localStorage.setItem('runthroo_onboarding_seen', '1')
+    setShowOnboarding(false)
+  }
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [creatingDemo, setCreatingDemo] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
@@ -377,6 +383,20 @@ export function CaptureLibrary() {
               {creatingDemo ? 'Creating…' : '+ Create Demo'}
             </button>
             <button
+              onClick={() => {
+                for (const id of selectedIds) {
+                  deleteCapture(id)
+                }
+                fetchDemos()
+                setSelectedIds(new Set())
+                fetchCaptures()
+              }}
+              className="h-7 px-3 flex items-center gap-1.5 text-red-400 text-[12px] font-medium rounded transition-all duration-150 cursor-pointer hover:bg-red-500/15"
+              style={{ border: '1px solid rgba(255,59,48,0.3)' }}
+            >
+              Delete
+            </button>
+            <button
               onClick={() => setSelectedIds(new Set())}
               className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#404040] text-[#6e6e6e] hover:text-white transition-all duration-150 cursor-pointer"
             >
@@ -401,7 +421,7 @@ export function CaptureLibrary() {
 
         {/* Onboarding */}
         {showOnboarding && (
-          <OnboardingWalkthrough onClose={() => setShowOnboarding(false)} />
+          <OnboardingWalkthrough onClose={closeOnboarding} />
         )}
 
         {/* Preview modal */}
