@@ -2,6 +2,7 @@
   "name": "runthroo",
   "version": "1.2.5",
   "description": "Interactive click-through product demo builder",
+  "license": "AGPL-3.0",
   "main": "out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",

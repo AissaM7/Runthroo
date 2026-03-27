@@ -218,7 +218,7 @@ Contributions are welcome! Feel free to open issues, submit pull requests, or su
 
 ## 📄 License
 
-This project is open sourced under the [MIT License](LICENSE).
+This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). It is free for personal and non-commercial use. Any commercial use, resale, or incorporation into a paid product requires a separate commercial license — contact aissamamdouh14@gmail.com directly.
 
 ---
 
