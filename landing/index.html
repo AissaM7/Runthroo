@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runthroo | Build interactive demos in seconds</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <nav class="glass-nav">
+        <div class="nav-content">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="128" height="128" rx="32" fill="#0A84FF" />
+                    <rect x="24" y="28" width="80" height="56" rx="8" fill="none" stroke="white" stroke-width="8" />
+                    <path d="M56 44 v24 l18 -12 z" fill="white" />
+                    <path d="M64 84 v16" stroke="white" stroke-width="8" />
+                    <path d="M44 100 h40" stroke="white" stroke-width="8" stroke-linecap="round" />
+                </svg>
+                <span>Runthroo</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#installation">Install Guide</a>
+                <a href="https://github.com/Runthroo/runthroo" target="_blank" class="github-link">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-badge">Open Source 1.0 Release</div>
+            <h1 class="hero-title">Interactive product demos.<br>Built in <i>seconds</i>.</h1>
+            <p class="hero-subtitle">Capture any web application with perfect fidelity. Draw click zones, add context,
+                and export blazing fast interactive demos that feel like native software.</p>
+
+            <div class="cta-group">
+                <a href="https://github.com/AissaM7/Runthroo/releases/download/v1.0.0/Runthroo.dmg"
+                    download="Runthroo.dmg" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download for Mac (.dmg)
+                </a>
+                <a href="#installation" class="btn btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Get Chrome Extension
+                </a>
+            </div>
+
+            <div class="hero-visual">
+                <div class="macbook-frame">
+                    <div class="macbook-topbar">
+                        <div class="traffic-lights">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <!-- Placeholder for App Screenshot/Video -->
+                    <div class="screen-placeholder">
+                        <svg class="play-icon" viewBox="0 0 24 24" fill="white">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                        <span>See exactly how it works</span>
+                    </div>
+                </div>
+                <div class="glow-effect"></div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon-box">⚡️</div>
+                    <h3>Blazing Fast Export</h3>
+                    <p>Stop recording heavy videos. Export lightweight, pure HTML/CSS presentations that load instantly
+                        and look perfectly sharp.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-box">🎯</div>
+                    <h3>Smart Click Zones</h3>
+                    <p>Draw interactive targets over any element. Visually guide your viewers through the exact
+                        happy-path of your application.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-box">🔒</div>
+                    <h3>100% Local & Secure</h3>
+                    <p>Your screen captures never touch a cloud server. Everything is stored and compiled strictly on
+                        your local machine.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="installation" class="installation">
+            <div class="install-container">
+                <div class="install-text">
+                    <h2>Install the Extension<br>in 15 seconds.</h2>
+                    <p>To bypass the Chrome Web Store review queue, we've made the extension available natively. Just
+                        follow these quick steps:</p>
+
+                    <ol class="steps-list">
+                        <li>
+                            <strong>Download the ZIP Archive</strong>
+                            <span>Click here to <a href="runthroo-extension.zip" download class="text-link">download
+                                    runthroo-extension.zip</a> and
+                                unzip it.</span>
+                        </li>
+                        <li>
+                            <strong>Open Extension Settings</strong>
+                            <span>Navigate to <code>chrome://extensions</code> in your Chrome browser.</span>
+                        </li>
+                        <li>
+                            <strong>Enable Developer Mode</strong>
+                            <span>Toggle "Developer mode" in the top right corner.</span>
+                        </li>
+                        <li>
+                            <strong>Load Unpacked</strong>
+                            <span>Click "Load unpacked" and select the folder you just unzipped. You're done!</span>
+                        </li>
+                    </ol>
+                </div>
+                <div class="install-visual">
+                    <div class="video-placeholder">
+                        <div class="play-indicator">▶ Play Tutorial GIF</div>
+                        <!-- Provide an area where the user can replace with their own 10 second tutorial GIF -->
+                        <div class="replace-hint">Replace with 10s Screen Recording</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">Runthroo Platform</div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="https://github.com/Runthroo">GitHub Repository</a>
+            </div>
+            <p class="copyright">© 2024 Runthroo Open Source. Built for the modern web.</p>
+        </div>
+    </footer>
+
+    <script src="spotlight.js"></script>
+</body>
+
+</html>

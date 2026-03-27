@@ -1,0 +1,536 @@
+:root {
+    --bg: #0b0b0d;
+    --text-main: #f5f5f7;
+    --text-muted: #86868b;
+    --accent: #0A84FF;
+    --accent-glow: rgba(10, 132, 255, 0.6);
+    --glass: rgba(255, 255, 255, 0.04);
+    --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: transparent;
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+/* ━━━ Spotlight Background ━━━ */
+.spotlight-background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+    background-color: var(--bg);
+}
+
+.spotlight-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.spotlight-base {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* ━━━ Navigation ━━━ */
+.glass-nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 64px;
+    background: rgba(11, 11, 13, 0.75);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+}
+
+.nav-content {
+    width: 100%;
+    max-width: 1100px;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: -0.02em;
+}
+
+.logo span {
+    background: linear-gradient(135deg, #fff, #a1a1a6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+    display: flex;
+    gap: 32px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: var(--text-main);
+}
+
+.github-link {
+    color: var(--text-main) !important;
+}
+
+/* ━━━ Hero Section ━━━ */
+.hero {
+    padding: 180px 24px 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.hero-badge {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    background: rgba(10, 132, 255, 0.1);
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(10, 132, 255, 0.2);
+}
+
+.hero-title {
+    font-size: 72px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    margin-bottom: 24px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #A1A1A6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-title i {
+    font-style: italic;
+    font-family: "SF Pro Display", "Times New Roman", serif;
+    font-weight: 400;
+    color: var(--accent);
+    -webkit-text-fill-color: var(--accent);
+}
+
+.hero-subtitle {
+    font-size: 21px;
+    color: var(--text-muted);
+    max-width: 640px;
+    margin-bottom: 48px;
+    letter-spacing: -0.01em;
+}
+
+/* ━━━ Buttons ━━━ */
+.cta-group {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 80px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.btn-primary:hover {
+    background: #0070e0;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--accent-glow);
+}
+
+.btn-secondary {
+    background: var(--glass);
+    color: var(--text-main);
+    border: 1px solid var(--glass-border);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* ━━━ Mockup Visual ━━━ */
+.hero-visual {
+    width: 100%;
+    max-width: 1000px;
+    position: relative;
+    perspective: 1000px;
+}
+
+.macbook-frame {
+    width: 100%;
+    aspect-ratio: 16/10;
+    background: #111113;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.macbook-topbar {
+    height: 28px;
+    background: #1c1c1e;
+    border-bottom: 1px solid #2c2c2e;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+}
+
+.traffic-lights {
+    display: flex;
+    gap: 8px;
+}
+
+.traffic-lights span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #333;
+}
+
+.traffic-lights span:nth-child(1) {
+    background: #ff5f56;
+}
+
+.traffic-lights span:nth-child(2) {
+    background: #ffbd2e;
+}
+
+.traffic-lights span:nth-child(3) {
+    background: #27c93f;
+}
+
+.screen-placeholder {
+    flex: 1;
+    background: linear-gradient(145deg, #1c1c1e, #0b0b0d);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    gap: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.play-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(10, 132, 255, 0.1);
+    border-radius: 50%;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(10, 132, 255, 0.2);
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.macbook-frame:hover .play-icon {
+    transform: scale(1.05);
+    background: rgba(10, 132, 255, 0.2);
+}
+
+.glow-effect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    filter: blur(100px);
+    z-index: 1;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* ━━━ Features ━━━ */
+.features {
+    padding: 100px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 32px;
+    transition: background 0.2s;
+}
+
+.feature-card:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.icon-box {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 24px;
+    border: 1px solid var(--glass-border);
+}
+
+.feature-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+}
+
+.feature-card p {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* ━━━ Installation ━━━ */
+.installation {
+    padding: 100px 24px;
+    background: linear-gradient(180deg, transparent, rgba(10, 132, 255, 0.02));
+    border-top: 1px solid var(--glass-border);
+}
+
+.install-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+}
+
+.install-text h2 {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 24px;
+}
+
+.install-text p {
+    color: var(--text-muted);
+    font-size: 17px;
+    margin-bottom: 40px;
+}
+
+.steps-list {
+    list-style: none;
+    counter-reset: my-awesome-counter;
+}
+
+.steps-list li {
+    position: relative;
+    padding-left: 48px;
+    margin-bottom: 32px;
+}
+
+.steps-list li::before {
+    counter-increment: my-awesome-counter;
+    content: counter(my-awesome-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.steps-list strong {
+    display: block;
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.steps-list span {
+    display: block;
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.text-link {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.text-link:hover {
+    text-decoration: underline;
+}
+
+.install-visual {
+    width: 100%;
+    aspect-ratio: 4/3;
+    border-radius: 16px;
+    background: #111113;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.video-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    color: var(--text-muted);
+}
+
+.play-indicator {
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+}
+
+.replace-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* ━━━ Footer ━━━ */
+footer {
+    padding: 80px 24px 40px;
+    border-top: 1px solid var(--glass-border);
+    background: #000;
+}
+
+.footer-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+}
+
+.footer-logo {
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+}
+
+.footer-links {
+    display: flex;
+    gap: 32px;
+}
+
+.footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}
+
+.copyright {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-top: 24px;
+}
+
+@media (max-width: 900px) {
+    .hero-title {
+        font-size: 48px;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .install-container {
+        grid-template-columns: 1fr;
+    }
+
+    .cta-group {
+        flex-direction: column;
+    }
+}
