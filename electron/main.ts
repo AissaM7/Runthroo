@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { v4 as uuidv4 } from 'uuid'
-import { initDatabase, dbListCaptures, dbGetCapture, dbInsertCapture, dbDeleteCapture, dbUpdateCaptureTags, dbListDemos, dbGetDemo, dbInsertDemo, dbUpdateDemo, dbDeleteDemo, dbInsertStep, dbUpdateStep, dbDeleteStep, dbReorderSteps, dbReindexSteps, dbListSteps } from './services/database'
+import { initDatabase, dbListCaptures, dbGetCapture, dbInsertCapture, dbDeleteCapture, dbDeleteCaptureWithCascade, dbUpdateCaptureTags, dbListDemos, dbGetDemo, dbInsertDemo, dbUpdateDemo, dbDeleteDemo, dbInsertStep, dbUpdateStep, dbDeleteStep, dbReorderSteps, dbReindexSteps, dbListSteps } from './services/database'
 import { initDirectories, writeCaptureFile, readCaptureFile, deleteCaptureFile, deleteThumbnailFile } from './services/fileManager'
 import { startCaptureServer } from './services/captureServer'
 import { generateThumbnail } from './services/thumbnailGenerator'
@@ -44,7 +44,7 @@ function registerIpcHandlers() {
   ipcMain.handle('captures:delete', (_e, id: string) => {
     deleteCaptureFile(id)
     deleteThumbnailFile(id)
-    dbDeleteCapture(id)
+    dbDeleteCaptureWithCascade(id)
   })
 
   ipcMain.handle('captures:import', async (_e, htmlContent: string, metadata: Partial<Capture>) => {

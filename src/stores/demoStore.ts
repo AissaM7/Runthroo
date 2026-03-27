@@ -83,12 +83,16 @@ export const useDemoStore = create<DemoStoreState>((set, get) => ({
 
   removeStep: async (stepId) => {
     await window.api.removeStep(stepId)
-    const { currentDemo } = get()
+    const { currentDemo, selectedStepId } = get()
     if (!currentDemo) return
+    const oldIndex = currentDemo.steps.findIndex(s => s.id === stepId)
     const updatedSteps = currentDemo.steps
       .filter(s => s.id !== stepId)
       .map((s, i) => ({ ...s, stepOrder: i }))
-    const newSelectedId = updatedSteps.length > 0 ? updatedSteps[0].id : null
+    // Select the previous step, or the first step, or null
+    const newSelectedId = updatedSteps.length > 0
+      ? updatedSteps[Math.max(0, oldIndex - 1)].id
+      : null
     set({ currentDemo: { ...currentDemo, steps: updatedSteps }, selectedStepId: newSelectedId })
   },
 

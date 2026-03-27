@@ -49,6 +49,12 @@ function CapturePreviewCard({ capture, onClick, isSelected, onToggleSelect, onDe
   const [menuOpen, setMenuOpen] = useState(false)
   const color = getPlatformColor(capture.platform)
 
+  function handleDelete(e: React.MouseEvent) {
+    e.stopPropagation()
+    if (!confirm('Are you sure you want to delete this capture? If it\'s used in any demos, those steps will also be removed.')) return
+    onDelete()
+  }
+
   return (
     <div
       className={`group bg-[#2c2c2c] rounded-lg overflow-hidden cursor-pointer relative transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] ${isSelected ? 'ring-2 ring-[#0A84FF]' : ''
@@ -69,6 +75,17 @@ function CapturePreviewCard({ capture, onClick, isSelected, onToggleSelect, onDe
             <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
+      </button>
+
+      {/* Delete button on hover */}
+      <button
+        className="absolute top-2 right-2 z-10 w-6 h-6 rounded flex items-center justify-center bg-black/60 text-red-400 opacity-0 group-hover:opacity-100 transition-all duration-150 cursor-pointer hover:bg-red-500/30"
+        onClick={handleDelete}
+        title="Delete capture"
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+        </svg>
       </button>
 
       {/* Live Preview — mini iframe of the actual captured page */}
@@ -110,7 +127,7 @@ function CapturePreviewCard({ capture, onClick, isSelected, onToggleSelect, onDe
           <div className="absolute top-2 right-2 z-50 bg-[#2c2c2c] border border-[#4a4a4a] rounded-lg shadow-2xl py-1 min-w-[140px]">
             <button
               className="w-full text-left px-3 py-1.5 text-[12px] text-[#f24822] hover:bg-[#404040] transition-colors flex items-center gap-2 cursor-pointer"
-              onClick={e => { e.stopPropagation(); onDelete(); setMenuOpen(false) }}
+              onClick={handleDelete}
             >
               Delete
             </button>
@@ -192,7 +209,7 @@ function PlatformFolder({ platform, captures, count, onClick }: {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export function CaptureLibrary() {
   const { captures, filters, loading, fetchCaptures, setFilters, deleteCapture } = useCaptureStore()
-  const { createDemo, addStep } = useDemoStore()
+  const { createDemo, addStep, fetchDemos } = useDemoStore()
   const { setView } = useUIStore()
   const [previewCapture, setPreviewCapture] = useState<Capture | null>(null)
   const [previewHtml, setPreviewHtml] = useState('')
@@ -325,7 +342,7 @@ export function CaptureLibrary() {
                   : openPreview(capture)}
                 isSelected={selectedIds.has(capture.id)}
                 onToggleSelect={e => toggleSelect(e, capture.id)}
-                onDelete={() => deleteCapture(capture.id)}
+                onDelete={() => { deleteCapture(capture.id); fetchDemos() }}
               />
             ))}
           </div>
@@ -567,7 +584,7 @@ export function CaptureLibrary() {
                         : openPreview(capture)}
                       isSelected={selectedIds.has(capture.id)}
                       onToggleSelect={e => toggleSelect(e, capture.id)}
-                      onDelete={() => deleteCapture(capture.id)}
+                      onDelete={() => { deleteCapture(capture.id); fetchDemos() }}
                     />
                   ))}
                 </div>
@@ -593,7 +610,7 @@ export function CaptureLibrary() {
                           : openPreview(capture)}
                         isSelected={selectedIds.has(capture.id)}
                         onToggleSelect={e => toggleSelect(e, capture.id)}
-                        onDelete={() => deleteCapture(capture.id)}
+                        onDelete={() => { deleteCapture(capture.id); fetchDemos() }}
                       />
                     ))}
                 </div>

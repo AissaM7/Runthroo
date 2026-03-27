@@ -34,6 +34,7 @@ function SectionHeader({ title, action }: { title: string; action?: React.ReactN
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function LeftPanel({ onRequestAddStep }: { onRequestAddStep: () => void }) {
   const { demos, currentDemo, loadDemo, createDemo, deleteDemo, updateDemo } = useDemoStore()
+  const { setView } = useUIStore()
   const [showCreate, setShowCreate] = useState(false)
   const [newName, setNewName] = useState('')
 
@@ -164,7 +165,12 @@ function LeftPanel({ onRequestAddStep }: { onRequestAddStep: () => void }) {
               />
             </div>
             <button
-              onClick={() => deleteDemo(currentDemo.id)}
+              onClick={() => {
+                if (confirm('Are you sure you want to delete this demo and all its steps? This cannot be undone.')) {
+                  deleteDemo(currentDemo.id)
+                  setView('demos')
+                }
+              }}
               className="w-full h-9 text-[13px] text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-200 cursor-pointer mt-1"
             >
               Delete Demo
@@ -278,7 +284,11 @@ function RightInspector({ step, onUpdate, onRemove }: {
       {/* Actions */}
       <div className="mt-auto p-4">
         <button
-          onClick={onRemove}
+          onClick={() => {
+            if (confirm('Are you sure you want to remove this step? This cannot be undone.')) {
+              onRemove()
+            }
+          }}
           className="w-full h-10 text-[13px] font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer"
           style={{ border: '1px solid rgba(255,59,48,0.2)' }}
         >
@@ -576,6 +586,16 @@ function Timeline({ steps, selectedStepId, onSelectStep, onAddStep }: {
     return captures.find(c => c.id === captureId)
   }
 
+  function moveStep(stepId: string, direction: -1 | 1) {
+    const ids = steps.map(s => s.id)
+    const idx = ids.indexOf(stepId)
+    const newIdx = idx + direction
+    if (newIdx < 0 || newIdx >= ids.length) return
+    const newIds = [...ids]
+      ;[newIds[idx], newIds[newIdx]] = [newIds[newIdx], newIds[idx]]
+    reorderSteps(newIds)
+  }
+
   function onDragStart(e: React.DragEvent, id: string) {
     setDragId(id)
     e.dataTransfer.effectAllowed = 'move'
@@ -696,6 +716,28 @@ function Timeline({ steps, selectedStepId, onSelectStep, onAddStep }: {
                 </div>
               )}
             </div>
+
+            {/* Move left/right arrows — visible on selected step */}
+            {isSelected && steps.length > 1 && (
+              <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5 z-10">
+                <button
+                  onClick={e => { e.stopPropagation(); moveStep(step.id, -1) }}
+                  disabled={i === 0}
+                  className="w-5 h-5 rounded-full flex items-center justify-center bg-black/70 text-white/70 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                  title="Move left"
+                >
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M5 1.5L2.5 4 5 6.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </button>
+                <button
+                  onClick={e => { e.stopPropagation(); moveStep(step.id, 1) }}
+                  disabled={i === steps.length - 1}
+                  className="w-5 h-5 rounded-full flex items-center justify-center bg-black/70 text-white/70 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                  title="Move right"
+                >
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M3 1.5L5.5 4 3 6.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </button>
+              </div>
+            )}
 
             {/* Arrow between steps */}
             {i < steps.length - 1 && (

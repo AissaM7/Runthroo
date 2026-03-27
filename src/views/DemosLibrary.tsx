@@ -211,6 +211,7 @@ export function DemosLibrary() {
     }
 
     function handleDeleteDemo(id: string) {
+        if (!confirm('Are you sure you want to delete this demo and all its steps? This cannot be undone.')) return
         deleteDemo(id)
     }
 

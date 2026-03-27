@@ -109,6 +109,27 @@ export function dbDeleteCapture(id: string) {
   db.prepare(`DELETE FROM captures WHERE id = ?`).run(id)
 }
 
+export function dbDeleteCaptureWithCascade(id: string) {
+  const txn = db.transaction(() => {
+    // Find all demos affected by this capture
+    const affectedDemos = db.prepare(
+      `SELECT DISTINCT demo_id FROM demo_steps WHERE capture_id = ?`
+    ).all(id) as { demo_id: string }[]
+
+    // Delete all steps referencing this capture
+    db.prepare(`DELETE FROM demo_steps WHERE capture_id = ?`).run(id)
+
+    // Re-index remaining steps in each affected demo
+    for (const { demo_id } of affectedDemos) {
+      dbReindexSteps(demo_id)
+    }
+
+    // Delete the capture itself
+    db.prepare(`DELETE FROM captures WHERE id = ?`).run(id)
+  })
+  txn()
+}
+
 export function dbUpdateCaptureThumbnail(id: string, thumbnailPath: string) {
   db.prepare(`UPDATE captures SET thumbnail_path = ? WHERE id = ?`).run(thumbnailPath, id)
 }
