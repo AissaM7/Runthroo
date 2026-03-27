@@ -50,11 +50,9 @@ export function TopBar() {
             className="w-7 h-7 rounded-lg flex items-center justify-center"
             style={{ background: 'linear-gradient(135deg, #0A84FF, #0066cc)' }}
           >
-            {/* Monitor with play button — demo/tech icon */}
+            {/* Cursor icon — Runthroo brand */}
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect x="2" y="2" width="12" height="9" rx="1.5" stroke="white" strokeWidth="1.4" fill="none" />
-              <path d="M7 5.5v4l3-2-3-2z" fill="white" />
-              <path d="M5.5 13.5h5" stroke="white" strokeWidth="1.4" strokeLinecap="round" />
+              <path d="M3 2L3 12L6 9L9.5 13L11 12L7.5 8L11 7L3 2Z" fill="white" />
             </svg>
           </div>
           <span
