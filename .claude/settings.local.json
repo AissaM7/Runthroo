@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npx create-electron-vite@latest . --template react-ts)",
+      "Bash(npm install:*)",
+      "Bash(npx electron-rebuild:*)",
+      "Bash(npm run:*)",
+      "Bash(node:*)",
+      "Bash(printf 'export {}')",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(echo \"=== $f ===\")",
+      "Read(//Users/aissamamdouh/Downloads/claude/extension/**)",
+      "Bash(done)"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build output
+out/
+dist/
+
+# Environment
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local database
+*.db
+*.sqlite
+
+# Agent handoff (development notes)
+AGENT_HANDOFF.md
