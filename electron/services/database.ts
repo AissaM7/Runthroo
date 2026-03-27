@@ -230,6 +230,9 @@ export function dbDeleteStep(id: string) {
 export function dbReorderSteps(demoId: string, stepIds: string[]) {
   const update = db.prepare(`UPDATE demo_steps SET step_order = ? WHERE id = ? AND demo_id = ?`)
   const txn = db.transaction(() => {
+    // Pass 1: set all to negative temps to avoid UNIQUE(demo_id, step_order) conflicts
+    stepIds.forEach((sid, idx) => update.run(-(idx + 1), sid, demoId))
+    // Pass 2: set to final positive values
     stepIds.forEach((sid, idx) => update.run(idx, sid, demoId))
   })
   txn()
