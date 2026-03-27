@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="extension/icons/icon128.png" alt="Runthroo Logo" width="80" />
+  <img src="icon.png" alt="Runthroo Logo" width="80" />
 </p>
 
 <h1 align="center">Runthroo</h1>
