@@ -443,7 +443,7 @@ export function OnboardingWalkthrough({ onClose }: Props) {
       >
         <div
           className="relative bg-[#1e1e1e] border border-[#2a2a2a] rounded-2xl overflow-hidden"
-          style={{ width: 560, boxShadow: '0 24px 80px rgba(0,0,0,0.65)' }}
+          style={{ width: 560, boxShadow: '0 24px 80px rgba(0,0,0,0.65)', animation: 'walkthroughSlideIn 0.4s ease-out' }}
           onClick={e => e.stopPropagation()}
         >
           {/* Close button */}

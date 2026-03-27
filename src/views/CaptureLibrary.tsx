@@ -212,9 +212,15 @@ export function CaptureLibrary() {
   const { setView } = useUIStore()
   const [previewCapture, setPreviewCapture] = useState<Capture | null>(null)
   const [previewHtml, setPreviewHtml] = useState('')
-  const [showOnboarding, setShowOnboarding] = useState(() => {
-    return !localStorage.getItem('runthroo_onboarding_seen')
-  })
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  // Auto-pop walkthrough after 1 second on first launch
+  useEffect(() => {
+    if (!localStorage.getItem('runthroo_onboarding_seen')) {
+      const timer = setTimeout(() => setShowOnboarding(true), 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   function closeOnboarding() {
     localStorage.setItem('runthroo_onboarding_seen', '1')
@@ -524,42 +530,107 @@ export function CaptureLibrary() {
         )}
 
         {!loading && captures.length === 0 && (
-          <div className="flex-1 flex flex-col items-center justify-center h-full min-h-[320px]">
+          <div className="flex-1 flex flex-col items-center justify-center h-full min-h-[420px]" style={{ animation: 'fadeInUp 0.6s ease-out' }}>
+            {/* Hero icon with glow */}
             <div
-              className="w-20 h-20 rounded-2xl flex items-center justify-center mb-5"
-              style={{ background: 'linear-gradient(135deg, rgba(10,132,255,0.15), rgba(10,132,255,0.05))' }}
+              className="w-24 h-24 rounded-3xl flex items-center justify-center mb-8 relative"
+              style={{
+                background: 'linear-gradient(135deg, rgba(10,132,255,0.2), rgba(94,92,230,0.12))',
+                boxShadow: '0 0 60px rgba(10,132,255,0.15), 0 0 120px rgba(94,92,230,0.08)',
+              }}
             >
-              <span className="text-[#0A84FF]"><CameraIcon size={36} /></span>
+              <span className="text-[#0A84FF]"><CameraIcon size={40} /></span>
+              <div className="absolute inset-0 rounded-3xl" style={{
+                background: 'linear-gradient(135deg, transparent, rgba(255,255,255,0.05))',
+                pointerEvents: 'none',
+              }} />
             </div>
-            <p className="text-[17px] font-semibold text-white mb-1">No captures yet</p>
-            <p className="text-[12px] text-[#6e6e6e] mb-6 text-center max-w-xs">
-              Capture any web page with the Chrome extension and build interactive demos.
+
+            {/* Heading */}
+            <h2
+              className="text-[28px] font-bold text-white mb-2 tracking-[-0.02em]"
+              style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}
+            >
+              No captures yet
+            </h2>
+            <p className="text-[15px] mb-10 text-center max-w-md leading-relaxed" style={{ color: '#8e8e93' }}>
+              Capture any web page with the Chrome extension and
+              turn it into an interactive product demo.
             </p>
 
-            <div className="w-full max-w-sm space-y-3 mb-6">
+            {/* Steps — glassmorphism cards */}
+            <div className="w-full max-w-md space-y-3 mb-10">
               {[
-                { step: '1', title: 'Install the Extension', desc: 'Load the extension from the project\'s extension/ folder in chrome://extensions' },
-                { step: '2', title: 'Navigate to Any Web App', desc: 'Open the page you want to capture in Chrome' },
-                { step: '3', title: 'Click "Capture This Page"', desc: 'The page will appear here in your library' },
-              ].map(item => (
-                <div key={item.step} className="flex items-start gap-3 bg-[#2c2c2c] rounded-lg px-3.5 py-2.5 border border-[#3a3a3a]">
-                  <div className="w-6 h-6 rounded-full bg-[#0A84FF]/15 flex items-center justify-center text-[#0A84FF] text-[11px] font-bold shrink-0 mt-0.5">
+                { step: '1', title: 'Install the Extension', desc: 'Load from chrome://extensions with Developer Mode on', icon: '🧩' },
+                { step: '2', title: 'Navigate to Any Web App', desc: 'Open the page you want to capture in Chrome', icon: '🌐' },
+                { step: '3', title: 'Click "Capture This Page"', desc: 'The page will appear here in your library instantly', icon: '📸' },
+              ].map((item, idx) => (
+                <div
+                  key={item.step}
+                  className="group flex items-center gap-4 rounded-xl px-5 py-4 transition-all duration-300 cursor-default"
+                  style={{
+                    background: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    backdropFilter: 'blur(12px)',
+                    animation: `fadeInUp 0.5s ease-out ${0.1 + idx * 0.1}s both`,
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLElement).style.background = 'rgba(10,132,255,0.08)';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(10,132,255,0.2)';
+                    (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.06)';
+                    (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+                  }}
+                >
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(10,132,255,0.15), rgba(94,92,230,0.1))',
+                      border: '1px solid rgba(10,132,255,0.15)',
+                    }}
+                  >
+                    {item.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[14px] font-semibold text-white tracking-[-0.01em]">{item.title}</div>
+                    <div className="text-[13px] mt-0.5" style={{ color: '#6e6e73' }}>{item.desc}</div>
+                  </div>
+                  <span className="text-[12px] font-bold tabular-nums" style={{ color: 'rgba(10,132,255,0.4)' }}>
                     {item.step}
-                  </div>
-                  <div>
-                    <div className="text-[12px] font-medium text-white">{item.title}</div>
-                    <div className="text-[11px] text-[#6e6e6e] mt-0.5">{item.desc}</div>
-                  </div>
+                  </span>
                 </div>
               ))}
             </div>
 
+            {/* Walkthrough button — prominent gradient */}
             <button
               onClick={() => setShowOnboarding(true)}
-              className="px-4 py-2 text-[#0A84FF] text-[12px] font-medium rounded-md transition-all duration-150 cursor-pointer hover:opacity-80"
-              style={{ background: 'linear-gradient(to right, rgba(10,132,255,0.15), rgba(10,132,255,0.05))' }}
+              className="group relative h-12 px-8 text-white text-[15px] font-semibold rounded-xl transition-all duration-300 cursor-pointer overflow-hidden hover:scale-[1.03] active:scale-[0.97]"
+              style={{
+                background: 'linear-gradient(135deg, #0A84FF, #5E5CE6)',
+                boxShadow: '0 4px 24px rgba(10,132,255,0.3), 0 1px 3px rgba(0,0,0,0.2)',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(10,132,255,0.45), 0 1px 3px rgba(0,0,0,0.2)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 24px rgba(10,132,255,0.3), 0 1px 3px rgba(0,0,0,0.2)';
+              }}
             >
-              Watch walkthrough →
+              <span className="relative z-10 flex items-center gap-2">
+                ✨ Watch Walkthrough
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition-transform group-hover:translate-x-0.5">
+                  <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+              {/* Shimmer effect */}
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)' }}
+              />
             </button>
           </div>
         )}
