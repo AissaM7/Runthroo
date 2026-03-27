@@ -102,8 +102,27 @@ export function startCaptureServer(
     res.end()
   })
 
-  server.listen(19876, '127.0.0.1', () => {
-    console.log('Capture server listening on 127.0.0.1:19876')
+  const PORT = 19876
+
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    if (err.code === 'EADDRINUSE') {
+      console.log(`[Runthroo] Port ${PORT} in use, killing stale process and retrying...`)
+      const { execSync } = require('child_process')
+      try {
+        execSync(`lsof -i :${PORT} -t | xargs kill -9`, { stdio: 'ignore' })
+      } catch (_) { /* ignore */ }
+      setTimeout(() => {
+        server!.listen(PORT, '127.0.0.1', () => {
+          console.log(`Capture server listening on 127.0.0.1:${PORT}`)
+        })
+      }, 500)
+    } else {
+      console.error('[Runthroo] Server error:', err)
+    }
+  })
+
+  server.listen(PORT, '127.0.0.1', () => {
+    console.log(`Capture server listening on 127.0.0.1:${PORT}`)
   })
 }
 

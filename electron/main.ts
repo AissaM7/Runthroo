@@ -12,6 +12,7 @@ let mainWindow: BrowserWindow | null = null
 
 function createWindow() {
   mainWindow = new BrowserWindow({
+    title: 'Runthroo',
     width: 1400,
     height: 900,
     minWidth: 1024,
