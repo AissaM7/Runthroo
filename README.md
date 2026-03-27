@@ -222,6 +222,3 @@ This project is open sourced under the [MIT License](LICENSE).
 
 ---
 
-<p align="center">
-  Built with ❤️ by the Runthroo team.
-</p>
