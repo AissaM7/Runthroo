@@ -580,16 +580,20 @@ function Timeline({ steps, selectedStepId, onSelectStep, onAddStep }: {
     return captures.find(c => c.id === captureId)
   }
 
-
-
   function onDragStart(e: React.DragEvent, id: string) {
     setDragId(id)
     e.dataTransfer.effectAllowed = 'move'
+    // Required for drag to actually work in Electron/Chromium
+    e.dataTransfer.setData('text/plain', id)
+    // Set a transparent drag image so we see our custom opacity styling
+    const img = new Image()
+    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
+    e.dataTransfer.setDragImage(img, 0, 0)
   }
   function onDragOver(e: React.DragEvent, id: string) {
     e.preventDefault()
     e.dataTransfer.dropEffect = 'move'
-    setDragOverId(id)
+    if (dragOverId !== id) setDragOverId(id)
   }
   function onDrop(e: React.DragEvent, targetId: string) {
     e.preventDefault()
@@ -597,9 +601,11 @@ function Timeline({ steps, selectedStepId, onSelectStep, onAddStep }: {
     const ids = steps.map(s => s.id)
     const fromIdx = ids.indexOf(dragId)
     const toIdx = ids.indexOf(targetId)
+    if (fromIdx === -1 || toIdx === -1) { setDragId(null); setDragOverId(null); return }
+    // Swap the two positions
     const newIds = [...ids]
-    newIds.splice(fromIdx, 1)
-    newIds.splice(toIdx, 0, dragId)
+    newIds[fromIdx] = ids[toIdx]
+    newIds[toIdx] = ids[fromIdx]
     reorderSteps(newIds)
     setDragId(null)
     setDragOverId(null)
