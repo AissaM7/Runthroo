@@ -580,15 +580,7 @@ function Timeline({ steps, selectedStepId, onSelectStep, onAddStep }: {
     return captures.find(c => c.id === captureId)
   }
 
-  function moveStep(stepId: string, direction: -1 | 1) {
-    const ids = steps.map(s => s.id)
-    const idx = ids.indexOf(stepId)
-    const newIdx = idx + direction
-    if (newIdx < 0 || newIdx >= ids.length) return
-    const newIds = [...ids]
-      ;[newIds[idx], newIds[newIdx]] = [newIds[newIdx], newIds[idx]]
-    reorderSteps(newIds)
-  }
+
 
   function onDragStart(e: React.DragEvent, id: string) {
     setDragId(id)
@@ -711,27 +703,7 @@ function Timeline({ steps, selectedStepId, onSelectStep, onAddStep }: {
               )}
             </div>
 
-            {/* Move left/right arrows — visible on selected step */}
-            {isSelected && steps.length > 1 && (
-              <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5 z-10">
-                <button
-                  onClick={e => { e.stopPropagation(); moveStep(step.id, -1) }}
-                  disabled={i === 0}
-                  className="w-5 h-5 rounded-full flex items-center justify-center bg-black/70 text-white/70 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
-                  title="Move left"
-                >
-                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M5 1.5L2.5 4 5 6.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </button>
-                <button
-                  onClick={e => { e.stopPropagation(); moveStep(step.id, 1) }}
-                  disabled={i === steps.length - 1}
-                  className="w-5 h-5 rounded-full flex items-center justify-center bg-black/70 text-white/70 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
-                  title="Move right"
-                >
-                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M3 1.5L5.5 4 3 6.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </button>
-              </div>
-            )}
+
 
             {/* Arrow between steps */}
             {i < steps.length - 1 && (

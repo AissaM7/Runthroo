@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { v4 as uuidv4 } from 'uuid'
-import { initDatabase, dbListCaptures, dbGetCapture, dbInsertCapture, dbDeleteCapture, dbDeleteCaptureWithCascade, dbUpdateCaptureTags, dbListDemos, dbGetDemo, dbInsertDemo, dbUpdateDemo, dbDeleteDemo, dbInsertStep, dbUpdateStep, dbDeleteStep, dbReorderSteps, dbReindexSteps, dbListSteps } from './services/database'
+import { initDatabase, getDb, dbListCaptures, dbGetCapture, dbInsertCapture, dbDeleteCapture, dbDeleteCaptureWithCascade, dbUpdateCaptureTags, dbListDemos, dbGetDemo, dbInsertDemo, dbUpdateDemo, dbDeleteDemo, dbInsertStep, dbUpdateStep, dbDeleteStep, dbReorderSteps, dbReindexSteps, dbListSteps } from './services/database'
 import { initDirectories, writeCaptureFile, readCaptureFile, deleteCaptureFile, deleteThumbnailFile } from './services/fileManager'
 import { startCaptureServer } from './services/captureServer'
 import { generateThumbnail } from './services/thumbnailGenerator'
@@ -122,8 +122,7 @@ function registerIpcHandlers() {
   })
 
   ipcMain.handle('steps:remove', (_e, stepId: string) => {
-    // Get the step's demoId before deleting
-    const { getDb } = require('./services/database')
+    // Get the step's demoId before deleting so we can reindex
     const db = getDb()
     const step = db.prepare('SELECT demo_id FROM demo_steps WHERE id = ?').get(stepId) as { demo_id: string } | undefined
     dbDeleteStep(stepId)
