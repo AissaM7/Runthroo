@@ -113,7 +113,7 @@ function registerIpcHandlers() {
   // ── Steps ─────────────────────────────────────────────────────────────────
   ipcMain.handle('steps:add', (_e, demoId: string, captureId: string, stepOrder: number) => {
     const id = uuidv4()
-    dbInsertStep({ id, demoId, captureId, stepOrder, label: '', clickZone: null, cursorConfig: null, transition: 'fade' })
+    dbInsertStep({ id, demoId, captureId, stepOrder, label: '', clickZone: null, cursorConfig: null, transition: 'instant' })
     return dbListSteps(demoId).find(s => s.id === id)
   })
 

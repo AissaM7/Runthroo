@@ -46,7 +46,7 @@ function runSchema(): void {
       label TEXT DEFAULT '',
       click_zone TEXT DEFAULT NULL,
       cursor_config TEXT DEFAULT NULL,
-      transition TEXT DEFAULT 'fade',
+      transition TEXT DEFAULT 'instant',
       created_at TEXT DEFAULT (datetime('now')),
       UNIQUE(demo_id, step_order)
     );

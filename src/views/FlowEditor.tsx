@@ -23,8 +23,8 @@ function toKebab(str: string): string {
 // ─── Section header ───────────────────────────────────────────────────────────
 function SectionHeader({ title, action }: { title: string; action?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between px-4 py-3">
-      <span className="text-[12px] font-semibold text-white/50 uppercase tracking-[0.1em]">{title}</span>
+    <div className="flex items-center justify-between px-3 pt-3 pb-1">
+      <span className="text-[10px] font-semibold text-white/35 uppercase tracking-[0.12em]">{title}</span>
       {action}
     </div>
   )
@@ -193,99 +193,98 @@ function RightInspector({ step, onUpdate, onRemove }: {
 
   return (
     <div
-      className="w-72 flex flex-col h-full shrink-0 overflow-y-auto"
+      className="w-48 flex flex-col h-full shrink-0 overflow-y-auto"
       style={{
-        background: 'linear-gradient(180deg, rgba(44,44,48,0.97) 0%, rgba(38,38,42,0.97) 100%)',
+        background: '#222226',
         borderLeft: '1px solid rgba(255,255,255,0.06)',
       }}
     >
       {/* Step Label */}
-      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <SectionHeader title="Step Label" />
-        <div className="px-4 pb-4">
-          <input
-            className={inputCls}
-            value={step.label}
-            placeholder={`Step ${step.stepOrder + 1}`}
-            onChange={e => onUpdate({ label: e.target.value })}
-          />
-        </div>
+      <div className="px-4 pt-5 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <span className="text-[13px] text-white/40 block mb-2">Label</span>
+        <input
+          className={inputCls}
+          value={step.label}
+          placeholder={`Step ${step.stepOrder + 1}`}
+          onChange={e => onUpdate({ label: e.target.value })}
+        />
       </div>
 
       {/* Transition */}
-      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <SectionHeader title="Transition" />
-        <div className="px-4 pb-4 flex gap-2">
-          {(['fade', 'slide-left', 'instant'] as DemoStep['transition'][]).map(t => (
-            <button
-              key={t}
-              onClick={() => onUpdate({ transition: t })}
-              className="flex-1 h-9 text-[13px] font-medium rounded-lg capitalize transition-all duration-200 cursor-pointer"
-              style={{
-                background: step.transition === t ? 'rgba(10,132,255,0.12)' : 'rgba(255,255,255,0.04)',
-                color: step.transition === t ? '#0A84FF' : 'rgba(255,255,255,0.5)',
-                border: step.transition === t ? '1px solid rgba(10,132,255,0.3)' : '1px solid rgba(255,255,255,0.06)',
-              }}
-            >
-              {t === 'slide-left' ? 'Slide' : t}
-            </button>
-          ))}
+      <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <span className="text-[13px] text-white/40 block mb-3">Transition</span>
+        <div className="flex flex-col gap-2">
+          {(['instant', 'slide-left', 'fade'] as DemoStep['transition'][]).map(t => {
+            const active = step.transition === t
+            return (
+              <button
+                key={t}
+                onClick={() => onUpdate({ transition: t })}
+                className="w-full h-9 text-[13px] font-medium rounded-lg capitalize transition-all duration-200 cursor-pointer"
+                style={{
+                  background: active ? 'rgba(10,132,255,0.12)' : 'rgba(255,255,255,0.04)',
+                  color: active ? '#4DA3FF' : 'rgba(255,255,255,0.4)',
+                  border: active ? '1px solid rgba(10,132,255,0.25)' : '1px solid rgba(255,255,255,0.06)',
+                }}
+              >
+                {t === 'slide-left' ? 'Slide' : t}
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {/* Click Zone */}
-      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <SectionHeader title="Click Zone" />
-        <div className="px-4 pb-4 space-y-3">
-          <p className="text-[12px] text-white/30 leading-relaxed">
-            Draw a click zone on the canvas. Viewers click this area to advance to the next step.
-          </p>
+      <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <span className="text-[13px] text-white/40 block mb-1.5">Click Zone</span>
+        <p className="text-[12px] text-white/20 leading-relaxed mb-3">
+          Draw an area viewers click to advance.
+        </p>
 
-          <button
-            onClick={() => setDrawMode(drawMode === 'click-zone' ? 'none' : 'click-zone')}
-            className="w-full h-10 text-[13px] font-medium rounded-lg flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer"
-            style={{
-              background: drawMode === 'click-zone' ? 'rgba(10,132,255,0.12)' : 'rgba(255,255,255,0.04)',
-              color: drawMode === 'click-zone' ? '#0A84FF' : 'rgba(255,255,255,0.6)',
-              border: drawMode === 'click-zone' ? '1px solid rgba(10,132,255,0.3)' : '1px solid rgba(255,255,255,0.06)',
-            }}
-          >
-            <CursorIcon size={14} />
-            {drawMode === 'click-zone' ? 'Drawing…' : step.clickZone ? 'Redraw Zone' : 'Draw Zone'}
-          </button>
+        <button
+          onClick={() => setDrawMode(drawMode === 'click-zone' ? 'none' : 'click-zone')}
+          className="w-full h-10 text-[13px] font-medium rounded-lg flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer"
+          style={{
+            background: drawMode === 'click-zone' ? 'rgba(10,132,255,0.12)' : 'rgba(255,255,255,0.04)',
+            color: drawMode === 'click-zone' ? '#4DA3FF' : 'rgba(255,255,255,0.55)',
+            border: drawMode === 'click-zone' ? '1px solid rgba(10,132,255,0.25)' : '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          <CursorIcon size={14} />
+          {drawMode === 'click-zone' ? 'Drawing…' : step.clickZone ? 'Redraw Zone' : 'Draw Zone'}
+        </button>
 
-          {step.clickZone && (
-            <>
-              <div
-                className="rounded-lg px-3 py-2.5 text-[12px] font-mono tabular-nums space-y-1.5"
-                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
-              >
-                <div className="flex justify-between">
-                  <span className="text-white/30">Center</span>
-                  <span className="text-white/70">{(step.clickZone.x + step.clickZone.width / 2).toFixed(1)}%, {(step.clickZone.y + step.clickZone.height / 2).toFixed(1)}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-white/30">Radius</span>
-                  <span className="text-white/70">{(step.clickZone.width / 2).toFixed(1)}%</span>
-                </div>
+        {step.clickZone && (
+          <div className="mt-3 space-y-2">
+            <div
+              className="rounded-lg px-3 py-2.5 text-[12px] font-mono tabular-nums space-y-1"
+              style={{ background: 'rgba(255,255,255,0.03)' }}
+            >
+              <div className="flex justify-between">
+                <span className="text-white/25">Center</span>
+                <span className="text-white/50">{(step.clickZone.x + step.clickZone.width / 2).toFixed(1)}%, {(step.clickZone.y + step.clickZone.height / 2).toFixed(1)}%</span>
               </div>
-              <button
-                onClick={() => onUpdate({ clickZone: null })}
-                className="w-full h-9 text-[13px] text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-200 cursor-pointer"
-              >
-                Remove Zone
-              </button>
-            </>
-          )}
-        </div>
+              <div className="flex justify-between">
+                <span className="text-white/25">Radius</span>
+                <span className="text-white/50">{(step.clickZone.width / 2).toFixed(1)}%</span>
+              </div>
+            </div>
+            <button
+              onClick={() => onUpdate({ clickZone: null })}
+              className="w-full h-8 text-[12px] text-red-400/70 hover:text-red-400 rounded-lg transition-all duration-200 cursor-pointer"
+            >
+              Remove Zone
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Actions */}
-      <div className="mt-auto p-4">
+      {/* Remove Step */}
+      <div className="mt-auto px-4 py-5">
         <button
           onClick={onRemove}
           className="w-full h-10 text-[13px] font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer"
-          style={{ border: '1px solid rgba(255,59,48,0.2)' }}
+          style={{ border: '1px solid rgba(255,59,48,0.25)' }}
         >
           <TrashIcon size={14} />
           Remove Step
@@ -332,7 +331,7 @@ function ExportPanel() {
 
   return (
     <div
-      className="w-72 flex flex-col h-full shrink-0 overflow-y-auto"
+      className="w-44 flex flex-col h-full shrink-0 overflow-y-auto"
       style={{
         background: 'linear-gradient(180deg, rgba(44,44,48,0.97) 0%, rgba(38,38,42,0.97) 100%)',
         borderLeft: '1px solid rgba(255,255,255,0.06)',
@@ -596,6 +595,7 @@ export function FlowEditor() {
   const canvasRef = useRef<HTMLDivElement>(null)
   const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 })
   const [showAddCapture, setShowAddCapture] = useState(false)
+  const [docHeight, setDocHeight] = useState(900)
 
   useEffect(() => { fetchCaptures() }, [])
 
@@ -614,7 +614,7 @@ export function FlowEditor() {
 
   const vw = selectedCapture?.viewportWidth ?? 1440
   const vh = selectedCapture?.viewportHeight ?? 900
-  const scale = Math.min(canvasSize.width / vw, canvasSize.height / vh, 1) * 0.92
+  const scale = Math.min(canvasSize.width / vw, canvasSize.height / vh, 1) * 0.98
 
   function handleCanvasClick(e: React.MouseEvent) {
     if (drawMode !== 'cursor-start' && drawMode !== 'cursor-end') return
@@ -707,7 +707,7 @@ export function FlowEditor() {
               {/* Floating Present button */}
               <button
                 onClick={() => setView('preview')}
-                className="absolute bottom-28 right-6 h-11 px-6 flex items-center gap-2 text-white text-[14px] font-semibold rounded-full transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-xl"
+                className="absolute bottom-16 right-6 h-11 px-6 flex items-center gap-2 text-white text-[14px] font-semibold rounded-full transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-xl"
                 style={{
                   background: 'linear-gradient(135deg, #30d158, #28a745)',
                   boxShadow: '0 4px 16px rgba(48,209,88,0.3)',
@@ -785,7 +785,7 @@ export function FlowEditor() {
           <ExportPanel />
         ) : (
           <div
-            className="w-72 flex items-center justify-center shrink-0"
+            className="w-48 flex items-center justify-center shrink-0"
             style={{
               background: 'linear-gradient(180deg, rgba(44,44,48,0.97) 0%, rgba(38,38,42,0.97) 100%)',
               borderLeft: '1px solid rgba(255,255,255,0.06)',

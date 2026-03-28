@@ -98,50 +98,64 @@ const RUNTIME_JS = `
 
     if (step.clickZone && index < steps.length - 1) {
       var cz = step.clickZone;
-      var cx = cz.x + cz.width / 2;
-      var cy = cz.y + cz.height / 2;
-      var r = cz.width / 2;
+      var vw = step.viewportWidth;
+      // scrollY stores the total scrollHeight captured at draw time
+      var totalH = cz.scrollY || step.viewportHeight;
+
+      // Convert document-percentages back to absolute pixels
+      var cxPx = (cz.x / 100) * vw;
+      var cyPx = (cz.y / 100) * totalH;
+      var rPx = (cz.width / 100) * vw;
+
       var zone = document.createElement('div');
       zone.className = 'click-zone';
-      zone.style.left = (cx - r) + '%';
-      zone.style.top = (cy - r) + '%';
-      zone.style.width = (r * 2) + '%';
-      zone.style.height = (r * 2) + '%';
+      zone.style.left = (cxPx - rPx) + 'px';
+      zone.style.top = (cyPx - rPx) + 'px';
+      zone.style.width = (rPx * 2) + 'px';
+      zone.style.height = (rPx * 2) + 'px';
       zone.addEventListener('click', function(e) { e.stopPropagation(); goToStep(index + 1); });
       zoneOverlay.appendChild(zone);
 
-      var sx = cz.scrollX || 0;
-      var sy = cz.scrollY || 0;
-      // Initial state: assume page loads at top (0,0) so offset is exactly sx, sy.
-      zoneOverlay.style.transform = 'translate(' + sx + 'px, ' + sy + 'px)';
-
+      // The overlay tracks the iframe scroll so click zones follow the content.
+      // Supports both window scroll AND nested SPA scroll containers.
       frame.onload = function() {
         var win = frame.contentWindow;
         if (!win) return;
-        
-        // Remove automatic jump to click zone! Load at the top of the page.
-        // Update overlay in case the viewport isn't exactly at 0,0 somehow.
-        var dsx = win.scrollX - sx;
-        var dsy = win.scrollY - sy;
-        zoneOverlay.style.transform = 'translate(' + (-dsx) + 'px, ' + (-dsy) + 'px)';
-        
-        // Sync scroll to click zone overlay natively
-        win.addEventListener('scroll', function() {
-          dsx = win.scrollX - sx;
-          dsy = win.scrollY - sy;
-          zoneOverlay.style.transform = 'translate(' + (-dsx) + 'px, ' + (-dsy) + 'px)';
-        });
+
+        function getScrollY() {
+          var sy = win.scrollY || win.pageYOffset || 0;
+          if (sy > 0) return sy;
+          // Find nested scroll container (SPA)
+          try {
+            var all = win.document.querySelectorAll('*');
+            for (var i = 0; i < all.length; i++) {
+              var el = all[i];
+              if (el.scrollTop > 0 && el.scrollHeight > el.clientHeight + 50) {
+                return el.scrollTop;
+              }
+            }
+          } catch(e) {}
+          return 0;
+        }
+
+        function syncOverlay() {
+          var sy = getScrollY();
+          var sx = win.scrollX || win.pageXOffset || 0;
+          zoneOverlay.style.transform = 'translate(' + (-sx) + 'px, ' + (-sy) + 'px)';
+        }
+        syncOverlay();
+        win.addEventListener('scroll', syncOverlay, true); // capture phase for nested containers
 
         // Listen for wrong clicks inside the iframe
         win.document.addEventListener('click', function(e) {
-          showWrongClickTarget(cx, cy);
+          showWrongClickTarget(cxPx, cyPx);
         });
       };
 
       // Listen for wrong clicks on the outer container
       viewport.addEventListener('click', function wrongClickHandler(e) {
         if (e.target === zone || zone.contains(e.target)) return;
-        showWrongClickTarget(cx, cy);
+        showWrongClickTarget(cxPx, cyPx);
       }, { once: false });
     }
 
@@ -181,14 +195,14 @@ const RUNTIME_JS = `
     }, cfg.durationMs);
   }
 
-  function showWrongClickTarget(cx, cy) {
+  function showWrongClickTarget(cxPx, cyPx) {
     var existing = document.querySelector('.wrong-click-target');
     if (existing) existing.remove();
 
     var target = document.createElement('div');
     target.className = 'wrong-click-target';
-    target.style.left = cx + '%';
-    target.style.top = cy + '%';
+    target.style.left = cxPx + 'px';
+    target.style.top = cyPx + 'px';
 
     var ring = document.createElement('div');
     ring.className = 'target-ring';
