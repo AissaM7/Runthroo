@@ -704,19 +704,8 @@ export function FlowEditor() {
                 )}
               </div>
 
-              {/* Floating Present button */}
-              <button
-                onClick={() => setView('preview')}
-                className="absolute bottom-16 right-6 h-11 px-6 flex items-center gap-2 text-white text-[14px] font-semibold rounded-full transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-xl"
-                style={{
-                  background: 'linear-gradient(135deg, #30d158, #28a745)',
-                  boxShadow: '0 4px 16px rgba(48,209,88,0.3)',
-                  zIndex: 10,
-                }}
-              >
-                <PlayIcon size={16} />
-                Present Demo
-              </button>
+
+
             </>
           ) : (
             /* Demo selected but no step selected */
