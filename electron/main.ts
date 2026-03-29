@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, dialog, nativeTheme } from 'electron'
 import { join } from 'path'
+import { existsSync, writeFileSync, unlinkSync, rmSync } from 'fs'
 import { v4 as uuidv4 } from 'uuid'
 import { initDatabase, getDb, dbListCaptures, dbGetCapture, dbInsertCapture, dbDeleteCapture, dbDeleteCaptureWithCascade, dbUpdateCaptureTags, dbListDemos, dbGetDemo, dbInsertDemo, dbUpdateDemo, dbDeleteDemo, dbInsertStep, dbUpdateStep, dbDeleteStep, dbReorderSteps, dbReindexSteps, dbListSteps } from './services/database'
 import { initDirectories, writeCaptureFile, readCaptureFile, deleteCaptureFile, deleteThumbnailFile } from './services/fileManager'
@@ -163,6 +164,28 @@ function registerIpcHandlers() {
 }
 
 app.whenReady().then(() => {
+  // ── First-run detection ─────────────────────────────────────────────────────
+  const userDataPath = app.getPath('userData')
+  const flagPath = join(userDataPath, 'initialized.flag')
+  const isFirstRun = !existsSync(flagPath)
+
+  if (isFirstRun) {
+    // Wipe any leftover database from prior installs
+    const dbPath = join(userDataPath, 'demoforge.db')
+    const dbWalPath = join(userDataPath, 'demoforge.db-wal')
+    const dbShmPath = join(userDataPath, 'demoforge.db-shm')
+    for (const f of [dbPath, dbWalPath, dbShmPath]) {
+      if (existsSync(f)) unlinkSync(f)
+    }
+    // Wipe capture files directory
+    const capturesDir = join(userDataPath, 'captures')
+    if (existsSync(capturesDir)) rmSync(capturesDir, { recursive: true, force: true })
+    const thumbsDir = join(userDataPath, 'thumbnails')
+    if (existsSync(thumbsDir)) rmSync(thumbsDir, { recursive: true, force: true })
+    // Write the flag so this only happens once
+    writeFileSync(flagPath, new Date().toISOString(), 'utf-8')
+  }
+
   initDatabase()
   initDirectories()
   registerIpcHandlers()
@@ -181,6 +204,13 @@ app.whenReady().then(() => {
   )
 
   createWindow()
+
+  // On first run, clear renderer localStorage so onboarding walkthrough shows
+  if (isFirstRun && mainWindow) {
+    mainWindow.webContents.on('did-finish-load', () => {
+      mainWindow!.webContents.executeJavaScript(`localStorage.removeItem('runthroo_onboarding_seen')`)
+    })
+  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
