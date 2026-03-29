@@ -482,6 +482,12 @@ body {
     color: var(--text-muted);
 }
 
+.install-gif {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
 /* ━━━ Footer ━━━ */
 footer {
     padding: 80px 24px 40px;
