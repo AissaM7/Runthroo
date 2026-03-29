@@ -630,6 +630,7 @@ footer {
     margin-top: 24px;
 }
 
+/* ━━━ Responsive: Tablet ━━━ */
 @media (max-width: 900px) {
     .hero-title {
         font-size: 48px;
@@ -645,5 +646,114 @@ footer {
 
     .cta-group {
         flex-direction: column;
+        align-items: center;
+    }
+
+    .showcase-block,
+    .showcase-block.reverse {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .showcase-text h2 {
+        font-size: 32px;
+    }
+
+    .showcase-visual {
+        flex: none;
+        width: 100%;
+    }
+}
+
+/* ━━━ Responsive: Mobile ━━━ */
+@media (max-width: 600px) {
+    .nav-links {
+        gap: 16px;
+        font-size: 13px;
+    }
+
+    .hero {
+        padding: 140px 16px 60px;
+    }
+
+    .hero-title {
+        font-size: 36px;
+    }
+
+    .hero-subtitle {
+        font-size: 17px;
+    }
+
+    .hero-title i {
+        font-size: inherit;
+    }
+
+    .features {
+        padding: 60px 16px;
+    }
+
+    .feature-card {
+        padding: 24px;
+    }
+
+    .showcase {
+        margin-top: 60px;
+        gap: 60px;
+    }
+
+    .showcase-block,
+    .showcase-block.reverse {
+        flex-direction: column;
+        gap: 32px;
+    }
+
+    .showcase-text h2 {
+        font-size: 28px;
+    }
+
+    .showcase-text p {
+        font-size: 15px;
+    }
+
+    .showcase-visual {
+        flex: none;
+        width: 100%;
+        padding: 8px;
+    }
+
+    .installation {
+        padding: 60px 16px;
+    }
+
+    .install-text h2 {
+        font-size: 28px;
+    }
+
+    .install-visual {
+        aspect-ratio: auto;
+    }
+
+    .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .macbook-frame {
+        border-radius: 10px;
+    }
+
+    .macbook-topbar {
+        height: 22px;
+        padding: 0 10px;
+    }
+
+    .traffic-lights span {
+        width: 8px;
+        height: 8px;
+    }
+
+    .traffic-lights {
+        gap: 6px;
     }
 }
