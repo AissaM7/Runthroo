@@ -312,6 +312,8 @@
             <div class="toc-inner">
                 <div class="toc-label">In this guide</div>
                 <div class="toc-grid">
+                    <a href="#installation">Installation Guide</a>
+                    <a href="#security">macOS Security Warning</a>
                     <a href="#capturing">Capturing Pages</a>
                     <a href="#recording">Recording Multi-Step Demos</a>
                     <a href="#library">The Capture Library</a>
@@ -324,8 +326,6 @@
                     <a href="#hiding-elements">Hiding Elements</a>
                     <a href="#preview">Previewing Your Demo</a>
                     <a href="#exporting">Exporting &amp; Sharing</a>
-                    <a href="#installation">Installation Guide</a>
-                    <a href="#security">macOS Security Warning</a>
                 </div>
             </div>
         </div>
@@ -333,9 +333,89 @@
         <!-- ━━━ Guide Content ━━━ -->
         <div class="guide">
 
-            <!-- ─── Chapter 1: Capturing ─── -->
-            <div class="chapter" id="capturing">
+            <!-- ─── Chapter 1: Installation ─── -->
+            <div class="chapter" id="installation">
                 <div class="chapter-number">Chapter 1</div>
+                <h2>Installation Guide</h2>
+                <p>Runthroo is distributed as a compiled macOS native application for optimized performance.</p>
+
+                <div class="section">
+                    <h3>1. Download & Install the Application</h3>
+                    <p>Navigate to the <a
+                            href="https://github.com/AissaM7/Runthroo/releases/download/v2.0.0/Runthroo-2.0.0-arm64.dmg"
+                            class="text-link">latest version download</a>.</p>
+                    <p>Download the applicable <code>.dmg</code> file, mount the image, and drag the Runthroo native
+                        binary into your Applications directory.</p>
+                </div>
+
+                <div class="section">
+                    <h3>2. Setup the Capture Extension</h3>
+                    <p>The companion Chrome extension handles DOM serialization and CSS extraction, automatically
+                        transmitting the captured configurations to the local application.</p>
+                    <ol class="instruction-list">
+                        <li>Download the
+                            <code><a href="runthroo-extension.zip" class="text-link" download>runthroo-extension.zip</a></code>
+                            archive and extract its full contents.
+                        </li>
+                        <li>In Google Chrome, navigate to <code>chrome://extensions</code>.</li>
+                        <li>Enable <strong>Developer mode</strong> via the top-right corner interface.</li>
+                        <li>Click <strong>Load unpacked</strong> and select the directory containing the extracted
+                            extension payload.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="chapter-divider"></div>
+
+            <!-- ─── Chapter 2: macOS Security ─── -->
+            <div class="chapter" id="security">
+                <div class="chapter-number">Chapter 2</div>
+                <h2>macOS Security Warning</h2>
+                <p>When you download Runthroo from the GitHub Releases page, macOS will likely block it from opening
+                    since it's not distributed through the App Store. You'll see a dialog that says <strong>"Runthroo"
+                        Not Opened</strong> with a warning that Apple could not verify the app. <em>This is completely
+                        normal for apps downloaded directly from GitHub.</em></p>
+
+                <p style="margin-top: 12px; font-weight: 500; margin-bottom: 24px;">Here's how to open it:</p>
+
+                <div class="section">
+                    <h3>Step 1: Click "Done" on the Warning Dialog</h3>
+                    <p>When you first try to open Runthroo, you'll see this warning. Click <strong>Done</strong> — don't
+                        click "Move to Trash".</p>
+                    <img src="step1-not-opened.png" alt="macOS Runthroo Not Opened dialog"
+                        style="display: block; max-width: 360px; border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
+                </div>
+
+                <div class="section">
+                    <h3>Step 2: Open Privacy &amp; Security Settings</h3>
+                    <p>Open <strong>System Settings → Privacy &amp; Security</strong>. Scroll down to the Security
+                        section. You'll see a message that says "Runthroo" was blocked to protect your Mac. Click the
+                        <strong>Open Anyway</strong> button.
+                    </p>
+                    <img src="step2-privacy-security.png"
+                        alt="macOS Privacy and Security settings showing Open Anyway button"
+                        style="display: block; max-width: 680px; border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
+                </div>
+
+                <div class="section">
+                    <h3>Step 3: Confirm "Open Anyway"</h3>
+                    <p>macOS will show one final confirmation dialog. Click <strong>Open Anyway</strong> to launch
+                        Runthroo.</p>
+                    <img src="step3-open-anyway.png" alt="macOS Open Runthroo confirmation dialog"
+                        style="display: block; max-width: 360px; border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
+                </div>
+
+                <div class="tip">
+                    <strong>Tip:</strong> After doing this once, macOS will remember your choice and Runthroo will open
+                    normally from then on.
+                </div>
+            </div>
+
+            <div class="chapter-divider"></div>
+
+            <!-- ─── Chapter 3: Capturing ─── -->
+            <div class="chapter" id="capturing">
+                <div class="chapter-number">Chapter 3</div>
                 <h2>Capturing Pages</h2>
                 <p>Runthroo captures a perfect, pixel-accurate copy of any web page — complete with all styling, fonts,
                     images, and layout. You can capture pages one at a time or record entire multi-step workflows.</p>
@@ -375,7 +455,8 @@
                         <li>Runthroo captures each page automatically once it detects the content has settled (about 3
                             seconds of inactivity).</li>
                         <li>When you've finished your walkthrough, click the extension icon again and press
-                            <strong>"Stop Recording"</strong>.</li>
+                            <strong>"Stop Recording"</strong>.
+                        </li>
                     </ol>
 
                     <div class="tip">
@@ -397,9 +478,9 @@
 
             <div class="chapter-divider"></div>
 
-            <!-- ─── Chapter 2: Library ─── -->
+            <!-- ─── Chapter 4: Library ─── -->
             <div class="chapter" id="library">
-                <div class="chapter-number">Chapter 2</div>
+                <div class="chapter-number">Chapter 4</div>
                 <h2>The Capture Library</h2>
                 <p>Every captured page appears in the Library — your central hub for all screenshots. Think of it as a
                     gallery of raw materials you'll use to build demos.</p>
@@ -426,15 +507,16 @@
 
                     <p>Use the <strong>search bar</strong> at the top to quickly find captures by name. You can also
                         <strong>delete</strong> any capture you no longer need by hovering over its card and clicking
-                        the delete option.</p>
+                        the delete option.
+                    </p>
                 </div>
             </div>
 
             <div class="chapter-divider"></div>
 
-            <!-- ─── Chapter 3: Creating Demos ─── -->
+            <!-- ─── Chapter 5: Creating Demos ─── -->
             <div class="chapter" id="creating-demos">
-                <div class="chapter-number">Chapter 3</div>
+                <div class="chapter-number">Chapter 5</div>
                 <h2>Creating a Demo</h2>
                 <p>Demos are interactive presentations built from your captured pages. You pick the pages, set the
                     order, and define how viewers navigate through them.</p>
@@ -443,7 +525,8 @@
                     <h3>Starting a New Demo</h3>
                     <ol class="instruction-list">
                         <li>Click <strong>"+ New Demo"</strong> in the Library view, <em>or</em> go to the
-                            <strong>Demos</strong> tab and click <strong>"Create Demo"</strong>.</li>
+                            <strong>Demos</strong> tab and click <strong>"Create Demo"</strong>.
+                        </li>
                         <li>Give your demo a name (you can always rename it later).</li>
                         <li>You'll be taken to the <strong>Flow Editor</strong> where you can start adding pages.</li>
                     </ol>
@@ -473,9 +556,9 @@
 
             <div class="chapter-divider"></div>
 
-            <!-- ─── Chapter 4: The Editor ─── -->
+            <!-- ─── Chapter 6: The Editor ─── -->
             <div class="chapter" id="editor">
-                <div class="chapter-number">Chapter 4</div>
+                <div class="chapter-number">Chapter 6</div>
                 <h2>The Flow Editor</h2>
                 <p>The Flow Editor is your workspace for customizing each step of your demo. It has three main areas: a
                     large <strong>canvas preview</strong> in the center, a <strong>timeline</strong> at the bottom, and
@@ -497,7 +580,8 @@
                         </li>
                         <li><strong>Choose a transition</strong> — Select how the viewer moves between steps:
                             <strong>Instant</strong> (immediate switch), <strong>Slide</strong> (horizontal slide
-                            animation), or <strong>Fade</strong> (smooth crossfade).</li>
+                            animation), or <strong>Fade</strong> (smooth crossfade).
+                        </li>
                     </ol>
                 </div>
 
@@ -614,9 +698,9 @@
 
             <div class="chapter-divider"></div>
 
-            <!-- ─── Chapter 5: Preview & Export ─── -->
+            <!-- ─── Chapter 7: Preview & Export ─── -->
             <div class="chapter" id="preview">
-                <div class="chapter-number">Chapter 5</div>
+                <div class="chapter-number">Chapter 7</div>
                 <h2>Previewing &amp; Sharing</h2>
                 <p>Once you've finished editing, preview your demo exactly as your audience will experience it — then
                     export a single HTML file to share anywhere.</p>
@@ -667,81 +751,7 @@
 
             <div class="chapter-divider"></div>
 
-            <!-- ─── Chapter 6: Installation ─── -->
-            <div class="chapter" id="installation">
-                <div class="chapter-number">Chapter 6</div>
-                <h2>Installation Guide</h2>
-                <p>Runthroo is distributed as a compiled macOS native application for optimized performance.</p>
 
-                <div class="section">
-                    <h3>1. Download & Install the Application</h3>
-                    <p>Navigate to the <a
-                            href="https://github.com/AissaM7/Runthroo/releases/download/v2.0.0/Runthroo-2.0.0-arm64.dmg"
-                            class="text-link">latest version download</a>.</p>
-                    <p>Download the applicable <code>.dmg</code> file, mount the image, and drag the Runthroo native
-                        binary into your Applications directory.</p>
-                </div>
-
-                <div class="section">
-                    <h3>2. Setup the Capture Extension</h3>
-                    <p>The companion Chrome extension handles DOM serialization and CSS extraction, automatically
-                        transmitting the captured configurations to the local application.</p>
-                    <ol class="instruction-list">
-                        <li>Download the
-                            <code><a href="runthroo-extension.zip" class="text-link" download>runthroo-extension.zip</a></code>
-                            archive and extract its full contents.</li>
-                        <li>In Google Chrome, navigate to <code>chrome://extensions</code>.</li>
-                        <li>Enable <strong>Developer mode</strong> via the top-right corner interface.</li>
-                        <li>Click <strong>Load unpacked</strong> and select the directory containing the extracted
-                            extension payload.</li>
-                    </ol>
-                </div>
-            </div>
-
-            <div class="chapter-divider"></div>
-
-            <!-- ─── Chapter 7: macOS Security ─── -->
-            <div class="chapter" id="security">
-                <div class="chapter-number">Chapter 7</div>
-                <h2>macOS Security Warning</h2>
-                <p>When you download Runthroo from the GitHub Releases page, macOS will likely block it from opening
-                    since it's not distributed through the App Store. You'll see a dialog that says <strong>"Runthroo"
-                        Not Opened</strong> with a warning that Apple could not verify the app. <em>This is completely
-                        normal for apps downloaded directly from GitHub.</em></p>
-
-                <p style="margin-top: 12px; font-weight: 500; margin-bottom: 24px;">Here's how to open it:</p>
-
-                <div class="section">
-                    <h3>Step 1: Click "Done" on the Warning Dialog</h3>
-                    <p>When you first try to open Runthroo, you'll see this warning. Click <strong>Done</strong> — don't
-                        click "Move to Trash".</p>
-                    <img src="step1-not-opened.png" alt="macOS Runthroo Not Opened dialog"
-                        style="display: block; max-width: 360px; border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
-                </div>
-
-                <div class="section">
-                    <h3>Step 2: Open Privacy &amp; Security Settings</h3>
-                    <p>Open <strong>System Settings → Privacy &amp; Security</strong>. Scroll down to the Security
-                        section. You'll see a message that says "Runthroo" was blocked to protect your Mac. Click the
-                        <strong>Open Anyway</strong> button.</p>
-                    <img src="step2-privacy-security.png"
-                        alt="macOS Privacy and Security settings showing Open Anyway button"
-                        style="display: block; max-width: 680px; border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
-                </div>
-
-                <div class="section">
-                    <h3>Step 3: Confirm "Open Anyway"</h3>
-                    <p>macOS will show one final confirmation dialog. Click <strong>Open Anyway</strong> to launch
-                        Runthroo.</p>
-                    <img src="step3-open-anyway.png" alt="macOS Open Runthroo confirmation dialog"
-                        style="display: block; max-width: 360px; border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
-                </div>
-
-                <div class="tip">
-                    <strong>Tip:</strong> After doing this once, macOS will remember your choice and Runthroo will open
-                    normally from then on.
-                </div>
-            </div>
 
         </div>
     </main>
