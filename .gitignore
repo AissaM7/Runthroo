@@ -32,3 +32,4 @@ AGENT_HANDOFF.md
 extension/_metadata/
 *.mjs
 V2-BUILD-AND-TEST-GUIDE.md
+.claude/
