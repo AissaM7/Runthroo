@@ -15,6 +15,10 @@ export function ExportView() {
   const [keyboardNav, setKeyboardNav] = useState(true)
   const [showStepCounter, setShowStepCounter] = useState(false)
   const [presentationMode, setPresentationMode] = useState(false)
+  const [presentationBg, setPresentationBg] = useState('midnight')
+  const [autoPlay, setAutoPlay] = useState(false)
+  const [autoPlayDelay, setAutoPlayDelay] = useState(4)
+  const [autoPlayLoop, setAutoPlayLoop] = useState(true)
   const [imageQuality, setImageQuality] = useState(70)
   const [exporting, setExporting] = useState(false)
   const [outputPath, setOutputPath] = useState<string | null>(null)
@@ -30,7 +34,10 @@ export function ExportView() {
       const savePath = await window.api.showSaveDialog(`${filename}.html`)
       if (!savePath) return
       setExporting(true)
-      const path = await exportDemo({ filename, keyboardNav, showStepCounter, imageQuality, outputPath: savePath, presentationMode })
+      const path = await exportDemo({
+        filename, keyboardNav, showStepCounter, imageQuality, outputPath: savePath, presentationMode, presentationBg,
+        autoPlay, autoPlayDefaultDelay: autoPlayDelay * 1000, autoPlayLoop,
+      })
       setOutputPath(path)
     } catch (err) {
       setError(String(err))
@@ -138,10 +145,85 @@ export function ExportView() {
             />
             <ToggleRow
               label="Presentation mode"
-              desc="Dark border around viewport"
+              desc="Framed viewport with styled background"
               checked={presentationMode}
               onChange={setPresentationMode}
             />
+            {presentationMode && (
+              <div className="pl-2 space-y-2.5" style={{ borderLeft: '2px solid rgba(10,132,255,0.2)' }}>
+                <span className="text-[12px] text-[#8e8e93] font-medium">Background</span>
+                <div className="grid grid-cols-4 gap-2">
+                  {([
+                    { id: 'midnight', label: 'Midnight', bg: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(56,50,140,0.7) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 0% 100%, rgba(40,35,100,0.5) 0%, transparent 55%), #0f0f1a' },
+                    { id: 'aurora', label: 'Aurora', bg: 'radial-gradient(ellipse 70% 50% at 25% -5%, rgba(20,100,180,0.7) 0%, transparent 55%), radial-gradient(ellipse 55% 45% at 85% 20%, rgba(100,40,160,0.55) 0%, transparent 50%), #0a0a18' },
+                    { id: 'ember', label: 'Ember', bg: 'radial-gradient(ellipse 65% 50% at 75% -5%, rgba(160,50,30,0.6) 0%, transparent 55%), radial-gradient(ellipse 55% 45% at 10% 85%, rgba(180,60,20,0.4) 0%, transparent 50%), #10080a' },
+                    { id: 'ocean', label: 'Ocean', bg: 'radial-gradient(ellipse 70% 50% at 35% -5%, rgba(10,100,170,0.7) 0%, transparent 55%), radial-gradient(ellipse 55% 50% at 90% 80%, rgba(0,130,180,0.45) 0%, transparent 50%), #060d18' },
+                  ] as const).map(theme => (
+                    <button
+                      key={theme.id}
+                      onClick={() => setPresentationBg(theme.id)}
+                      className="group cursor-pointer flex flex-col items-center gap-1.5"
+                    >
+                      <div
+                        className="w-full aspect-[16/10] rounded-lg transition-all duration-200"
+                        style={{
+                          background: theme.bg,
+                          border: presentationBg === theme.id ? '2px solid #0A84FF' : '1px solid rgba(255,255,255,0.08)',
+                          boxShadow: presentationBg === theme.id ? '0 0 0 1px rgba(10,132,255,0.3), 0 2px 8px rgba(10,132,255,0.15)' : 'none',
+                        }}
+                      >
+                        {/* Mini viewport preview */}
+                        <div className="w-full h-full flex items-center justify-center p-1.5">
+                          <div
+                            className="rounded-[3px]"
+                            style={{
+                              width: '60%',
+                              height: '65%',
+                              background: 'rgba(255,255,255,0.85)',
+                              boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <span
+                        className="text-[10px] font-medium transition-colors duration-150"
+                        style={{ color: presentationBg === theme.id ? '#0A84FF' : 'rgba(255,255,255,0.35)' }}
+                      >
+                        {theme.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            <ToggleRow
+              label="Auto-play"
+              desc="Demo advances automatically"
+              checked={autoPlay}
+              onChange={setAutoPlay}
+            />
+            {autoPlay && (
+              <>
+                <div className="pl-2 space-y-2" style={{ borderLeft: '2px solid rgba(10,132,255,0.2)' }}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[13px] text-[#e5e5ea]">Delay per step</span>
+                    <span className="text-[13px] font-mono text-[#0A84FF] font-semibold">{autoPlayDelay}s</span>
+                  </div>
+                  <input
+                    type="range" min={1} max={15} value={autoPlayDelay}
+                    onChange={e => setAutoPlayDelay(parseInt(e.target.value))}
+                    className="w-full accent-[#0A84FF]"
+                  />
+                  <ToggleRow
+                    label="Loop"
+                    desc="Restart after last step"
+                    checked={autoPlayLoop}
+                    onChange={setAutoPlayLoop}
+                  />
+                </div>
+              </>
+            )}
+
           </div>
 
           {/* Info pill */}

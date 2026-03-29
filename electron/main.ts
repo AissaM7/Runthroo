@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, nativeTheme } from 'electron'
 import { join } from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { initDatabase, getDb, dbListCaptures, dbGetCapture, dbInsertCapture, dbDeleteCapture, dbDeleteCaptureWithCascade, dbUpdateCaptureTags, dbListDemos, dbGetDemo, dbInsertDemo, dbUpdateDemo, dbDeleteDemo, dbInsertStep, dbUpdateStep, dbDeleteStep, dbReorderSteps, dbReindexSteps, dbListSteps } from './services/database'
@@ -11,7 +11,10 @@ import type { Capture, ExportOptions } from '../src/types/index'
 let mainWindow: BrowserWindow | null = null
 
 function createWindow() {
+  nativeTheme.themeSource = 'dark'
+
   mainWindow = new BrowserWindow({
+    titleBarStyle: 'hiddenInset',
     title: 'Runthroo',
     width: 1400,
     height: 900,
@@ -117,7 +120,11 @@ function registerIpcHandlers() {
     return dbListSteps(demoId).find(s => s.id === id)
   })
 
-  ipcMain.handle('steps:update', (_e, stepId: string, updates: { label?: string; clickZone?: unknown; cursorConfig?: unknown; transition?: string }) => {
+  ipcMain.handle('steps:update', (_e, stepId: string, updates: {
+    label?: string; clickZone?: unknown; cursorConfig?: unknown; transition?: string;
+    blurZones?: unknown; textEdits?: unknown; hiddenElements?: unknown;
+    clickZones?: unknown; autoPlayDelay?: number; personalizationTokens?: unknown;
+  }) => {
     dbUpdateStep(stepId, updates)
   })
 

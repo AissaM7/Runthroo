@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useUIStore } from '../stores/uiStore'
 import { useDemoStore } from '../stores/demoStore'
+import { useUndoStore, type StepSnapshot } from '../stores/undoStore'
 import { PlayIcon, DownloadIcon } from './Icons'
 
 export function TopBar() {
@@ -10,8 +11,39 @@ export function TopBar() {
   const [draftName, setDraftName] = useState('')
   const nameInputRef = useRef<HTMLInputElement>(null)
 
+  const { selectedStepId, updateStep } = useDemoStore()
+  const { canUndo, undo, stacks } = useUndoStore()
+
   const inEditor = currentView === 'editor' || currentView === 'preview' || currentView === 'export'
   const viewTitle = ''
+
+  // Derive undo availability from the stacks state (reactive)
+  const hasUndo = selectedStepId ? canUndo(selectedStepId) : false
+
+  function handleUndo() {
+    if (!selectedStepId) return
+    const snapshot = undo(selectedStepId)
+    if (snapshot) {
+      updateStep(selectedStepId, {
+        blurZones: snapshot.blurZones,
+        textEdits: snapshot.textEdits,
+        hiddenElements: snapshot.hiddenElements,
+        clickZones: snapshot.clickZones,
+      })
+    }
+  }
+
+  // Keyboard shortcut: Cmd/Ctrl+Z for undo
+  useEffect(() => {
+    function handleKeydown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        handleUndo()
+      }
+    }
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [selectedStepId, stacks])
 
   function startEditName() {
     if (!currentDemo) return
@@ -27,14 +59,15 @@ export function TopBar() {
 
   return (
     <header
-      className="relative flex items-center px-5"
+      className="relative flex items-center pr-5 pl-[80px] [&_button]:[-webkit-app-region:no-drag] [&_input]:[-webkit-app-region:no-drag]"
       style={{
         height: 52,
         background: 'linear-gradient(180deg, rgba(50,50,55,0.97) 0%, rgba(40,40,44,0.97) 100%)',
         borderBottom: '1px solid rgba(255,255,255,0.06)',
         boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
         backdropFilter: 'blur(20px)',
-      }}
+        WebkitAppRegion: 'drag',
+      } as React.CSSProperties}
     >
       {/* Top edge highlight */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/8 to-transparent pointer-events-none" />
@@ -121,6 +154,27 @@ export function TopBar() {
 
         {inEditor && currentDemo && (
           <>
+            <div className="w-px h-5 bg-white/8" />
+
+            {/* Undo button */}
+            <button
+              onClick={handleUndo}
+              disabled={!hasUndo}
+              className="h-9 px-3 flex items-center gap-1.5 text-[13px] font-medium rounded-lg transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
+              style={{
+                background: hasUndo ? 'rgba(10,132,255,0.1)' : 'rgba(255,255,255,0.04)',
+                color: hasUndo ? '#4DA3FF' : 'rgba(255,255,255,0.3)',
+                border: hasUndo ? '1px solid rgba(10,132,255,0.2)' : '1px solid rgba(255,255,255,0.06)',
+              }}
+              title="Undo (Cmd+Z)"
+            >
+              <svg width="14" height="14" viewBox="0 0 12 12" fill="none">
+                <path d="M3 5l-2-2 2-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M1 3h6.5a3.5 3.5 0 010 7H5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Undo
+            </button>
+
             <div className="w-px h-5 bg-white/8" />
             <button
               onClick={() => setView('preview')}

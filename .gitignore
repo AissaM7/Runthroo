@@ -29,3 +29,6 @@ npm-debug.log*
 
 # Agent handoff (development notes)
 AGENT_HANDOFF.md
+extension/_metadata/
+*.mjs
+V2-BUILD-AND-TEST-GUIDE.md

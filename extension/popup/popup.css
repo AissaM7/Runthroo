@@ -6,7 +6,7 @@
 }
 
 body {
-    width: 280px;
+    width: 300px;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
     font-size: 13px;
     color: #e5e5ea;
@@ -19,7 +19,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 12px;
+    padding: 12px 14px;
     background: linear-gradient(180deg, rgba(50, 50, 55, 0.98) 0%, rgba(38, 38, 42, 0.98) 100%);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
@@ -31,9 +31,9 @@ body {
 }
 
 .logo-icon {
-    width: 26px;
-    height: 26px;
-    border-radius: 7px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
     background: linear-gradient(135deg, #0A84FF, #0066cc);
     display: flex;
     align-items: center;
@@ -85,7 +85,7 @@ body {
 
 /* ─── Form ───────────────────────────────────── */
 .form {
-    padding: 12px;
+    padding: 14px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -98,15 +98,15 @@ body {
 }
 
 label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.6px;
+    color: rgba(255, 255, 255, 0.35);
 }
 
 input {
-    padding: 7px 10px;
+    padding: 8px 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
     font-size: 13px;
@@ -127,17 +127,17 @@ input:focus {
     background: rgba(255, 255, 255, 0.06);
 }
 
-/* ─── Capture Button ─────────────────────────── */
+/* ─── Buttons ────────────────────────────────── */
 .btn-capture {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 9px 14px;
+    gap: 7px;
+    padding: 10px 14px;
     background: linear-gradient(135deg, #0A84FF, #0066cc);
     color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -159,8 +159,8 @@ input:focus {
 }
 
 .btn-capture:disabled {
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.2);
     box-shadow: none;
     cursor: not-allowed;
 }
@@ -173,25 +173,104 @@ input:focus {
     flex-shrink: 0;
 }
 
+.btn-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e5e5ea;
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.btn-secondary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-finish {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex: 1;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #30d158, #28a745);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    box-shadow: 0 2px 8px rgba(48, 209, 88, 0.25);
+}
+
+.btn-finish:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(48, 209, 88, 0.35);
+}
+
+.btn-finish:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-ghost {
+    padding: 8px 12px;
+    background: none;
+    color: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.btn-ghost:hover {
+    color: #ff453a;
+    border-color: rgba(255, 69, 58, 0.3);
+    background: rgba(255, 69, 58, 0.06);
+}
+
 /* ─── Toast ──────────────────────────────────── */
 .toast {
-    padding: 7px 10px;
-    border-radius: 6px;
+    padding: 8px 10px;
+    border-radius: 8px;
     font-size: 11px;
     font-weight: 500;
     line-height: 1.4;
 }
 
 .toast.success {
-    background: rgba(48, 209, 88, 0.12);
+    background: rgba(48, 209, 88, 0.1);
     color: #30d158;
-    border: 1px solid rgba(48, 209, 88, 0.2);
+    border: 1px solid rgba(48, 209, 88, 0.15);
 }
 
 .toast.error {
-    background: rgba(255, 69, 58, 0.12);
+    background: rgba(255, 69, 58, 0.1);
     color: #ff453a;
-    border: 1px solid rgba(255, 69, 58, 0.2);
+    border: 1px solid rgba(255, 69, 58, 0.15);
 }
 
 .hidden {
@@ -201,21 +280,171 @@ input:focus {
 /* ─── Divider ────────────────────────────────── */
 .divider {
     height: 1px;
-    margin: 0 12px;
+    margin: 0 14px;
     background: rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Recording Section ──────────────────────── */
+.recording-section {
+    padding: 14px;
+}
+
+.recording-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.recording-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.recording-desc {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.3);
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+/* Recording active state */
+.recording-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 69, 58, 0.08);
+    border: 1px solid rgba(255, 69, 58, 0.15);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.recording-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff453a;
+    box-shadow: 0 0 8px rgba(255, 69, 58, 0.5);
+    animation: pulse 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+.recording-status-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: #ff6b6b;
+    flex: 1;
+}
+
+.recording-count-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: #ff453a;
+    background: rgba(255, 69, 58, 0.12);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.recording-hint {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.25);
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.recording-log {
+    list-style: none;
+    max-height: 140px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.recording-log:empty {
+    display: none;
+}
+
+.recording-log-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.log-num {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(10, 132, 255, 0.15);
+    color: #4da3ff;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.log-detail {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.log-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #e5e5ea;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.log-url {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: 'SF Mono', 'Menlo', monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.log-check {
+    font-size: 11px;
+    color: #30d158;
+    flex-shrink: 0;
+}
+
+.recording-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
 }
 
 /* ─── History ────────────────────────────────── */
 .history-section {
-    padding: 10px 12px 12px;
+    padding: 12px 14px 14px;
 }
 
 .history-title {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.6px;
+    color: rgba(255, 255, 255, 0.25);
     margin-bottom: 10px;
 }
 
@@ -227,11 +456,12 @@ input:focus {
 }
 
 .history-item {
-    padding: 7px 10px;
-    background: rgba(255, 255, 255, 0.04);
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 8px;
     transition: background 0.15s, border-color 0.15s;
+    animation: fadeIn 0.2s ease-out;
 }
 
 .history-item:hover {
@@ -251,7 +481,7 @@ input:focus {
 
 .history-item .meta {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.25);
     margin-top: 3px;
     display: flex;
     align-items: center;
@@ -261,8 +491,8 @@ input:focus {
 .history-item .platform-tag {
     display: inline-block;
     padding: 1px 6px;
-    background: rgba(10, 132, 255, 0.12);
-    color: #0A84FF;
+    background: rgba(10, 132, 255, 0.1);
+    color: #4da3ff;
     border-radius: 4px;
     font-size: 10px;
     font-weight: 600;
@@ -272,8 +502,8 @@ input:focus {
 
 .empty-state {
     text-align: center;
-    padding: 10px 8px;
-    color: rgba(255, 255, 255, 0.2);
+    padding: 12px 8px;
+    color: rgba(255, 255, 255, 0.18);
     font-size: 11px;
     line-height: 1.5;
 }
@@ -291,28 +521,22 @@ input:focus {
     }
 }
 
-.history-item {
-    animation: fadeIn 0.2s ease-out;
-}
-
-/* ─── Capturing state ────────────────────────── */
-.btn-capture.capturing {
-    background: rgba(10, 132, 255, 0.15);
-    color: #0A84FF;
-    box-shadow: none;
-    pointer-events: none;
-}
-
 @keyframes pulse {
-
-    0%,
-    100% {
+    0%, 100% {
         opacity: 1;
     }
 
     50% {
-        opacity: 0.4;
+        opacity: 0.3;
     }
+}
+
+/* ─── Capturing state ────────────────────────── */
+.btn-capture.capturing {
+    background: rgba(10, 132, 255, 0.12);
+    color: #0A84FF;
+    box-shadow: none;
+    pointer-events: none;
 }
 
 .btn-capture.capturing span {

@@ -10,6 +10,7 @@ export function initDatabase(): void {
   db.pragma('journal_mode = WAL')
   db.pragma('foreign_keys = ON')
   runSchema()
+  runMigrations()
 }
 
 function runSchema(): void {
@@ -47,6 +48,12 @@ function runSchema(): void {
       click_zone TEXT DEFAULT NULL,
       cursor_config TEXT DEFAULT NULL,
       transition TEXT DEFAULT 'instant',
+      blur_zones TEXT DEFAULT '[]',
+      text_edits TEXT DEFAULT '[]',
+      hidden_elements TEXT DEFAULT '[]',
+      click_zones TEXT DEFAULT '[]',
+      auto_play_delay INTEGER DEFAULT 0,
+      personalization_tokens TEXT DEFAULT '{}',
       created_at TEXT DEFAULT (datetime('now')),
       UNIQUE(demo_id, step_order)
     );
@@ -54,6 +61,27 @@ function runSchema(): void {
     CREATE INDEX IF NOT EXISTS idx_captures_platform ON captures(platform);
     CREATE INDEX IF NOT EXISTS idx_steps_demo ON demo_steps(demo_id, step_order);
   `)
+}
+
+function runMigrations(): void {
+  // V2 migration: add new columns to demo_steps if they don't exist
+  const columns = db.prepare(`PRAGMA table_info(demo_steps)`).all() as { name: string }[]
+  const colNames = new Set(columns.map(c => c.name))
+
+  const v2Columns: [string, string][] = [
+    ['blur_zones', "TEXT DEFAULT '[]'"],
+    ['text_edits', "TEXT DEFAULT '[]'"],
+    ['hidden_elements', "TEXT DEFAULT '[]'"],
+    ['click_zones', "TEXT DEFAULT '[]'"],
+    ['auto_play_delay', 'INTEGER DEFAULT 0'],
+    ['personalization_tokens', "TEXT DEFAULT '{}'"],
+  ]
+
+  for (const [name, def] of v2Columns) {
+    if (!colNames.has(name)) {
+      db.exec(`ALTER TABLE demo_steps ADD COLUMN ${name} ${def}`)
+    }
+  }
 }
 
 export function getDb(): Database.Database {
@@ -211,6 +239,8 @@ export function dbInsertStep(step: {
 
 export function dbUpdateStep(id: string, updates: {
   label?: string; clickZone?: unknown; cursorConfig?: unknown; transition?: string;
+  blurZones?: unknown; textEdits?: unknown; hiddenElements?: unknown;
+  clickZones?: unknown; autoPlayDelay?: number; personalizationTokens?: unknown;
 }) {
   const fields: string[] = []
   const params: unknown[] = []
@@ -218,6 +248,13 @@ export function dbUpdateStep(id: string, updates: {
   if ('clickZone' in updates) { fields.push('click_zone = ?'); params.push(updates.clickZone ? JSON.stringify(updates.clickZone) : null) }
   if ('cursorConfig' in updates) { fields.push('cursor_config = ?'); params.push(updates.cursorConfig ? JSON.stringify(updates.cursorConfig) : null) }
   if (updates.transition !== undefined) { fields.push('transition = ?'); params.push(updates.transition) }
+  // V2 fields
+  if ('blurZones' in updates) { fields.push('blur_zones = ?'); params.push(JSON.stringify(updates.blurZones || [])) }
+  if ('textEdits' in updates) { fields.push('text_edits = ?'); params.push(JSON.stringify(updates.textEdits || [])) }
+  if ('hiddenElements' in updates) { fields.push('hidden_elements = ?'); params.push(JSON.stringify(updates.hiddenElements || [])) }
+  if ('clickZones' in updates) { fields.push('click_zones = ?'); params.push(JSON.stringify(updates.clickZones || [])) }
+  if ('autoPlayDelay' in updates) { fields.push('auto_play_delay = ?'); params.push(updates.autoPlayDelay || 0) }
+  if ('personalizationTokens' in updates) { fields.push('personalization_tokens = ?'); params.push(JSON.stringify(updates.personalizationTokens || {})) }
   if (!fields.length) return
   params.push(id)
   db.prepare(`UPDATE demo_steps SET ${fields.join(', ')} WHERE id = ?`).run(...params)
@@ -276,5 +313,12 @@ function rowToStep(row: Record<string, unknown>) {
     clickZone: row.click_zone ? JSON.parse(row.click_zone as string) : null,
     cursorConfig: row.cursor_config ? JSON.parse(row.cursor_config as string) : null,
     transition: row.transition as 'fade' | 'slide-left' | 'instant',
+    // V2 fields
+    blurZones: JSON.parse((row.blur_zones as string) || '[]'),
+    textEdits: JSON.parse((row.text_edits as string) || '[]'),
+    hiddenElements: JSON.parse((row.hidden_elements as string) || '[]'),
+    clickZones: JSON.parse((row.click_zones as string) || '[]'),
+    autoPlayDelay: (row.auto_play_delay as number) || 0,
+    personalizationTokens: JSON.parse((row.personalization_tokens as string) || '{}'),
   }
 }

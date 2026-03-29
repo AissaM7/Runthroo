@@ -268,15 +268,13 @@ export function Timeline({ steps, selectedStepId, onSelectStep, onAddStep }: Pro
                                     </div>
                                 )}
 
-                                {/* Label */}
-                                {step.label && (
-                                    <div
-                                        className="absolute bottom-0 left-0 right-0 text-[10px] font-medium text-white px-2 py-1 truncate"
-                                        style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', zIndex: 21, pointerEvents: 'none' }}
-                                    >
-                                        {step.label}
-                                    </div>
-                                )}
+                                {/* Label — always show, with step number fallback */}
+                                <div
+                                    className="absolute bottom-0 left-0 right-0 text-[10px] font-medium text-white px-2 py-1 truncate"
+                                    style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', zIndex: 21, pointerEvents: 'none' }}
+                                >
+                                    {step.label?.trim() || `Step ${i + 1}`}
+                                </div>
                             </div>
 
                             {/* Arrow between steps */}

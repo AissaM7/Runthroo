@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 type View = 'library' | 'editor' | 'demos' | 'preview' | 'export'
-type DrawMode = 'none' | 'click-zone' | 'cursor-start' | 'cursor-end'
+type DrawMode = 'none' | 'click-zone' | 'cursor-start' | 'cursor-end' | 'blur-draw' | 'text-edit' | 'element-picker' | 'branch-zone'
 
 interface UIStoreState {
   currentView: View

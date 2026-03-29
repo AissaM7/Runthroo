@@ -2,8 +2,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useDemoStore } from '../stores/demoStore'
 import { useCaptureStore } from '../stores/captureStore'
 import { useUIStore } from '../stores/uiStore'
+import { useUndoStore, type StepSnapshot } from '../stores/undoStore'
 import { PageRenderer } from '../components/PageRenderer'
-import { ClickZoneOverlay } from '../components/ClickZoneOverlay'
+import { BlurZoneOverlay } from '../components/BlurZoneOverlay'
+import { TextEditOverlay } from '../components/TextEditOverlay'
+import { ElementPickerOverlay } from '../components/ElementPickerOverlay'
+import { BranchZoneOverlay } from '../components/BranchZoneOverlay'
 import { Toggle } from '../components/Toggle'
 import { Timeline } from '../components/Timeline'
 import {
@@ -184,8 +188,9 @@ function LeftPanel({ onRequestAddStep }: { onRequestAddStep: () => void }) {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // RIGHT INSPECTOR — Step properties, click zone
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function RightInspector({ step, onUpdate, onRemove }: {
+function RightInspector({ step, allSteps, onUpdate, onRemove }: {
   step: DemoStep
+  allSteps: DemoStep[]
   onUpdate: (updates: Partial<DemoStep>) => void
   onRemove: () => void
 }) {
@@ -199,13 +204,21 @@ function RightInspector({ step, onUpdate, onRemove }: {
         borderLeft: '1px solid rgba(255,255,255,0.06)',
       }}
     >
-      {/* Step Label */}
-      <div className="px-4 pt-5 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <span className="text-[13px] text-white/40 block mb-2">Label</span>
+      {/* Step header */}
+      <div className="px-4 pt-3 pb-2 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <span className="text-[11px] font-semibold text-white/30 uppercase tracking-wider">Step {step.stepOrder + 1}</span>
+      </div>
+
+      {/* Step Name — prominent input */}
+      <div className="px-4 pt-4 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <span className="text-[13px] text-white/40 block mb-1">Step Name</span>
+        <p className="text-[11px] text-white/20 leading-relaxed mb-2">
+          Name your steps to identify them in branches and the timeline.
+        </p>
         <input
           className={inputCls}
           value={step.label}
-          placeholder={`Step ${step.stepOrder + 1}`}
+          placeholder={`e.g. Homepage, Dashboard, Settings…`}
           onChange={e => onUpdate({ label: e.target.value })}
         />
       </div>
@@ -234,50 +247,174 @@ function RightInspector({ step, onUpdate, onRemove }: {
         </div>
       </div>
 
-      {/* Click Zone */}
+      {/* Click Zones */}
       <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <span className="text-[13px] text-white/40 block mb-1.5">Click Zone</span>
+        <span className="text-[13px] text-white/40 block mb-1.5">Click Zones</span>
         <p className="text-[12px] text-white/20 leading-relaxed mb-3">
-          Draw an area viewers click to advance.
+          Draw clickable areas that navigate viewers to specific steps.
         </p>
 
         <button
-          onClick={() => setDrawMode(drawMode === 'click-zone' ? 'none' : 'click-zone')}
+          onClick={() => setDrawMode(drawMode === 'branch-zone' ? 'none' : 'branch-zone')}
           className="w-full h-10 text-[13px] font-medium rounded-lg flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer"
           style={{
-            background: drawMode === 'click-zone' ? 'rgba(10,132,255,0.12)' : 'rgba(255,255,255,0.04)',
-            color: drawMode === 'click-zone' ? '#4DA3FF' : 'rgba(255,255,255,0.55)',
-            border: drawMode === 'click-zone' ? '1px solid rgba(10,132,255,0.25)' : '1px solid rgba(255,255,255,0.06)',
+            background: drawMode === 'branch-zone' ? 'rgba(10,132,255,0.12)' : 'rgba(255,255,255,0.04)',
+            color: drawMode === 'branch-zone' ? '#0A84FF' : 'rgba(255,255,255,0.55)',
+            border: drawMode === 'branch-zone' ? '1px solid rgba(10,132,255,0.25)' : '1px solid rgba(255,255,255,0.06)',
           }}
         >
           <CursorIcon size={14} />
-          {drawMode === 'click-zone' ? 'Drawing…' : step.clickZone ? 'Redraw Zone' : 'Draw Zone'}
+          {drawMode === 'branch-zone' ? 'Drawing…' : 'Add Click Zone'}
         </button>
 
-        {step.clickZone && (
+        {(step.clickZones?.length ?? 0) > 0 && (
           <div className="mt-3 space-y-2">
+            <span className="text-[11px] text-white/30">{step.clickZones.length} zone{step.clickZones.length !== 1 ? 's' : ''}</span>
+
+            {/* Zone flow diagram */}
             <div
-              className="rounded-lg px-3 py-2.5 text-[12px] font-mono tabular-nums space-y-1"
-              style={{ background: 'rgba(255,255,255,0.03)' }}
+              className="rounded-lg p-3 space-y-2"
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
             >
-              <div className="flex justify-between">
-                <span className="text-white/25">Center</span>
-                <span className="text-white/50">{(step.clickZone.x + step.clickZone.width / 2).toFixed(1)}%, {(step.clickZone.y + step.clickZone.height / 2).toFixed(1)}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/25">Radius</span>
-                <span className="text-white/50">{(step.clickZone.width / 2).toFixed(1)}%</span>
-              </div>
+              <span className="text-[9px] text-white/25 uppercase tracking-wider font-semibold">Navigation Flow</span>
+              {step.clickZones.map(zone => {
+                const targetStep = zone.targetStepId === 'next'
+                  ? allSteps.find(s => s.stepOrder === step.stepOrder + 1)
+                  : allSteps.find(s => s.id === zone.targetStepId)
+                const targetName = targetStep
+                  ? (targetStep.label?.trim() || `Step ${targetStep.stepOrder + 1}`)
+                  : zone.targetStepId === 'next' ? 'Next' : '???'
+
+                return (
+                  <div key={zone.id} className="flex items-center gap-1.5">
+                    <div
+                      className="px-1.5 py-0.5 rounded text-[9px] font-medium text-white/70 truncate max-w-[55px]"
+                      style={{ background: 'rgba(48,209,88,0.15)', border: '1px solid rgba(48,209,88,0.2)' }}
+                      title={zone.label}
+                    >
+                      {zone.label}
+                    </div>
+                    <svg width="16" height="8" viewBox="0 0 16 8" fill="none" className="shrink-0">
+                      <path d="M0 4h12M10 1l3 3-3 3" stroke="rgba(48,209,88,0.6)" strokeWidth="1" strokeLinecap="round" />
+                    </svg>
+                    <div
+                      className="px-1.5 py-0.5 rounded text-[9px] font-medium text-white/70 truncate max-w-[55px]"
+                      style={{ background: 'rgba(10,132,255,0.15)', border: '1px solid rgba(10,132,255,0.2)' }}
+                      title={targetName}
+                    >
+                      {targetName}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
+
             <button
-              onClick={() => onUpdate({ clickZone: null })}
+              onClick={() => onUpdate({ clickZones: [] })}
               className="w-full h-8 text-[12px] text-red-400/70 hover:text-red-400 rounded-lg transition-all duration-200 cursor-pointer"
             >
-              Remove Zone
+              Clear All Zones
             </button>
           </div>
         )}
       </div>
+
+      {/* Text Editing */}
+      <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <span className="text-[13px] text-white/40 block mb-1.5">Text Editing</span>
+        <p className="text-[12px] text-white/20 leading-relaxed mb-3">
+          Click text on the page to edit it.
+        </p>
+
+        <button
+          onClick={() => setDrawMode(drawMode === 'text-edit' ? 'none' : 'text-edit')}
+          className="w-full h-10 text-[13px] font-medium rounded-lg flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer"
+          style={{
+            background: drawMode === 'text-edit' ? 'rgba(10,132,255,0.12)' : 'rgba(255,255,255,0.04)',
+            color: drawMode === 'text-edit' ? '#4DA3FF' : 'rgba(255,255,255,0.55)',
+            border: drawMode === 'text-edit' ? '1px solid rgba(10,132,255,0.25)' : '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          {drawMode === 'text-edit' ? 'Editing…' : 'Edit Text'}
+        </button>
+
+        {(step.textEdits?.length ?? 0) > 0 && (
+          <div className="mt-3 space-y-1.5">
+            <span className="text-[11px] text-white/30">{step.textEdits.length} edit{step.textEdits.length !== 1 ? 's' : ''}</span>
+            <button
+              onClick={() => onUpdate({ textEdits: [] })}
+              className="w-full h-8 text-[12px] text-red-400/70 hover:text-red-400 rounded-lg transition-all duration-200 cursor-pointer"
+            >
+              Clear All Edits
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Hide/Show Elements */}
+      <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <span className="text-[13px] text-white/40 block mb-1.5">Hide Elements</span>
+        <p className="text-[12px] text-white/20 leading-relaxed mb-3">
+          Click elements to hide them.
+        </p>
+
+        <button
+          onClick={() => setDrawMode(drawMode === 'element-picker' ? 'none' : 'element-picker')}
+          className="w-full h-10 text-[13px] font-medium rounded-lg flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer"
+          style={{
+            background: drawMode === 'element-picker' ? 'rgba(255,149,0,0.12)' : 'rgba(255,255,255,0.04)',
+            color: drawMode === 'element-picker' ? '#ffb340' : 'rgba(255,255,255,0.55)',
+            border: drawMode === 'element-picker' ? '1px solid rgba(255,149,0,0.25)' : '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          {drawMode === 'element-picker' ? 'Picking…' : 'Pick Elements'}
+        </button>
+
+        {(step.hiddenElements?.length ?? 0) > 0 && (
+          <div className="mt-3 space-y-1.5">
+            <span className="text-[11px] text-white/30">{step.hiddenElements.length} hidden</span>
+            <button
+              onClick={() => onUpdate({ hiddenElements: [] })}
+              className="w-full h-8 text-[12px] text-red-400/70 hover:text-red-400 rounded-lg transition-all duration-200 cursor-pointer"
+            >
+              Show All Elements
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Blur & Redact */}
+      <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <span className="text-[13px] text-white/40 block mb-1.5">Blur & Redact</span>
+        <p className="text-[12px] text-white/20 leading-relaxed mb-3">
+          Draw areas to hide sensitive data.
+        </p>
+
+        <button
+          onClick={() => setDrawMode(drawMode === 'blur-draw' ? 'none' : 'blur-draw')}
+          className="w-full h-10 text-[13px] font-medium rounded-lg flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer"
+          style={{
+            background: drawMode === 'blur-draw' ? 'rgba(255,59,48,0.12)' : 'rgba(255,255,255,0.04)',
+            color: drawMode === 'blur-draw' ? '#ff6b6b' : 'rgba(255,255,255,0.55)',
+            border: drawMode === 'blur-draw' ? '1px solid rgba(255,59,48,0.25)' : '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          {drawMode === 'blur-draw' ? 'Drawing…' : 'Draw Blur Zone'}
+        </button>
+
+        {(step.blurZones?.length ?? 0) > 0 && (
+          <div className="mt-3 space-y-1.5">
+            <span className="text-[11px] text-white/30">{step.blurZones.length} zone{step.blurZones.length !== 1 ? 's' : ''}</span>
+            <button
+              onClick={() => onUpdate({ blurZones: [] })}
+              className="w-full h-8 text-[12px] text-red-400/70 hover:text-red-400 rounded-lg transition-all duration-200 cursor-pointer"
+            >
+              Clear All Zones
+            </button>
+          </div>
+        )}
+      </div>
+
 
       {/* Remove Step */}
       <div className="mt-auto px-4 py-5">
@@ -303,6 +440,9 @@ function ExportPanel() {
   const [keyboardNav, setKeyboardNav] = useState(true)
   const [showStepCounter, setShowStepCounter] = useState(true)
   const [presentationMode, setPresentationMode] = useState(false)
+  const [autoPlay, setAutoPlay] = useState(false)
+  const [autoPlayDelay, setAutoPlayDelay] = useState(4)
+  const [autoPlayLoop, setAutoPlayLoop] = useState(true)
   const [imageQuality, setImageQuality] = useState(85)
   const [exporting, setExporting] = useState(false)
   const [outputPath, setOutputPath] = useState<string | null>(null)
@@ -320,7 +460,10 @@ function ExportPanel() {
       const savePath = await window.api.showSaveDialog(`${filename}.html`)
       if (!savePath) return
       setExporting(true)
-      const path = await exportDemo({ filename, keyboardNav, showStepCounter, imageQuality, outputPath: savePath, presentationMode })
+      const path = await exportDemo({
+        filename, keyboardNav, showStepCounter, imageQuality, outputPath: savePath, presentationMode,
+        autoPlay, autoPlayDefaultDelay: autoPlayDelay * 1000, autoPlayLoop,
+      })
       setOutputPath(path)
     } catch (err) {
       setError(String(err))
@@ -371,6 +514,17 @@ function ExportPanel() {
           <ToggleRow label="Keyboard nav" checked={keyboardNav} onChange={setKeyboardNav} />
           <ToggleRow label="Step counter" checked={showStepCounter} onChange={setShowStepCounter} />
           <ToggleRow label="Presentation mode" desc="Dark border" checked={presentationMode} onChange={setPresentationMode} />
+          <ToggleRow label="Auto-play" desc="Auto-advance steps" checked={autoPlay} onChange={setAutoPlay} />
+          {autoPlay && (
+            <div className="pl-2 space-y-2" style={{ borderLeft: '2px solid rgba(10,132,255,0.15)' }}>
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] text-white/40">Delay</span>
+                <span className="text-[12px] font-mono text-[#0A84FF]">{autoPlayDelay}s</span>
+              </div>
+              <input type="range" min={1} max={15} value={autoPlayDelay} onChange={e => setAutoPlayDelay(parseInt(e.target.value))} className="w-full accent-[#0A84FF]" />
+              <ToggleRow label="Loop" checked={autoPlayLoop} onChange={setAutoPlayLoop} />
+            </div>
+          )}
         </div>
 
         {/* Meta */}
@@ -592,6 +746,7 @@ export function FlowEditor() {
   const { currentDemo, selectedStepId, selectStep, updateStep, addStep, removeStep } = useDemoStore()
   const { captures, fetchCaptures } = useCaptureStore()
   const { drawMode, setDrawMode, setView } = useUIStore()
+  const { pushState } = useUndoStore()
   const canvasRef = useRef<HTMLDivElement>(null)
   const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 })
   const [showAddCapture, setShowAddCapture] = useState(false)
@@ -681,6 +836,7 @@ export function FlowEditor() {
                   height: vh * scale,
                   boxShadow: '0 8px 40px rgba(0,0,0,0.5)',
                   borderRadius: 8,
+                  overflow: 'hidden',
                 }}
               >
                 <PageRenderer
@@ -690,14 +846,64 @@ export function FlowEditor() {
                   containerWidth={canvasSize.width}
                   containerHeight={canvasSize.height}
                 />
-                <ClickZoneOverlay
-                  clickZone={selectedStep.clickZone}
+                {/* Legacy ClickZoneOverlay removed — replaced by BranchZoneOverlay */}
+                <BlurZoneOverlay
+                  blurZones={selectedStep.blurZones || []}
                   viewportWidth={vw}
                   viewportHeight={vh}
-                  containerWidth={canvasSize.width}
-                  containerHeight={canvasSize.height}
                   scale={scale}
-                  onChange={zone => updateStep(selectedStep.id, { clickZone: zone })}
+                  onChange={zones => {
+                    pushState(selectedStep.id, {
+                      blurZones: selectedStep.blurZones || [],
+                      textEdits: selectedStep.textEdits || [],
+                      hiddenElements: selectedStep.hiddenElements || [],
+                      clickZones: selectedStep.clickZones || [],
+                    })
+                    updateStep(selectedStep.id, { blurZones: zones })
+                  }}
+                />
+                <TextEditOverlay
+                  textEdits={selectedStep.textEdits || []}
+                  scale={scale}
+                  onChange={edits => {
+                    pushState(selectedStep.id, {
+                      blurZones: selectedStep.blurZones || [],
+                      textEdits: selectedStep.textEdits || [],
+                      hiddenElements: selectedStep.hiddenElements || [],
+                      clickZones: selectedStep.clickZones || [],
+                    })
+                    updateStep(selectedStep.id, { textEdits: edits })
+                  }}
+                />
+                <ElementPickerOverlay
+                  hiddenElements={selectedStep.hiddenElements || []}
+                  scale={scale}
+                  onChange={selectors => {
+                    pushState(selectedStep.id, {
+                      blurZones: selectedStep.blurZones || [],
+                      textEdits: selectedStep.textEdits || [],
+                      hiddenElements: selectedStep.hiddenElements || [],
+                      clickZones: selectedStep.clickZones || [],
+                    })
+                    updateStep(selectedStep.id, { hiddenElements: selectors })
+                  }}
+                />
+                <BranchZoneOverlay
+                  clickZones={selectedStep.clickZones || []}
+                  viewportWidth={vw}
+                  viewportHeight={vh}
+                  scale={scale}
+                  steps={currentDemo?.steps || []}
+                  currentStepId={selectedStep.id}
+                  onChange={zones => {
+                    pushState(selectedStep.id, {
+                      blurZones: selectedStep.blurZones || [],
+                      textEdits: selectedStep.textEdits || [],
+                      hiddenElements: selectedStep.hiddenElements || [],
+                      clickZones: selectedStep.clickZones || [],
+                    })
+                    updateStep(selectedStep.id, { clickZones: zones })
+                  }}
                 />
                 {selectedStep.cursorConfig?.enabled && (
                   <CursorPathPreview config={selectedStep.cursorConfig} scale={scale} vw={vw} vh={vh} />
@@ -750,9 +956,15 @@ export function FlowEditor() {
                 zIndex: 20,
               }}
             >
-              {drawMode === 'click-zone'
-                ? '🎯 Click and drag to draw a click zone'
-                : `Click to set ${drawMode === 'cursor-start' ? 'start' : 'end'} point`}
+              {drawMode === 'blur-draw'
+                ? '🔒 Click and drag to draw a blur/redact zone'
+                : drawMode === 'text-edit'
+                  ? '✏️ Click on text in the page to edit it'
+                  : drawMode === 'element-picker'
+                    ? '👁️ Click on an element to hide/show it'
+                    : drawMode === 'branch-zone'
+                      ? '🎯 Click and drag to draw a click zone'
+                      : `Click to set ${drawMode === 'cursor-start' ? 'start' : 'end'} point`}
               <button
                 className="text-white/70 hover:text-white text-[12px] underline cursor-pointer"
                 onClick={e => { e.stopPropagation(); setDrawMode('none') }}
@@ -767,6 +979,7 @@ export function FlowEditor() {
         {selectedStep ? (
           <RightInspector
             step={selectedStep}
+            allSteps={currentDemo?.steps || []}
             onUpdate={updates => updateStep(selectedStep.id, updates)}
             onRemove={() => removeStep(selectedStep.id)}
           />

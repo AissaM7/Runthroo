@@ -32,6 +32,42 @@ export interface DemoStep {
   clickZone: ClickZone | null;
   cursorConfig: CursorConfig | null;
   transition: 'fade' | 'slide-left' | 'instant';
+  // V2 features
+  blurZones: BlurZone[];
+  textEdits: TextEdit[];
+  hiddenElements: string[];
+  clickZones: BranchClickZone[];  // branching: multiple click zones
+  autoPlayDelay: number;          // auto-play delay in ms (0 = use global default)
+}
+
+export interface BlurZone {
+  id: string;
+  x: number;       // percentage 0-100 from left
+  y: number;       // percentage 0-100 from top
+  width: number;   // percentage of viewport width
+  height: number;  // percentage of viewport height
+  mode: 'blur' | 'redact';
+  intensity: number; // blur: px (3-20), redact: ignored
+  color: string;     // redact color, e.g. '#333333'
+}
+
+export interface TextEdit {
+  id: string;
+  selector: string;      // CSS selector to the text node's parent
+  originalText: string;
+  newText: string;
+}
+
+export interface BranchClickZone {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  scrollX?: number;
+  scrollY?: number;
+  targetStepId: string;  // 'next' or a specific step id
+  label: string;
 }
 
 export interface ClickZone {
@@ -64,4 +100,9 @@ export interface ExportOptions {
   imageQuality: number; // 1-100, JPEG quality
   outputPath?: string; // user-chosen save location
   presentationMode?: boolean; // true = dark framed view, false = full-screen raw website
+  presentationBg?: string;   // background theme id: 'midnight', 'aurora', 'ember', 'ocean' (default: 'midnight')
+  // V2 features
+  autoPlay?: boolean;
+  autoPlayDefaultDelay?: number; // ms between steps (default 4000)
+  autoPlayLoop?: boolean;
 }

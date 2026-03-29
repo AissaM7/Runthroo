@@ -52,6 +52,51 @@
   <!-- Divider -->
   <div class="divider"></div>
 
+  <!-- Recording mode -->
+  <div class="recording-section">
+    <div id="recording-idle">
+      <div class="recording-header">
+        <div class="recording-label">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="5" fill="#ff453a"/>
+            <circle cx="8" cy="8" r="7" stroke="#ff453a" stroke-width="1.5" stroke-opacity="0.3"/>
+          </svg>
+          <span>Multi-Step Recording</span>
+        </div>
+      </div>
+      <p class="recording-desc">Start recording, then browse your site normally. Each page you visit is captured automatically — CSS, images, and all.</p>
+      <button id="start-recording-btn" class="btn-secondary" disabled>
+        Start Recording
+      </button>
+    </div>
+
+    <div id="recording-active" style="display:none">
+      <div class="recording-status-bar">
+        <div class="recording-pulse"></div>
+        <span class="recording-status-text">Recording</span>
+        <span class="recording-count-badge"><span id="recording-count">0</span> pages</span>
+      </div>
+
+      <p class="recording-hint">Browse your site — pages are captured automatically as you navigate. Close this popup and keep clicking through your app.</p>
+
+      <!-- Live capture log -->
+      <ul id="recording-log" class="recording-log"></ul>
+
+      <div class="recording-actions">
+        <button id="finish-recording-btn" class="btn-finish">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+            <path d="M4 8l3 3 5-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Finish & Create Demo
+        </button>
+        <button id="cancel-recording-btn" class="btn-ghost">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="divider"></div>
+
   <!-- History -->
   <div class="history-section">
     <div class="history-title">Recent Captures</div>

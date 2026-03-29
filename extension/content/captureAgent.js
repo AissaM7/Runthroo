@@ -1,6 +1,6 @@
 (async function () {
-  // Prevent double-injection
-  if (window.__demoforgeCapturing) return
+  // Reset the guard immediately — during multi-step recording, the service worker
+  // re-injects this script for each new page. We must allow re-execution.
   window.__demoforgeCapturing = true
 
   try {
@@ -14,9 +14,6 @@
     await inlineFontFaces()
 
     // ─── Step 3: Capture runtime CSS custom properties ──────────────────
-    // CSS-in-JS and theme systems define CSS variables via JavaScript at
-    // runtime. These vars live on elements (html, body, :root) but aren't
-    // in any stylesheet. We must capture them explicitly.
     const runtimeVarsCSS = captureRuntimeCSSVars()
 
     // ─── Step 4: Inline all images on the LIVE DOM ──────────────────────
@@ -25,10 +22,21 @@
     // ─── Step 5: Inline background images from computed styles ──────────
     await inlineComputedBackgroundImages()
 
-    // ─── Step 6: Clone the DOM after all inlining is complete ───────────
+    // ─── Step 6: Snapshot <canvas> elements (Grafana charts, etc.) ─────
+    const canvasSnapshots = snapshotCanvasElements()
+
+    // ─── Step 7: Clone the DOM after all inlining is complete ───────────
     const clone = document.documentElement.cloneNode(true)
 
-    // ─── Step 7: Inject runtime CSS variables as a <style> tag ──────────
+    // ─── Step 7b: Replace cloned <canvas> with <img> snapshots ──────────
+    replaceCanvasWithImages(clone, canvasSnapshots)
+
+    // Clean up temp markers from the live DOM
+    document.querySelectorAll('canvas[data-df-canvas-id]').forEach(c =>
+      c.removeAttribute('data-df-canvas-id')
+    )
+
+    // ─── Step 8: Inject runtime CSS variables as a <style> tag ──────────
     if (runtimeVarsCSS) {
       const varStyle = clone.ownerDocument.createElement('style')
       varStyle.setAttribute('data-demoforge', 'runtime-vars')
@@ -37,7 +45,7 @@
       if (head) head.insertBefore(varStyle, head.firstChild)
     }
 
-    // ─── Step 8: Force structural elements to be visible ────────────────
+    // ─── Step 9: Force structural elements to be visible ────────────────
     const clonedBody = clone.querySelector('body')
     if (clonedBody) {
       const bodyStyle = clonedBody.getAttribute('style') || ''
@@ -51,15 +59,15 @@
       }
     }
 
-    // ─── Step 9: Clean up non-visual elements ───────────────────────────
+    // ─── Step 10: Clean up non-visual elements ──────────────────────────
     clone.querySelectorAll('style, meta, title, link, base, head').forEach(el => {
       el.removeAttribute('style')
     })
 
-    // ─── Step 10: Remove scripts ────────────────────────────────────────
+    // ─── Step 11: Remove scripts ────────────────────────────────────────
     clone.querySelectorAll('script').forEach(el => el.remove())
 
-    // ─── Step 11: Remove external iframes (Stripe, analytics, etc.) ────
+    // ─── Step 12: Remove external iframes (Stripe, analytics, etc.) ────
     clone.querySelectorAll('iframe').forEach(el => {
       const src = el.getAttribute('src') || ''
       if (src.startsWith('http') || src.startsWith('//')) {
@@ -67,10 +75,10 @@
       }
     })
 
-    // ─── Step 12: Remove unused link tags ───────────────────────────────
+    // ─── Step 13: Remove unused link tags ───────────────────────────────
     clone.querySelectorAll('link[rel="modulepreload"], link[rel="preload"], link[rel="prefetch"], link[rel="preconnect"], link[rel="dns-prefetch"]').forEach(el => el.remove())
 
-    // ─── Step 13: Remove event attrs and form actions ───────────────────
+    // ─── Step 14: Remove event attrs and form actions ───────────────────
     clone.querySelectorAll('*').forEach(el => {
       Array.from(el.attributes).forEach(attr => {
         if (attr.name.startsWith('on')) el.removeAttribute(attr.name)
@@ -78,16 +86,14 @@
       el.removeAttribute('action')
     })
 
-    // ─── Step 14: Serialize ─────────────────────────────────────────────
+    // ─── Step 15: Serialize ─────────────────────────────────────────────
     const serializer = new XMLSerializer()
     let htmlString = '<!DOCTYPE html>' + serializer.serializeToString(clone)
 
     // Strip XHTML namespace attrs for HTML5 rendering
     htmlString = htmlString.replace(/ xmlns="http:\/\/www\.w3\.org\/1999\/xhtml"/g, '')
 
-    // XMLSerializer HTML-entity-encodes > chars inside <style> text content,
-    // turning CSS child selectors (.a > .b) into broken (.a &gt; .b).
-    // Decode these entities only inside <style> blocks to fix CSS.
+    // Decode HTML entities inside <style> blocks
     htmlString = htmlString.replace(
       /(<style[^>]*>)([\s\S]*?)(<\/style>)/gi,
       (match, open, css, close) => {
@@ -100,14 +106,13 @@
       }
     )
 
-    // Inject viewport meta tag with original viewport width so media queries
-    // evaluate correctly even when the page is rendered in a scaled iframe.
+    // Inject viewport meta tag
     const vpMeta = '<meta name="viewport" content="width=' + window.innerWidth + ', initial-scale=1">'
     htmlString = htmlString.replace('</head>', vpMeta + '</head>')
 
     console.log('[Runthroo] capture ready, HTML size:', htmlString.length, 'bytes')
 
-    // ─── Step 15: Send result back ──────────────────────────────────────
+    // ─── Step 16: Send result back ──────────────────────────────────────
     chrome.runtime.sendMessage({
       type: 'CAPTURE_RESULT',
       data: {
@@ -133,6 +138,43 @@
 // Helper functions
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// ─── Fetch with CORS bypass ─────────────────────────────────────────────────
+// Content script fetch() shares the page's origin, so cross-origin requests
+// are blocked by CORS. We route ALL fetches through the service worker which
+// has host_permissions: <all_urls> and bypasses CORS entirely.
+async function fetchWithProxy(url, responseType = 'text') {
+  // Always try service worker proxy first — it has unrestricted network access
+  try {
+    if (responseType === 'blob') {
+      const swRes = await chrome.runtime.sendMessage({ type: 'FETCH_URL_BASE64', url })
+      if (swRes && swRes.ok && swRes.dataUrl) {
+        const fetchRes = await fetch(swRes.dataUrl)
+        return { ok: true, data: await fetchRes.blob() }
+      }
+    } else {
+      const swRes = await chrome.runtime.sendMessage({ type: 'FETCH_URL', url })
+      if (swRes && swRes.ok && swRes.text) {
+        return { ok: true, data: swRes.text }
+      }
+    }
+  } catch (e) {
+    // Service worker proxy failed
+  }
+
+  // Fallback: try direct fetch (works for same-origin or CORS-enabled resources)
+  try {
+    const res = await fetch(url, { credentials: 'omit' })
+    if (res.ok) {
+      if (responseType === 'blob') return { ok: true, data: await res.blob() }
+      return { ok: true, data: await res.text() }
+    }
+  } catch (e) {
+    // Direct fetch also failed
+  }
+
+  return { ok: false, data: null }
+}
+
 // ─── Inline all stylesheets using CSSOM ─────────────────────────────────────
 async function inlineAllStylesheets() {
   const sheets = [...document.styleSheets]
@@ -143,19 +185,17 @@ async function inlineAllStylesheets() {
         const rules = sheet.cssRules || sheet.rules
         if (rules && rules.length > 0) {
           cssText = [...rules].map(r => r.cssText).join('\n')
-          // CSSOM may return HTML-entity-encoded selectors (e.g. &gt; instead of >)
-          // This happens when stylesheets are parsed in an XHTML context.
-          // We must decode these for the CSS to work correctly.
           cssText = unescapeCSS(cssText)
         }
       } catch (securityErr) {
+        // Cross-origin stylesheet — CSSOM blocked. Fetch the CSS text instead.
         if (sheet.href) {
-          try {
-            const res = await fetch(sheet.href, { credentials: 'include' })
-            cssText = await res.text()
-            cssText = rebaseCssUrls(cssText, sheet.href)
-          } catch (fetchErr) {
-            console.warn('[Runthroo] Could not fetch stylesheet:', sheet.href)
+          const result = await fetchWithProxy(sheet.href)
+          if (result.ok && result.data) {
+            cssText = rebaseCssUrls(result.data, sheet.href)
+          } else {
+            // Not fetchable — skip silently (console.debug won't show on error page)
+            console.debug('[Runthroo] skipped unfetchable stylesheet:', sheet.href)
             continue
           }
         }
@@ -172,15 +212,12 @@ async function inlineAllStylesheets() {
         sheet.ownerNode.parentNode.replaceChild(style, sheet.ownerNode)
       }
     } catch (e) {
-      console.warn('[Runthroo] stylesheet inline failed:', e)
+      console.debug('[Runthroo] stylesheet inline skipped:', e)
     }
   }
 }
 
 // ─── Unescape HTML entities in CSS text ─────────────────────────────────────
-// CSSOM cssRules.cssText can contain HTML-entity-encoded characters
-// (e.g. &gt; instead of >) when the stylesheet was parsed in an XHTML/DOM
-// context. We must decode these for the CSS to render correctly.
 function unescapeCSS(cssText) {
   return cssText
     .replace(/&gt;/g, '>')
@@ -200,16 +237,10 @@ async function resolveImports() {
     let newText = text
     for (const match of importMatches) {
       const url = match[1]
-      try {
-        const res = await fetch(url, { credentials: 'include' })
-        let importedCSS = await res.text()
-        importedCSS = rebaseCssUrls(importedCSS, url)
-        // Replace the @import with the actual CSS content
+      const result = await fetchWithProxy(url)
+      if (result.ok) {
+        let importedCSS = rebaseCssUrls(result.data, url)
         newText = newText.replace(match[0], importedCSS)
-      } catch (e) {
-        // Fetch failed (CORS, CSP, etc.) — leave the @import rule in place
-        // so it can load at render time from the iframe.
-        // No action needed — newText still contains the original @import.
       }
     }
     styleEl.textContent = newText
@@ -217,14 +248,10 @@ async function resolveImports() {
 }
 
 // ─── Inline @font-face font files as base64 data URIs ──────────────────────
-// Icon fonts and custom fonts are loaded via @font-face with url() references.
-// In the sandboxed iframe, relative URLs can't resolve, so we must fetch the
-// font files and embed them as base64 data URIs.
 async function inlineFontFaces() {
   const styleTags = [...document.querySelectorAll('style')]
   for (const styleEl of styleTags) {
     let text = styleEl.textContent || ''
-    // Find all @font-face blocks
     const fontFaceBlocks = [...text.matchAll(/@font-face\s*\{[^}]+\}/g)]
     if (fontFaceBlocks.length === 0) continue
 
@@ -232,14 +259,11 @@ async function inlineFontFaces() {
       let blockText = block[0]
       let newBlockText = blockText
 
-      // Find all url() references inside this @font-face block
       const urlMatches = [...blockText.matchAll(/url\(["']?([^"')]+)["']?\)/g)]
       for (const urlMatch of urlMatches) {
         let fontUrl = urlMatch[1]
-        // Skip data: URIs (already inlined)
         if (fontUrl.startsWith('data:')) continue
 
-        // Resolve relative URLs against the page origin
         try {
           if (fontUrl.startsWith('/')) {
             fontUrl = window.location.origin + fontUrl
@@ -247,19 +271,9 @@ async function inlineFontFaces() {
             fontUrl = new URL(fontUrl, window.location.href).href
           }
 
-          // Strip query string for MIME type detection
-          const cleanUrl = fontUrl.split('?')[0]
-          let mimeType = 'font/woff2'
-          if (cleanUrl.endsWith('.woff')) mimeType = 'font/woff'
-          else if (cleanUrl.endsWith('.ttf')) mimeType = 'font/ttf'
-          else if (cleanUrl.endsWith('.otf')) mimeType = 'font/otf'
-          else if (cleanUrl.endsWith('.eot')) mimeType = 'application/vnd.ms-fontobject'
-
-          const res = await fetch(fontUrl, { credentials: 'include' })
-          if (!res.ok) continue
-          const blob = await res.blob()
-          const dataUrl = await blobToDataUrl(blob)
-          // Replace original URL with data URI
+          const result = await fetchWithProxy(fontUrl, 'blob')
+          if (!result.ok) continue
+          const dataUrl = await blobToDataUrl(result.data)
           newBlockText = newBlockText.replace(urlMatch[0], 'url("' + dataUrl + '")')
         } catch (e) {
           // Could not fetch font — leave original URL in place
@@ -275,19 +289,15 @@ async function inlineFontFaces() {
 }
 
 // ─── Capture CSS custom properties set on root elements by JavaScript ───────
-// Returns a CSS string with :root { } and body { } blocks containing all
-// runtime-defined custom properties.
 function captureRuntimeCSSVars() {
   const blocks = []
 
-  // Capture vars from <html> element
   const htmlStyle = getComputedStyle(document.documentElement)
   const htmlVars = extractCSSVars(htmlStyle)
   if (htmlVars.length > 0) {
     blocks.push(':root {\n' + htmlVars.join(';\n') + ';\n}')
   }
 
-  // Capture vars from <body> element
   if (document.body) {
     const bodyStyle = getComputedStyle(document.body)
     const bodyVars = extractCSSVars(bodyStyle)
@@ -296,7 +306,6 @@ function captureRuntimeCSSVars() {
     }
   }
 
-  // Also capture vars from any element with a data-theme attribute
   document.querySelectorAll('[data-theme]').forEach(el => {
     if (el === document.documentElement || el === document.body) return
     const style = getComputedStyle(el)
@@ -312,8 +321,6 @@ function captureRuntimeCSSVars() {
 
 function extractCSSVars(computedStyle) {
   const vars = []
-  // getComputedStyle contains all properties including custom properties
-  // We need to iterate to find --* properties
   for (let i = 0; i < computedStyle.length; i++) {
     const prop = computedStyle[i]
     if (prop.startsWith('--')) {
@@ -352,13 +359,14 @@ async function inlineImages() {
       try {
         const dataUrl = await imageToDataUrl(img)
         if (dataUrl) { img.setAttribute('src', dataUrl); return }
-      } catch (e) { /* canvas failed */ }
+      } catch (e) { /* canvas tainted */ }
       try {
-        const res = await fetch(img.src, { credentials: 'include' })
-        const blob = await res.blob()
-        const dataUrl = await blobToDataUrl(blob)
-        img.setAttribute('src', dataUrl)
-      } catch (e) { /* fetch failed */ }
+        const result = await fetchWithProxy(img.src, 'blob')
+        if (result.ok) {
+          const dataUrl = await blobToDataUrl(result.data)
+          img.setAttribute('src', dataUrl)
+        }
+      } catch (e) { /* failed */ }
     }))
   }
 }
@@ -403,15 +411,136 @@ async function inlineComputedBackgroundImages() {
         const urlMatch = match.match(/url\(["']?(https?:\/\/[^"')]+)["']?\)/)
         if (!urlMatch || !urlMatch[1]) continue
         try {
-          const res = await fetch(urlMatch[1], { credentials: 'include' })
-          const blob = await res.blob()
-          const dataUrl = await blobToDataUrl(blob)
-          newBgImage = newBgImage.replace(urlMatch[1], dataUrl)
-        } catch (e) { /* fetch failed */ }
+          const result = await fetchWithProxy(urlMatch[1], 'blob')
+          if (result.ok) {
+            const dataUrl = await blobToDataUrl(result.data)
+            newBgImage = newBgImage.replace(urlMatch[1], dataUrl)
+          }
+        } catch (e) { /* failed */ }
       }
       if (newBgImage !== bgImage) {
         el.style.backgroundImage = newBgImage
       }
     } catch (e) { /* skip */ }
   }
+}
+
+// ─── Snapshot <canvas> elements to data URLs ────────────────────────────────
+// Called BEFORE cloning so we can read the live canvas pixels AND computed styles.
+function snapshotCanvasElements() {
+  const snapshots = []
+  const canvases = [...document.querySelectorAll('canvas')]
+  let idx = 0
+
+  for (const canvas of canvases) {
+    try {
+      // Skip zero-size canvases
+      if (!canvas.width || !canvas.height) continue
+      const rect = canvas.getBoundingClientRect()
+      if (rect.width === 0 || rect.height === 0) continue
+
+      const id = '__df_canvas_' + (idx++)
+      canvas.setAttribute('data-df-canvas-id', id)
+
+      // toDataURL may throw if the canvas is tainted (cross-origin drawn content)
+      let dataUrl
+      try {
+        dataUrl = canvas.toDataURL('image/png')
+      } catch (taintErr) {
+        console.debug('[Runthroo] canvas tainted, skipping:', taintErr.message)
+        continue
+      }
+
+      // Skip blank canvases (all transparent)
+      if (dataUrl.length < 200) continue
+
+      // Capture the COMPUTED styles so we can precisely replicate the layout.
+      // canvas.width/height = pixel buffer (2x on Retina), but rect = CSS pixels.
+      const computed = getComputedStyle(canvas)
+      snapshots.push({
+        id,
+        dataUrl,
+        // CSS display size (what the user actually sees) — NOT the buffer size
+        cssWidth: rect.width,
+        cssHeight: rect.height,
+        // Positioning — critical for Grafana's absolutely-positioned canvases
+        position: computed.position,
+        top: computed.top,
+        left: computed.left,
+        right: computed.right,
+        bottom: computed.bottom,
+        zIndex: computed.zIndex,
+        display: computed.display,
+        // Original inline style for fallback
+        inlineStyle: canvas.getAttribute('style') || '',
+      })
+    } catch (e) {
+      console.debug('[Runthroo] canvas snapshot skipped:', e)
+    }
+  }
+
+  console.log('[Runthroo] snapshotted', snapshots.length, 'canvas elements')
+  return snapshots
+}
+
+// ─── Replace cloned <canvas> with <img> snapshots ───────────────────────────
+// Called AFTER cloning. Swaps canvas nodes with pixel-perfect <img> elements
+// that preserve the exact visual size and positioning.
+function replaceCanvasWithImages(clone, snapshots) {
+  for (const snap of snapshots) {
+    const canvasEl = clone.querySelector('canvas[data-df-canvas-id="' + snap.id + '"]')
+    if (!canvasEl) continue
+
+    const img = clone.ownerDocument
+      ? clone.ownerDocument.createElement('img')
+      : document.createElement('img')
+
+    img.setAttribute('src', snap.dataUrl)
+    img.setAttribute('data-df-from-canvas', 'true')
+
+    // Preserve the className for CSS rule matching
+    if (canvasEl.className) img.className = canvasEl.className
+
+    // Build a precise style string from computed values.
+    // Use CSS pixel dimensions (not the 2x buffer) to prevent overflow.
+    const parts = []
+
+    // Exact CSS dimensions — this is the key fix for the stretching/overflow
+    parts.push('width: ' + snap.cssWidth + 'px')
+    parts.push('height: ' + snap.cssHeight + 'px')
+
+    // Preserve positioning so the image doesn't push text/legends around
+    if (snap.position && snap.position !== 'static') {
+      parts.push('position: ' + snap.position)
+      if (snap.top && snap.top !== 'auto') parts.push('top: ' + snap.top)
+      if (snap.left && snap.left !== 'auto') parts.push('left: ' + snap.left)
+      if (snap.right && snap.right !== 'auto') parts.push('right: ' + snap.right)
+      if (snap.bottom && snap.bottom !== 'auto') parts.push('bottom: ' + snap.bottom)
+    }
+
+    if (snap.zIndex && snap.zIndex !== 'auto') {
+      parts.push('z-index: ' + snap.zIndex)
+    }
+
+    // Preserve original display value (don't force display:block)
+    if (snap.display) {
+      parts.push('display: ' + snap.display)
+    }
+
+    img.setAttribute('style', parts.join('; '))
+
+    // Copy data attributes (except our temp ID)
+    Array.from(canvasEl.attributes).forEach(attr => {
+      if (attr.name.startsWith('data-') && attr.name !== 'data-df-canvas-id') {
+        img.setAttribute(attr.name, attr.value)
+      }
+    })
+
+    canvasEl.parentNode.replaceChild(img, canvasEl)
+  }
+
+  // Clean up any remaining canvas ID flags
+  clone.querySelectorAll('canvas[data-df-canvas-id]').forEach(c => {
+    c.removeAttribute('data-df-canvas-id')
+  })
 }
