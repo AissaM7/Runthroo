@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Runthroo — User Guide</title>
-    <meta name="description" content="Learn how to capture, edit, and share interactive product demos with Runthroo. Step-by-step user guide covering every feature.">
+    <meta name="description"
+        content="Learn how to capture, edit, and share interactive product demos with Runthroo. Step-by-step user guide covering every feature.">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="logo.png">
@@ -118,7 +119,7 @@
             margin-bottom: 16px;
         }
 
-        .chapter > p {
+        .chapter>p {
             color: var(--text-muted);
             font-size: 17px;
             line-height: 1.65;
@@ -292,9 +293,9 @@
                 <span>Runthroo</span>
             </div>
             <div class="nav-links">
-                <a href="index.html">Install</a>
+                <a href="index.html#features">Features</a>
                 <a href="docs.html" style="color: var(--text-main);">User Guide</a>
-                <a href="index.html#installation">Chrome Extension</a>
+                <a href="#installation">Install</a>
                 <a href="https://github.com/AissaM7/Runthroo" target="_blank" class="github-link">GitHub</a>
             </div>
         </div>
@@ -323,6 +324,8 @@
                     <a href="#hiding-elements">Hiding Elements</a>
                     <a href="#preview">Previewing Your Demo</a>
                     <a href="#exporting">Exporting &amp; Sharing</a>
+                    <a href="#installation">Installation Guide</a>
+                    <a href="#security">macOS Security Warning</a>
                 </div>
             </div>
         </div>
@@ -334,16 +337,20 @@
             <div class="chapter" id="capturing">
                 <div class="chapter-number">Chapter 1</div>
                 <h2>Capturing Pages</h2>
-                <p>Runthroo captures a perfect, pixel-accurate copy of any web page — complete with all styling, fonts, images, and layout. You can capture pages one at a time or record entire multi-step workflows.</p>
+                <p>Runthroo captures a perfect, pixel-accurate copy of any web page — complete with all styling, fonts,
+                    images, and layout. You can capture pages one at a time or record entire multi-step workflows.</p>
 
                 <div class="section">
                     <h3>Single Page Capture</h3>
-                    <p>Use this when you want to capture one specific screen — a dashboard, a settings page, a landing page, or any single view.</p>
+                    <p>Use this when you want to capture one specific screen — a dashboard, a settings page, a landing
+                        page, or any single view.</p>
                     <ol class="instruction-list">
                         <li>Open the page you want to capture in <strong>Google Chrome</strong>.</li>
-                        <li>Click the <strong>Runthroo extension icon</strong> in your browser toolbar (puzzle-piece icon → Runthroo).</li>
+                        <li>Click the <strong>Runthroo extension icon</strong> in your browser toolbar (puzzle-piece
+                            icon → Runthroo).</li>
                         <li>Click <strong>"Capture Current Page"</strong>.</li>
-                        <li>The extension will flash briefly, then the page snapshot is sent directly to the Runthroo desktop app. You're done.</li>
+                        <li>The extension will flash briefly, then the page snapshot is sent directly to the Runthroo
+                            desktop app. You're done.</li>
                     </ol>
 
                     <div class="screenshot-annotation">
@@ -357,23 +364,32 @@
 
                 <div class="section" id="recording">
                     <h3>Recording Multi-Step Demos</h3>
-                    <p>Use recording mode when you want to walk through a full user journey — clicking through multiple pages, navigating menus, or stepping through a workflow. Runthroo will automatically capture each page as you navigate.</p>
+                    <p>Use recording mode when you want to walk through a full user journey — clicking through multiple
+                        pages, navigating menus, or stepping through a workflow. Runthroo will automatically capture
+                        each page as you navigate.</p>
                     <ol class="instruction-list">
-                        <li>Click the <strong>Runthroo extension icon</strong> and press <strong>"Start Recording"</strong>.</li>
-                        <li>Navigate through your website normally. Visit each page, wait for it to fully load, then move on to the next.</li>
-                        <li>Runthroo captures each page automatically once it detects the content has settled (about 3 seconds of inactivity).</li>
-                        <li>When you've finished your walkthrough, click the extension icon again and press <strong>"Stop Recording"</strong>.</li>
+                        <li>Click the <strong>Runthroo extension icon</strong> and press <strong>"Start
+                                Recording"</strong>.</li>
+                        <li>Navigate through your website normally. Visit each page, wait for it to fully load, then
+                            move on to the next.</li>
+                        <li>Runthroo captures each page automatically once it detects the content has settled (about 3
+                            seconds of inactivity).</li>
+                        <li>When you've finished your walkthrough, click the extension icon again and press
+                            <strong>"Stop Recording"</strong>.</li>
                     </ol>
 
                     <div class="tip">
-                        <strong>Tip:</strong> Let each page fully load before navigating to the next one. Runthroo waits for the page to stabilize before capturing, so rushing between pages might result in incomplete snapshots.
+                        <strong>Tip:</strong> Let each page fully load before navigating to the next one. Runthroo waits
+                        for the page to stabilize before capturing, so rushing between pages might result in incomplete
+                        snapshots.
                     </div>
 
                     <div class="screenshot-annotation">
                         <div class="ss-icon">📸</div>
                         <div class="ss-text">
                             <span class="ss-label">Suggested screenshot</span>
-                            The extension popup in "recording" state, showing the active recording indicator and "Stop Recording" button
+                            The extension popup in "recording" state, showing the active recording indicator and "Stop
+                            Recording" button
                         </div>
                     </div>
                 </div>
@@ -385,14 +401,19 @@
             <div class="chapter" id="library">
                 <div class="chapter-number">Chapter 2</div>
                 <h2>The Capture Library</h2>
-                <p>Every captured page appears in the Library — your central hub for all screenshots. Think of it as a gallery of raw materials you'll use to build demos.</p>
+                <p>Every captured page appears in the Library — your central hub for all screenshots. Think of it as a
+                    gallery of raw materials you'll use to build demos.</p>
 
                 <div class="section">
                     <h3>Browsing Your Captures</h3>
-                    <p>Open the Runthroo desktop app and click <strong>Library</strong> in the top navigation bar. You'll see two sections:</p>
+                    <p>Open the Runthroo desktop app and click <strong>Library</strong> in the top navigation bar.
+                        You'll see two sections:</p>
                     <ol class="instruction-list">
-                        <li><strong>Platforms</strong> — Your captures are automatically grouped by the website or platform they came from. Each folder shows a thumbnail preview and the number of captures inside.</li>
-                        <li><strong>All Captures</strong> — A flat view of every page you've ever captured, sorted by most recent. Each card shows a thumbnail, the page title, and when it was captured.</li>
+                        <li><strong>Platforms</strong> — Your captures are automatically grouped by the website or
+                            platform they came from. Each folder shows a thumbnail preview and the number of captures
+                            inside.</li>
+                        <li><strong>All Captures</strong> — A flat view of every page you've ever captured, sorted by
+                            most recent. Each card shows a thumbnail, the page title, and when it was captured.</li>
                     </ol>
 
                     <div class="screenshot-annotation">
@@ -403,7 +424,9 @@
                         </div>
                     </div>
 
-                    <p>Use the <strong>search bar</strong> at the top to quickly find captures by name. You can also <strong>delete</strong> any capture you no longer need by hovering over its card and clicking the delete option.</p>
+                    <p>Use the <strong>search bar</strong> at the top to quickly find captures by name. You can also
+                        <strong>delete</strong> any capture you no longer need by hovering over its card and clicking
+                        the delete option.</p>
                 </div>
             </div>
 
@@ -413,12 +436,14 @@
             <div class="chapter" id="creating-demos">
                 <div class="chapter-number">Chapter 3</div>
                 <h2>Creating a Demo</h2>
-                <p>Demos are interactive presentations built from your captured pages. You pick the pages, set the order, and define how viewers navigate through them.</p>
+                <p>Demos are interactive presentations built from your captured pages. You pick the pages, set the
+                    order, and define how viewers navigate through them.</p>
 
                 <div class="section">
                     <h3>Starting a New Demo</h3>
                     <ol class="instruction-list">
-                        <li>Click <strong>"+ New Demo"</strong> in the Library view, <em>or</em> go to the <strong>Demos</strong> tab and click <strong>"Create Demo"</strong>.</li>
+                        <li>Click <strong>"+ New Demo"</strong> in the Library view, <em>or</em> go to the
+                            <strong>Demos</strong> tab and click <strong>"Create Demo"</strong>.</li>
                         <li>Give your demo a name (you can always rename it later).</li>
                         <li>You'll be taken to the <strong>Flow Editor</strong> where you can start adding pages.</li>
                     </ol>
@@ -427,8 +452,10 @@
                 <div class="section">
                     <h3>Adding Pages to Your Demo</h3>
                     <ol class="instruction-list">
-                        <li>In the Flow Editor, click <strong>"+ Add Page"</strong> in the timeline at the bottom of the screen.</li>
-                        <li>A panel will appear showing all of your available captures. Click on the one you want to add.</li>
+                        <li>In the Flow Editor, click <strong>"+ Add Page"</strong> in the timeline at the bottom of the
+                            screen.</li>
+                        <li>A panel will appear showing all of your available captures. Click on the one you want to
+                            add.</li>
                         <li>The page gets added as the next step in your demo. Repeat to add more steps.</li>
                         <li>To <strong>reorder steps</strong>, drag and drop the step thumbnails in the timeline.</li>
                     </ol>
@@ -437,7 +464,8 @@
                         <div class="ss-icon">📸</div>
                         <div class="ss-text">
                             <span class="ss-label">Suggested screenshot</span>
-                            The Flow Editor showing the main canvas with a captured page, and the step timeline at the bottom
+                            The Flow Editor showing the main canvas with a captured page, and the step timeline at the
+                            bottom
                         </div>
                     </div>
                 </div>
@@ -449,31 +477,44 @@
             <div class="chapter" id="editor">
                 <div class="chapter-number">Chapter 4</div>
                 <h2>The Flow Editor</h2>
-                <p>The Flow Editor is your workspace for customizing each step of your demo. It has three main areas: a large <strong>canvas preview</strong> in the center, a <strong>timeline</strong> at the bottom, and the <strong>tools panel</strong> on the right.</p>
+                <p>The Flow Editor is your workspace for customizing each step of your demo. It has three main areas: a
+                    large <strong>canvas preview</strong> in the center, a <strong>timeline</strong> at the bottom, and
+                    the <strong>tools panel</strong> on the right.</p>
 
                 <div class="section">
                     <h3>Selecting a Step</h3>
-                    <p>Click any step in the <strong>timeline</strong> at the bottom of the screen to load it into the canvas. The tools panel on the right will update to show settings for the selected step — its name, transition style, and all available editing tools.</p>
+                    <p>Click any step in the <strong>timeline</strong> at the bottom of the screen to load it into the
+                        canvas. The tools panel on the right will update to show settings for the selected step — its
+                        name, transition style, and all available editing tools.</p>
                 </div>
 
                 <div class="section">
                     <h3>Step Settings</h3>
                     <p>On the right panel you can:</p>
                     <ol class="instruction-list">
-                        <li><strong>Name your step</strong> — Give each step a descriptive label (e.g., "Dashboard Overview", "Settings Page") to help you organize your flow and identify steps in branches.</li>
-                        <li><strong>Choose a transition</strong> — Select how the viewer moves between steps: <strong>Instant</strong> (immediate switch), <strong>Slide</strong> (horizontal slide animation), or <strong>Fade</strong> (smooth crossfade).</li>
+                        <li><strong>Name your step</strong> — Give each step a descriptive label (e.g., "Dashboard
+                            Overview", "Settings Page") to help you organize your flow and identify steps in branches.
+                        </li>
+                        <li><strong>Choose a transition</strong> — Select how the viewer moves between steps:
+                            <strong>Instant</strong> (immediate switch), <strong>Slide</strong> (horizontal slide
+                            animation), or <strong>Fade</strong> (smooth crossfade).</li>
                     </ol>
                 </div>
 
                 <!-- Click Zones -->
                 <div class="section" id="click-zones">
                     <h3>Adding Click Zones</h3>
-                    <p>Click zones are the core interactive element in every demo. They tell your viewer exactly where to click to advance to the next step — a button, a menu item, a nav link, or any UI element.</p>
+                    <p>Click zones are the core interactive element in every demo. They tell your viewer exactly where
+                        to click to advance to the next step — a button, a menu item, a nav link, or any UI element.</p>
                     <ol class="instruction-list">
-                        <li>Select a step in the timeline, then click <strong>"+ Add Click Zone"</strong> in the right panel.</li>
-                        <li>Draw a rectangle over the area you want to be clickable by clicking and dragging on the canvas.</li>
-                        <li>The zone will appear as a subtle highlighted overlay. When viewers click inside it, they advance to the next step.</li>
-                        <li>If a viewer clicks the <strong>wrong area</strong>, a gentle pulse animation plays on the correct click zone — guiding them without being intrusive.</li>
+                        <li>Select a step in the timeline, then click <strong>"+ Add Click Zone"</strong> in the right
+                            panel.</li>
+                        <li>Draw a rectangle over the area you want to be clickable by clicking and dragging on the
+                            canvas.</li>
+                        <li>The zone will appear as a subtle highlighted overlay. When viewers click inside it, they
+                            advance to the next step.</li>
+                        <li>If a viewer clicks the <strong>wrong area</strong>, a gentle pulse animation plays on the
+                            correct click zone — guiding them without being intrusive.</li>
                     </ol>
 
                     <div class="screenshot-annotation">
@@ -485,19 +526,25 @@
                     </div>
 
                     <div class="tip">
-                        <strong>Tip:</strong> You can add multiple click zones to a single step if there are several valid interaction points. Each zone can navigate to a different step (see Branching below).
+                        <strong>Tip:</strong> You can add multiple click zones to a single step if there are several
+                        valid interaction points. Each zone can navigate to a different step (see Branching below).
                     </div>
                 </div>
 
                 <!-- Branching -->
                 <div class="section" id="branching">
                     <h3>Adding Branches</h3>
-                    <p>Branching lets you create non-linear demos where different click zones lead to different steps. This is perfect for showing alternate paths — like "What happens if the user clicks Settings vs. Profile?"</p>
+                    <p>Branching lets you create non-linear demos where different click zones lead to different steps.
+                        This is perfect for showing alternate paths — like "What happens if the user clicks Settings vs.
+                        Profile?"</p>
                     <ol class="instruction-list">
                         <li>Add a click zone to your step (see above).</li>
-                        <li>After drawing the zone, a popover appears. Under <strong>"Navigate to"</strong>, choose which step this click zone should jump to.</li>
-                        <li>By default, click zones advance to the next step in order. Change the target to create a branch.</li>
-                        <li>You can have multiple click zones on one step, each leading to a different destination — creating a decision tree your viewers can explore.</li>
+                        <li>After drawing the zone, a popover appears. Under <strong>"Navigate to"</strong>, choose
+                            which step this click zone should jump to.</li>
+                        <li>By default, click zones advance to the next step in order. Change the target to create a
+                            branch.</li>
+                        <li>You can have multiple click zones on one step, each leading to a different destination —
+                            creating a decision tree your viewers can explore.</li>
                     </ol>
 
                     <div class="screenshot-annotation">
@@ -512,47 +559,56 @@
                 <!-- Blur Zones -->
                 <div class="section" id="blur-zones">
                     <h3>Redacting Sensitive Information</h3>
-                    <p>Use blur zones to hide sensitive data like customer names, API keys, revenue numbers, or anything you don't want visible in the demo. The area gets covered with a frosted-glass blur effect.</p>
+                    <p>Use blur zones to hide sensitive data like customer names, API keys, revenue numbers, or anything
+                        you don't want visible in the demo. The area gets covered with a frosted-glass blur effect.</p>
                     <ol class="instruction-list">
                         <li>Select a step, then click <strong>"Add Blur Zone"</strong> in the right panel.</li>
                         <li>Draw a rectangle over the sensitive area by clicking and dragging.</li>
-                        <li>The area will instantly be covered with a blur effect. You can resize or reposition it by dragging the edges.</li>
+                        <li>The area will instantly be covered with a blur effect. You can resize or reposition it by
+                            dragging the edges.</li>
                         <li>Add as many blur zones as you need — they're independent and can overlap.</li>
                     </ol>
 
                     <div class="tip">
-                        <strong>Tip:</strong> Blur zones are exported into the final HTML, so sensitive data stays hidden even when the demo is shared externally.
+                        <strong>Tip:</strong> Blur zones are exported into the final HTML, so sensitive data stays
+                        hidden even when the demo is shared externally.
                     </div>
                 </div>
 
                 <!-- Text Editing -->
                 <div class="section" id="text-editing">
                     <h3>Editing Text</h3>
-                    <p>Need to change a headline, swap out a customer name, or update placeholder text? Text editing lets you click on any text element in the captured page and change it directly.</p>
+                    <p>Need to change a headline, swap out a customer name, or update placeholder text? Text editing
+                        lets you click on any text element in the captured page and change it directly.</p>
                     <ol class="instruction-list">
                         <li>Click <strong>"Edit Text"</strong> in the right panel to enter text editing mode.</li>
                         <li>Click on any text element in the captured page — a heading, a paragraph, a label.</li>
                         <li>The text becomes editable. Type your replacement text.</li>
-                        <li>Click outside the text to commit the change. Click "Edit Text" again to exit editing mode.</li>
+                        <li>Click outside the text to commit the change. Click "Edit Text" again to exit editing mode.
+                        </li>
                     </ol>
                 </div>
 
                 <!-- Hiding Elements -->
                 <div class="section" id="hiding-elements">
                     <h3>Hiding Elements</h3>
-                    <p>Sometimes you want to completely remove a UI element from view — an ad banner, a debug toolbar, a notification popup, or anything that shouldn't appear in the demo.</p>
+                    <p>Sometimes you want to completely remove a UI element from view — an ad banner, a debug toolbar, a
+                        notification popup, or anything that shouldn't appear in the demo.</p>
                     <ol class="instruction-list">
                         <li>Click <strong>"Hide Elements"</strong> in the right panel to enter element picker mode.</li>
                         <li>Hover over the page — elements will highlight as you move your cursor.</li>
                         <li>Click on any element to hide it. It will instantly disappear from the preview.</li>
-                        <li>Click "Hide Elements" again to exit the mode. Hidden elements remain hidden in the exported demo.</li>
+                        <li>Click "Hide Elements" again to exit the mode. Hidden elements remain hidden in the exported
+                            demo.</li>
                     </ol>
                 </div>
 
                 <!-- Undo -->
                 <div class="section">
                     <h3>Undoing Changes</h3>
-                    <p>Made a mistake? Every action in the editor can be undone. Click the <strong>Undo</strong> button in the top bar, or press <kbd>⌘</kbd> + <kbd>Z</kbd>. Undo works across all editing tools — click zones, blur zones, text edits, and hidden elements.</p>
+                    <p>Made a mistake? Every action in the editor can be undone. Click the <strong>Undo</strong> button
+                        in the top bar, or press <kbd>⌘</kbd> + <kbd>Z</kbd>. Undo works across all editing tools —
+                        click zones, blur zones, text edits, and hidden elements.</p>
                 </div>
             </div>
 
@@ -562,11 +618,14 @@
             <div class="chapter" id="preview">
                 <div class="chapter-number">Chapter 5</div>
                 <h2>Previewing &amp; Sharing</h2>
-                <p>Once you've finished editing, preview your demo exactly as your audience will experience it — then export a single HTML file to share anywhere.</p>
+                <p>Once you've finished editing, preview your demo exactly as your audience will experience it — then
+                    export a single HTML file to share anywhere.</p>
 
                 <div class="section">
                     <h3>Presentation Mode</h3>
-                    <p>Click the green <strong>"Present"</strong> button in the top bar to enter full-screen presentation mode. This is an exact preview of what your recipient will see when they open the exported file.</p>
+                    <p>Click the green <strong>"Present"</strong> button in the top bar to enter full-screen
+                        presentation mode. This is an exact preview of what your recipient will see when they open the
+                        exported file.</p>
                     <ol class="instruction-list">
                         <li>Navigate through your demo by clicking the click zones you defined.</li>
                         <li>Watch the transitions play between steps.</li>
@@ -578,24 +637,109 @@
                         <div class="ss-icon">📸</div>
                         <div class="ss-text">
                             <span class="ss-label">Suggested screenshot</span>
-                            The presentation mode view showing a full-screen captured page with the subtle click zone indicator
+                            The presentation mode view showing a full-screen captured page with the subtle click zone
+                            indicator
                         </div>
                     </div>
                 </div>
 
                 <div class="section" id="exporting">
                     <h3>Exporting Your Demo</h3>
-                    <p>Click the blue <strong>"Export"</strong> button in the top bar to generate your demo as a standalone HTML file.</p>
+                    <p>Click the blue <strong>"Export"</strong> button in the top bar to generate your demo as a
+                        standalone HTML file.</p>
                     <ol class="instruction-list">
                         <li>Choose a location on your computer to save the file.</li>
-                        <li>Runthroo generates a <strong>single, self-contained .html file</strong> — all images, styles, and interactivity are embedded inside.</li>
-                        <li>Share the file via email, Slack, Google Drive, Notion — or any way you'd share a regular document.</li>
-                        <li>Your recipient opens it in <strong>any browser</strong>. No install, no login, no internet connection required.</li>
+                        <li>Runthroo generates a <strong>single, self-contained .html file</strong> — all images,
+                            styles, and interactivity are embedded inside.</li>
+                        <li>Share the file via email, Slack, Google Drive, Notion — or any way you'd share a regular
+                            document.</li>
+                        <li>Your recipient opens it in <strong>any browser</strong>. No install, no login, no internet
+                            connection required.</li>
                     </ol>
 
                     <div class="tip">
-                        <strong>Tip:</strong> The exported file is completely offline-capable. It works even if the recipient has no internet access, making it ideal for sales demos in conference rooms, on planes, or in areas with poor connectivity.
+                        <strong>Tip:</strong> The exported file is completely offline-capable. It works even if the
+                        recipient has no internet access, making it ideal for sales demos in conference rooms, on
+                        planes, or in areas with poor connectivity.
                     </div>
+                </div>
+            </div>
+
+            <div class="chapter-divider"></div>
+
+            <!-- ─── Chapter 6: Installation ─── -->
+            <div class="chapter" id="installation">
+                <div class="chapter-number">Chapter 6</div>
+                <h2>Installation Guide</h2>
+                <p>Runthroo is distributed as a compiled macOS native application for optimized performance.</p>
+
+                <div class="section">
+                    <h3>1. Download & Install the Application</h3>
+                    <p>Navigate to the <a
+                            href="https://github.com/AissaM7/Runthroo/releases/download/v2.0.0/Runthroo-2.0.0-arm64.dmg"
+                            class="text-link">latest version download</a>.</p>
+                    <p>Download the applicable <code>.dmg</code> file, mount the image, and drag the Runthroo native
+                        binary into your Applications directory.</p>
+                </div>
+
+                <div class="section">
+                    <h3>2. Setup the Capture Extension</h3>
+                    <p>The companion Chrome extension handles DOM serialization and CSS extraction, automatically
+                        transmitting the captured configurations to the local application.</p>
+                    <ol class="instruction-list">
+                        <li>Download the
+                            <code><a href="runthroo-extension.zip" class="text-link" download>runthroo-extension.zip</a></code>
+                            archive and extract its full contents.</li>
+                        <li>In Google Chrome, navigate to <code>chrome://extensions</code>.</li>
+                        <li>Enable <strong>Developer mode</strong> via the top-right corner interface.</li>
+                        <li>Click <strong>Load unpacked</strong> and select the directory containing the extracted
+                            extension payload.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="chapter-divider"></div>
+
+            <!-- ─── Chapter 7: macOS Security ─── -->
+            <div class="chapter" id="security">
+                <div class="chapter-number">Chapter 7</div>
+                <h2>macOS Security Warning</h2>
+                <p>When you download Runthroo from the GitHub Releases page, macOS will likely block it from opening
+                    since it's not distributed through the App Store. You'll see a dialog that says <strong>"Runthroo"
+                        Not Opened</strong> with a warning that Apple could not verify the app. <em>This is completely
+                        normal for apps downloaded directly from GitHub.</em></p>
+
+                <p style="margin-top: 12px; font-weight: 500; margin-bottom: 24px;">Here's how to open it:</p>
+
+                <div class="section">
+                    <h3>Step 1: Click "Done" on the Warning Dialog</h3>
+                    <p>When you first try to open Runthroo, you'll see this warning. Click <strong>Done</strong> — don't
+                        click "Move to Trash".</p>
+                    <img src="step1-not-opened.png" alt="macOS Runthroo Not Opened dialog"
+                        style="display: block; max-width: 360px; border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
+                </div>
+
+                <div class="section">
+                    <h3>Step 2: Open Privacy &amp; Security Settings</h3>
+                    <p>Open <strong>System Settings → Privacy &amp; Security</strong>. Scroll down to the Security
+                        section. You'll see a message that says "Runthroo" was blocked to protect your Mac. Click the
+                        <strong>Open Anyway</strong> button.</p>
+                    <img src="step2-privacy-security.png"
+                        alt="macOS Privacy and Security settings showing Open Anyway button"
+                        style="display: block; max-width: 680px; border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
+                </div>
+
+                <div class="section">
+                    <h3>Step 3: Confirm "Open Anyway"</h3>
+                    <p>macOS will show one final confirmation dialog. Click <strong>Open Anyway</strong> to launch
+                        Runthroo.</p>
+                    <img src="step3-open-anyway.png" alt="macOS Open Runthroo confirmation dialog"
+                        style="display: block; max-width: 360px; border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
+                </div>
+
+                <div class="tip">
+                    <strong>Tip:</strong> After doing this once, macOS will remember your choice and Runthroo will open
+                    normally from then on.
                 </div>
             </div>
 
@@ -618,4 +762,3 @@
 </body>
 
 </html>
-
