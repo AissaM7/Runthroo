@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runthroo — User Guide</title>
+    <meta name="description" content="Learn how to capture, edit, and share interactive product demos with Runthroo. Step-by-step user guide covering every feature.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <style>
+        /* ━━━ Docs-specific Styles ━━━ */
+        .docs-hero {
+            padding: 140px 24px 60px;
+            text-align: center;
+            position: relative;
+        }
+
+        .docs-hero h1 {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            background: linear-gradient(180deg, #FFFFFF 0%, #A1A1A6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .docs-hero p {
+            font-size: 20px;
+            color: var(--text-muted);
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        /* ━━━ Table of Contents ━━━ */
+        .toc {
+            max-width: 800px;
+            margin: 0 auto 80px;
+            padding: 0 24px;
+        }
+
+        .toc-inner {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 32px 36px;
+        }
+
+        .toc-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 40px;
+        }
+
+        .toc-grid a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 0;
+            transition: color 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toc-grid a::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            flex-shrink: 0;
+        }
+
+        .toc-grid a:hover {
+            color: var(--text-main);
+        }
+
+        /* ━━━ Guide Content ━━━ */
+        .guide {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px 120px;
+        }
+
+        /* Chapter headers */
+        .chapter {
+            margin-bottom: 72px;
+        }
+
+        .chapter-number {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .chapter h2 {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+
+        .chapter > p {
+            color: var(--text-muted);
+            font-size: 17px;
+            line-height: 1.65;
+            margin-bottom: 40px;
+        }
+
+        /* Subsection */
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section h3 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .section p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .section p strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        /* Ordered instruction lists */
+        .instruction-list {
+            list-style: none;
+            counter-reset: step-counter;
+            padding: 0;
+            margin: 0 0 24px;
+        }
+
+        .instruction-list li {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
+
+        .instruction-list li::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 1px;
+            width: 26px;
+            height: 26px;
+            background: rgba(10, 132, 255, 0.08);
+            border: 1px solid rgba(10, 132, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .instruction-list li strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        /* Screenshot placeholder */
+        .screenshot-annotation {
+            background: rgba(10, 132, 255, 0.04);
+            border: 1px dashed rgba(10, 132, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 13px;
+            color: rgba(10, 132, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .screenshot-annotation .ss-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(10, 132, 255, 0.08);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .screenshot-annotation .ss-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .screenshot-annotation .ss-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            opacity: 0.6;
+        }
+
+        /* Tip callouts */
+        .tip {
+            background: rgba(48, 209, 88, 0.04);
+            border-left: 3px solid rgba(48, 209, 88, 0.3);
+            border-radius: 0 10px 10px 0;
+            padding: 16px 20px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .tip strong {
+            color: #30d158;
+            font-weight: 600;
+        }
+
+        /* Divider between chapters */
+        .chapter-divider {
+            height: 1px;
+            background: var(--glass-border);
+            margin: 72px 0;
+        }
+
+        /* Keyboard shortcut badges */
+        kbd {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 2px 7px;
+            font-size: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Mono", monospace;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .docs-hero h1 {
+                font-size: 36px;
+            }
+
+            .toc-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chapter h2 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="glass-nav">
+        <div class="nav-content">
+            <div class="logo">
+                <img src="logo.png" alt="Runthroo" width="24" height="24" style="border-radius: 5px;">
+                <span>Runthroo</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Install</a>
+                <a href="docs.html" style="color: var(--text-main);">User Guide</a>
+                <a href="index.html#installation">Chrome Extension</a>
+                <a href="https://github.com/AissaM7/Runthroo" target="_blank" class="github-link">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="docs-hero">
+            <h1>User Guide</h1>
+            <p>Everything you need to create, edit, and share interactive product demos with Runthroo.</p>
+        </section>
+
+        <!-- ━━━ Table of Contents ━━━ -->
+        <div class="toc">
+            <div class="toc-inner">
+                <div class="toc-label">In this guide</div>
+                <div class="toc-grid">
+                    <a href="#capturing">Capturing Pages</a>
+                    <a href="#recording">Recording Multi-Step Demos</a>
+                    <a href="#library">The Capture Library</a>
+                    <a href="#creating-demos">Creating a Demo</a>
+                    <a href="#editor">The Flow Editor</a>
+                    <a href="#click-zones">Adding Click Zones</a>
+                    <a href="#branching">Adding Branches</a>
+                    <a href="#blur-zones">Redacting Sensitive Info</a>
+                    <a href="#text-editing">Editing Text</a>
+                    <a href="#hiding-elements">Hiding Elements</a>
+                    <a href="#preview">Previewing Your Demo</a>
+                    <a href="#exporting">Exporting &amp; Sharing</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ━━━ Guide Content ━━━ -->
+        <div class="guide">
+
+            <!-- ─── Chapter 1: Capturing ─── -->
+            <div class="chapter" id="capturing">
+                <div class="chapter-number">Chapter 1</div>
+                <h2>Capturing Pages</h2>
+                <p>Runthroo captures a perfect, pixel-accurate copy of any web page — complete with all styling, fonts, images, and layout. You can capture pages one at a time or record entire multi-step workflows.</p>
+
+                <div class="section">
+                    <h3>Single Page Capture</h3>
+                    <p>Use this when you want to capture one specific screen — a dashboard, a settings page, a landing page, or any single view.</p>
+                    <ol class="instruction-list">
+                        <li>Open the page you want to capture in <strong>Google Chrome</strong>.</li>
+                        <li>Click the <strong>Runthroo extension icon</strong> in your browser toolbar (puzzle-piece icon → Runthroo).</li>
+                        <li>Click <strong>"Capture Current Page"</strong>.</li>
+                        <li>The extension will flash briefly, then the page snapshot is sent directly to the Runthroo desktop app. You're done.</li>
+                    </ol>
+
+                    <div class="screenshot-annotation">
+                        <div class="ss-icon">📸</div>
+                        <div class="ss-text">
+                            <span class="ss-label">Suggested screenshot</span>
+                            The Chrome extension popup showing the "Capture Current Page" button
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" id="recording">
+                    <h3>Recording Multi-Step Demos</h3>
+                    <p>Use recording mode when you want to walk through a full user journey — clicking through multiple pages, navigating menus, or stepping through a workflow. Runthroo will automatically capture each page as you navigate.</p>
+                    <ol class="instruction-list">
+                        <li>Click the <strong>Runthroo extension icon</strong> and press <strong>"Start Recording"</strong>.</li>
+                        <li>Navigate through your website normally. Visit each page, wait for it to fully load, then move on to the next.</li>
+                        <li>Runthroo captures each page automatically once it detects the content has settled (about 3 seconds of inactivity).</li>
+                        <li>When you've finished your walkthrough, click the extension icon again and press <strong>"Stop Recording"</strong>.</li>
+                    </ol>
+
+                    <div class="tip">
+                        <strong>Tip:</strong> Let each page fully load before navigating to the next one. Runthroo waits for the page to stabilize before capturing, so rushing between pages might result in incomplete snapshots.
+                    </div>
+
+                    <div class="screenshot-annotation">
+                        <div class="ss-icon">📸</div>
+                        <div class="ss-text">
+                            <span class="ss-label">Suggested screenshot</span>
+                            The extension popup in "recording" state, showing the active recording indicator and "Stop Recording" button
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chapter-divider"></div>
+
+            <!-- ─── Chapter 2: Library ─── -->
+            <div class="chapter" id="library">
+                <div class="chapter-number">Chapter 2</div>
+                <h2>The Capture Library</h2>
+                <p>Every captured page appears in the Library — your central hub for all screenshots. Think of it as a gallery of raw materials you'll use to build demos.</p>
+
+                <div class="section">
+                    <h3>Browsing Your Captures</h3>
+                    <p>Open the Runthroo desktop app and click <strong>Library</strong> in the top navigation bar. You'll see two sections:</p>
+                    <ol class="instruction-list">
+                        <li><strong>Platforms</strong> — Your captures are automatically grouped by the website or platform they came from. Each folder shows a thumbnail preview and the number of captures inside.</li>
+                        <li><strong>All Captures</strong> — A flat view of every page you've ever captured, sorted by most recent. Each card shows a thumbnail, the page title, and when it was captured.</li>
+                    </ol>
+
+                    <div class="screenshot-annotation">
+                        <div class="ss-icon">📸</div>
+                        <div class="ss-text">
+                            <span class="ss-label">Suggested screenshot</span>
+                            The Library view showing platform folders and the "All Captures" grid with capture cards
+                        </div>
+                    </div>
+
+                    <p>Use the <strong>search bar</strong> at the top to quickly find captures by name. You can also <strong>delete</strong> any capture you no longer need by hovering over its card and clicking the delete option.</p>
+                </div>
+            </div>
+
+            <div class="chapter-divider"></div>
+
+            <!-- ─── Chapter 3: Creating Demos ─── -->
+            <div class="chapter" id="creating-demos">
+                <div class="chapter-number">Chapter 3</div>
+                <h2>Creating a Demo</h2>
+                <p>Demos are interactive presentations built from your captured pages. You pick the pages, set the order, and define how viewers navigate through them.</p>
+
+                <div class="section">
+                    <h3>Starting a New Demo</h3>
+                    <ol class="instruction-list">
+                        <li>Click <strong>"+ New Demo"</strong> in the Library view, <em>or</em> go to the <strong>Demos</strong> tab and click <strong>"Create Demo"</strong>.</li>
+                        <li>Give your demo a name (you can always rename it later).</li>
+                        <li>You'll be taken to the <strong>Flow Editor</strong> where you can start adding pages.</li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h3>Adding Pages to Your Demo</h3>
+                    <ol class="instruction-list">
+                        <li>In the Flow Editor, click <strong>"+ Add Page"</strong> in the timeline at the bottom of the screen.</li>
+                        <li>A panel will appear showing all of your available captures. Click on the one you want to add.</li>
+                        <li>The page gets added as the next step in your demo. Repeat to add more steps.</li>
+                        <li>To <strong>reorder steps</strong>, drag and drop the step thumbnails in the timeline.</li>
+                    </ol>
+
+                    <div class="screenshot-annotation">
+                        <div class="ss-icon">📸</div>
+                        <div class="ss-text">
+                            <span class="ss-label">Suggested screenshot</span>
+                            The Flow Editor showing the main canvas with a captured page, and the step timeline at the bottom
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chapter-divider"></div>
+
+            <!-- ─── Chapter 4: The Editor ─── -->
+            <div class="chapter" id="editor">
+                <div class="chapter-number">Chapter 4</div>
+                <h2>The Flow Editor</h2>
+                <p>The Flow Editor is your workspace for customizing each step of your demo. It has three main areas: a large <strong>canvas preview</strong> in the center, a <strong>timeline</strong> at the bottom, and the <strong>tools panel</strong> on the right.</p>
+
+                <div class="section">
+                    <h3>Selecting a Step</h3>
+                    <p>Click any step in the <strong>timeline</strong> at the bottom of the screen to load it into the canvas. The tools panel on the right will update to show settings for the selected step — its name, transition style, and all available editing tools.</p>
+                </div>
+
+                <div class="section">
+                    <h3>Step Settings</h3>
+                    <p>On the right panel you can:</p>
+                    <ol class="instruction-list">
+                        <li><strong>Name your step</strong> — Give each step a descriptive label (e.g., "Dashboard Overview", "Settings Page") to help you organize your flow and identify steps in branches.</li>
+                        <li><strong>Choose a transition</strong> — Select how the viewer moves between steps: <strong>Instant</strong> (immediate switch), <strong>Slide</strong> (horizontal slide animation), or <strong>Fade</strong> (smooth crossfade).</li>
+                    </ol>
+                </div>
+
+                <!-- Click Zones -->
+                <div class="section" id="click-zones">
+                    <h3>Adding Click Zones</h3>
+                    <p>Click zones are the core interactive element in every demo. They tell your viewer exactly where to click to advance to the next step — a button, a menu item, a nav link, or any UI element.</p>
+                    <ol class="instruction-list">
+                        <li>Select a step in the timeline, then click <strong>"+ Add Click Zone"</strong> in the right panel.</li>
+                        <li>Draw a rectangle over the area you want to be clickable by clicking and dragging on the canvas.</li>
+                        <li>The zone will appear as a subtle highlighted overlay. When viewers click inside it, they advance to the next step.</li>
+                        <li>If a viewer clicks the <strong>wrong area</strong>, a gentle pulse animation plays on the correct click zone — guiding them without being intrusive.</li>
+                    </ol>
+
+                    <div class="screenshot-annotation">
+                        <div class="ss-icon">📸</div>
+                        <div class="ss-text">
+                            <span class="ss-label">Suggested screenshot</span>
+                            A step with a visible click zone drawn over a button, showing the blue highlight overlay
+                        </div>
+                    </div>
+
+                    <div class="tip">
+                        <strong>Tip:</strong> You can add multiple click zones to a single step if there are several valid interaction points. Each zone can navigate to a different step (see Branching below).
+                    </div>
+                </div>
+
+                <!-- Branching -->
+                <div class="section" id="branching">
+                    <h3>Adding Branches</h3>
+                    <p>Branching lets you create non-linear demos where different click zones lead to different steps. This is perfect for showing alternate paths — like "What happens if the user clicks Settings vs. Profile?"</p>
+                    <ol class="instruction-list">
+                        <li>Add a click zone to your step (see above).</li>
+                        <li>After drawing the zone, a popover appears. Under <strong>"Navigate to"</strong>, choose which step this click zone should jump to.</li>
+                        <li>By default, click zones advance to the next step in order. Change the target to create a branch.</li>
+                        <li>You can have multiple click zones on one step, each leading to a different destination — creating a decision tree your viewers can explore.</li>
+                    </ol>
+
+                    <div class="screenshot-annotation">
+                        <div class="ss-icon">📸</div>
+                        <div class="ss-text">
+                            <span class="ss-label">Suggested screenshot</span>
+                            The click zone popover showing the "Navigate to" dropdown with available step names listed
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blur Zones -->
+                <div class="section" id="blur-zones">
+                    <h3>Redacting Sensitive Information</h3>
+                    <p>Use blur zones to hide sensitive data like customer names, API keys, revenue numbers, or anything you don't want visible in the demo. The area gets covered with a frosted-glass blur effect.</p>
+                    <ol class="instruction-list">
+                        <li>Select a step, then click <strong>"Add Blur Zone"</strong> in the right panel.</li>
+                        <li>Draw a rectangle over the sensitive area by clicking and dragging.</li>
+                        <li>The area will instantly be covered with a blur effect. You can resize or reposition it by dragging the edges.</li>
+                        <li>Add as many blur zones as you need — they're independent and can overlap.</li>
+                    </ol>
+
+                    <div class="tip">
+                        <strong>Tip:</strong> Blur zones are exported into the final HTML, so sensitive data stays hidden even when the demo is shared externally.
+                    </div>
+                </div>
+
+                <!-- Text Editing -->
+                <div class="section" id="text-editing">
+                    <h3>Editing Text</h3>
+                    <p>Need to change a headline, swap out a customer name, or update placeholder text? Text editing lets you click on any text element in the captured page and change it directly.</p>
+                    <ol class="instruction-list">
+                        <li>Click <strong>"Edit Text"</strong> in the right panel to enter text editing mode.</li>
+                        <li>Click on any text element in the captured page — a heading, a paragraph, a label.</li>
+                        <li>The text becomes editable. Type your replacement text.</li>
+                        <li>Click outside the text to commit the change. Click "Edit Text" again to exit editing mode.</li>
+                    </ol>
+                </div>
+
+                <!-- Hiding Elements -->
+                <div class="section" id="hiding-elements">
+                    <h3>Hiding Elements</h3>
+                    <p>Sometimes you want to completely remove a UI element from view — an ad banner, a debug toolbar, a notification popup, or anything that shouldn't appear in the demo.</p>
+                    <ol class="instruction-list">
+                        <li>Click <strong>"Hide Elements"</strong> in the right panel to enter element picker mode.</li>
+                        <li>Hover over the page — elements will highlight as you move your cursor.</li>
+                        <li>Click on any element to hide it. It will instantly disappear from the preview.</li>
+                        <li>Click "Hide Elements" again to exit the mode. Hidden elements remain hidden in the exported demo.</li>
+                    </ol>
+                </div>
+
+                <!-- Undo -->
+                <div class="section">
+                    <h3>Undoing Changes</h3>
+                    <p>Made a mistake? Every action in the editor can be undone. Click the <strong>Undo</strong> button in the top bar, or press <kbd>⌘</kbd> + <kbd>Z</kbd>. Undo works across all editing tools — click zones, blur zones, text edits, and hidden elements.</p>
+                </div>
+            </div>
+
+            <div class="chapter-divider"></div>
+
+            <!-- ─── Chapter 5: Preview & Export ─── -->
+            <div class="chapter" id="preview">
+                <div class="chapter-number">Chapter 5</div>
+                <h2>Previewing &amp; Sharing</h2>
+                <p>Once you've finished editing, preview your demo exactly as your audience will experience it — then export a single HTML file to share anywhere.</p>
+
+                <div class="section">
+                    <h3>Presentation Mode</h3>
+                    <p>Click the green <strong>"Present"</strong> button in the top bar to enter full-screen presentation mode. This is an exact preview of what your recipient will see when they open the exported file.</p>
+                    <ol class="instruction-list">
+                        <li>Navigate through your demo by clicking the click zones you defined.</li>
+                        <li>Watch the transitions play between steps.</li>
+                        <li>Test any branches to make sure they lead to the correct steps.</li>
+                        <li>Press <kbd>Esc</kbd> to exit presentation mode and return to the editor.</li>
+                    </ol>
+
+                    <div class="screenshot-annotation">
+                        <div class="ss-icon">📸</div>
+                        <div class="ss-text">
+                            <span class="ss-label">Suggested screenshot</span>
+                            The presentation mode view showing a full-screen captured page with the subtle click zone indicator
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" id="exporting">
+                    <h3>Exporting Your Demo</h3>
+                    <p>Click the blue <strong>"Export"</strong> button in the top bar to generate your demo as a standalone HTML file.</p>
+                    <ol class="instruction-list">
+                        <li>Choose a location on your computer to save the file.</li>
+                        <li>Runthroo generates a <strong>single, self-contained .html file</strong> — all images, styles, and interactivity are embedded inside.</li>
+                        <li>Share the file via email, Slack, Google Drive, Notion — or any way you'd share a regular document.</li>
+                        <li>Your recipient opens it in <strong>any browser</strong>. No install, no login, no internet connection required.</li>
+                    </ol>
+
+                    <div class="tip">
+                        <strong>Tip:</strong> The exported file is completely offline-capable. It works even if the recipient has no internet access, making it ideal for sales demos in conference rooms, on planes, or in areas with poor connectivity.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">Runthroo Platform</div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="https://github.com/AissaM7/Runthroo">GitHub Repository</a>
+            </div>
+            <p class="copyright">© 2025 Runthroo Open Source. Built for the modern web.</p>
+        </div>
+    </footer>
+
+    <script src="spotlight.js"></script>
+</body>
+
+</html>
