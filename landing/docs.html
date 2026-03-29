@@ -249,6 +249,17 @@
             font-weight: 600;
         }
 
+        /* Screenshot images */
+        .docs-screenshot {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 32px 0 48px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+        }
+
         /* Divider between chapters */
         .chapter-divider {
             height: 1px;
@@ -387,13 +398,8 @@
                             desktop app. You're done.</li>
                     </ol>
 
-                    <div class="screenshot-annotation">
-                        <div class="ss-icon">📸</div>
-                        <div class="ss-text">
-                            <span class="ss-label">Suggested screenshot</span>
-                            The Chrome extension popup showing the "Capture Current Page" button
-                        </div>
-                    </div>
+                    <img src="docs-ss-single-shot.png" alt="Runthroo Chrome extension showing Capture Current Page"
+                        class="docs-screenshot">
                 </div>
 
                 <div class="section" id="recording">
@@ -419,14 +425,8 @@
                         snapshots.
                     </div>
 
-                    <div class="screenshot-annotation">
-                        <div class="ss-icon">📸</div>
-                        <div class="ss-text">
-                            <span class="ss-label">Suggested screenshot</span>
-                            The extension popup in "recording" state, showing the active recording indicator and "Stop
-                            Recording" button
-                        </div>
-                    </div>
+                    <img src="docs-ss-recording.png" alt="Runthroo Chrome extension in recording state"
+                        class="docs-screenshot">
                 </div>
             </div>
 
@@ -451,13 +451,8 @@
                             most recent. Each card shows a thumbnail, the page title, and when it was captured.</li>
                     </ol>
 
-                    <div class="screenshot-annotation">
-                        <div class="ss-icon">📸</div>
-                        <div class="ss-text">
-                            <span class="ss-label">Suggested screenshot</span>
-                            The Library view showing platform folders and the "All Captures" grid with capture cards
-                        </div>
-                    </div>
+                    <img src="docs-ss-library.png" alt="Runthroo Library view showing captured pages"
+                        class="docs-screenshot">
 
                     <p>Use the <strong>search bar</strong> at the top to quickly find captures by name. You can also
                         <strong>delete</strong> any capture you no longer need by hovering over its card and clicking
@@ -497,14 +492,8 @@
                         <li>To <strong>reorder steps</strong>, drag and drop the step thumbnails in the timeline.</li>
                     </ol>
 
-                    <div class="screenshot-annotation">
-                        <div class="ss-icon">📸</div>
-                        <div class="ss-text">
-                            <span class="ss-label">Suggested screenshot</span>
-                            The Flow Editor showing the main canvas with a captured page, and the step timeline at the
-                            bottom
-                        </div>
-                    </div>
+                    <img src="docs-ss-editor.png" alt="Runthroo Flow Editor showing canvas and timeline"
+                        class="docs-screenshot">
                 </div>
             </div>
 
@@ -577,14 +566,8 @@
                             creating a decision tree your viewers can explore.</li>
                     </ol>
 
-                    <div class="screenshot-annotation">
-                        <div class="ss-icon">📸</div>
-                        <div class="ss-text">
-                            <span class="ss-label">Suggested screenshot</span>
-                            A step with a visible click zone drawn over a button, also showing the "Navigate to" popover
-                            configuring the branch target
-                        </div>
-                    </div>
+                    <img src="docs-ss-branching.png" alt="Configuring a branch in the Runthroo editor"
+                        class="docs-screenshot">
                 </div>
 
                 <!-- Blur Zones -->
@@ -664,14 +647,8 @@
                         <li>Press <kbd>Esc</kbd> to exit presentation mode and return to the editor.</li>
                     </ol>
 
-                    <div class="screenshot-annotation">
-                        <div class="ss-icon">📸</div>
-                        <div class="ss-text">
-                            <span class="ss-label">Suggested screenshot</span>
-                            The presentation mode view showing a full-screen captured page with the subtle click zone
-                            indicator
-                        </div>
-                    </div>
+                    <img src="docs-ss-presentation.png" alt="Presentation mode preview of a Runthroo demo"
+                        class="docs-screenshot">
                 </div>
 
                 <div class="section" id="exporting">
