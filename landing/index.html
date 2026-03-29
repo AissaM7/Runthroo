@@ -8,6 +8,15 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="logo.png">
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
 </head>
 
 <body>
@@ -36,7 +45,7 @@
             <div class="cta-group">
                 <a href="https://github.com/AissaM7/Runthroo/releases/download/v2.0.0/Runthroo-2.0.0-arm64.dmg"
                     download="Runthroo.dmg" class="btn btn-primary"
-                    onclick="window.va && window.va('event', {name: 'download_mac_dmg'})">
+                    onclick="gtag('event', 'download_mac_dmg', {event_category: 'downloads', event_label: 'Runthroo DMG'})">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -46,7 +55,7 @@
                     Download for Mac (.dmg)
                 </a>
                 <a href="#installation" class="btn btn-secondary"
-                    onclick="window.va && window.va('event', {name: 'click_chrome_extension'})">
+                    onclick="gtag('event', 'click_chrome_extension', {event_category: 'engagement', event_label: 'Chrome Extension CTA'})">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -189,7 +198,7 @@
                         <li>
                             <strong>Download the ZIP Archive</strong>
                             <span>Click here to <a href="runthroo-extension.zip" download class="text-link"
-                                    onclick="window.va && window.va('event', {name: 'download_extension_zip'})">download
+                                    onclick="gtag('event', 'download_extension_zip', {event_category: 'downloads', event_label: 'Extension ZIP'})">download
                                     runthroo-extension.zip</a> and
                                 unzip it.</span>
                         </li>
