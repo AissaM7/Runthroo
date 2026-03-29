@@ -35,7 +35,8 @@
 
             <div class="cta-group">
                 <a href="https://github.com/AissaM7/Runthroo/releases/download/v2.0.0/Runthroo-2.0.0-arm64.dmg"
-                    download="Runthroo.dmg" class="btn btn-primary">
+                    download="Runthroo.dmg" class="btn btn-primary"
+                    onclick="window.va && window.va('event', {name: 'download_mac_dmg'})">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -44,7 +45,8 @@
                     </svg>
                     Download for Mac (.dmg)
                 </a>
-                <a href="#installation" class="btn btn-secondary">
+                <a href="#installation" class="btn btn-secondary"
+                    onclick="window.va && window.va('event', {name: 'click_chrome_extension'})">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -186,7 +188,8 @@
                     <ol class="steps-list">
                         <li>
                             <strong>Download the ZIP Archive</strong>
-                            <span>Click here to <a href="runthroo-extension.zip" download class="text-link">download
+                            <span>Click here to <a href="runthroo-extension.zip" download class="text-link"
+                                    onclick="window.va && window.va('event', {name: 'download_extension_zip'})">download
                                     runthroo-extension.zip</a> and
                                 unzip it.</span>
                         </li>
