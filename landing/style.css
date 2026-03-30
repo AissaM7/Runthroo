@@ -445,16 +445,21 @@ body {
 }
 
 .showcase-visual {
-    flex: 1.2;
+    flex: 1;
     background: #111113;
     border-radius: 16px;
     border: 1px solid var(--glass-border);
-    padding: 12px;
+    padding: 32px;
+    /* Increased padding to make image relatively smaller */
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .showcase-img {
     width: 100%;
+    max-width: 420px;
     height: auto;
     border-radius: 8px;
     border: 1px solid var(--glass-border);
