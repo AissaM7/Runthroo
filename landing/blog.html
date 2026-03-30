@@ -105,22 +105,34 @@
             text-align: center;
         }
 
+        .blog-hero-label {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
         .blog-hero h1 {
-            font-size: 48px;
+            font-size: 64px;
             font-weight: 800;
-            letter-spacing: -0.04em;
-            background: linear-gradient(135deg, #fff 0%, #a1a1a6 100%);
+            letter-spacing: -0.05em;
+            line-height: 1;
+            background: linear-gradient(135deg, #fff 0%, #0A84FF 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .blog-hero p {
-            font-size: 17px;
-            color: var(--text-secondary);
-            max-width: 500px;
+            font-size: 16px;
+            color: var(--text-tertiary);
+            max-width: 400px;
             margin: 0 auto;
+            letter-spacing: 0.01em;
         }
 
         /* ─── Blog Feed ─── */
@@ -509,7 +521,7 @@
         /* ─── Responsive ─── */
         @media (max-width: 600px) {
             .blog-hero h1 {
-                font-size: 32px;
+                font-size: 44px;
             }
 
             .article-header-img {
@@ -556,8 +568,9 @@
     <!-- Blog Index View -->
     <div id="blog-index">
         <div class="blog-hero">
-            <h1>Blog</h1>
-            <p>Updates, stories, and the thinking behind building Runthroo.</p>
+            <div class="blog-hero-label">Runthroo Engineering</div>
+            <h1>From the Lab</h1>
+            <p>Behind the product. Behind the engineering. Behind the decisions.</p>
         </div>
 
         <div class="blog-feed">
@@ -751,9 +764,10 @@
         <div class="footer-links">
             <a href="index.html">Home</a>
             <a href="docs.html">User Guide</a>
+            <a href="legal.html">Legal</a>
             <a href="https://github.com/AissaM7/Runthroo">GitHub</a>
         </div>
-        <p class="copyright">&copy; 2025 Runthroo Open Source. Built for the modern web.</p>
+        <p class="copyright">&copy; 2026 Runthroo Open Source. Built for the modern web.</p>
     </footer>
 
     <script>
