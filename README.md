@@ -14,7 +14,7 @@
 <br>
 
 <p align="center">
-  <img src="https://github.com/AissaM7/Runthroo/raw/main/landing/demo24.gif" alt="Runthroo Demo" width="850">
+  <video src="https://github.com/AissaM7/Runthroo/raw/main/landing/demo32.mp4" width="850" autoplay loop muted playsinline></video>
 </p>
 
 <br>
