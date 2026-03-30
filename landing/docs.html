@@ -253,9 +253,21 @@
         .docs-screenshot {
             display: block;
             width: 100%;
+            max-width: 680px;
             height: auto;
             border-radius: 12px;
-            margin: 32px 0 48px;
+            margin: 32px auto 48px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+        }
+
+        .docs-screenshot-sm {
+            display: block;
+            width: 100%;
+            max-width: 380px;
+            height: auto;
+            border-radius: 12px;
+            margin: 32px auto 48px;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
             border: 1px solid var(--glass-border);
         }
@@ -414,7 +426,7 @@
                     </ol>
 
                     <img src="docs-ss-single-shot.png" alt="Runthroo Chrome extension showing Capture Current Page"
-                        class="docs-screenshot">
+                        class="docs-screenshot-sm">
                 </div>
 
                 <div class="section" id="recording">
@@ -441,7 +453,7 @@
                     </div>
 
                     <img src="docs-ss-recording.png" alt="Runthroo Chrome extension in recording state"
-                        class="docs-screenshot">
+                        class="docs-screenshot-sm">
                 </div>
             </div>
 
@@ -706,7 +718,7 @@
                     <p>When you first try to open Runthroo, you'll see this warning. Click <strong>Done</strong> — don't
                         click "Move to Trash".</p>
                     <img src="step1-not-opened.png" alt="macOS Runthroo Not Opened dialog"
-                        style="display: block; max-width: 360px; border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
+                        style="display: block; max-width: 360px; border-radius: 12px; margin: 16px auto; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
                 </div>
 
                 <div class="section">
@@ -717,7 +729,7 @@
                     </p>
                     <img src="step2-privacy-security.png"
                         alt="macOS Privacy and Security settings showing Open Anyway button"
-                        style="display: block; max-width: 680px; border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
+                        style="display: block; max-width: 580px; border-radius: 12px; margin: 16px auto; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
                 </div>
 
                 <div class="section">
@@ -725,7 +737,7 @@
                     <p>macOS will show one final confirmation dialog. Click <strong>Open Anyway</strong> to launch
                         Runthroo.</p>
                     <img src="step3-open-anyway.png" alt="macOS Open Runthroo confirmation dialog"
-                        style="display: block; max-width: 360px; border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
+                        style="display: block; max-width: 360px; border-radius: 12px; margin: 16px auto; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);">
                 </div>
 
                 <div class="tip">
