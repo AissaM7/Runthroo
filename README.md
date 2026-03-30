@@ -103,51 +103,82 @@ npm run dev
 
 ---
 
-## Chrome Extension
+## User Guide
 
-The Chrome extension is required to capture web pages from your browser and send them to the desktop app.
+This guide covers everything from installing the capture extension to building and exporting your first interactive demo.
 
-### Installation
+### 1. Installation
 
-1. Download `runthroo-extension.zip` from the [Releases](https://github.com/AissaM7/Runthroo/releases) page and extract its contents.
-2. Open Google Chrome and navigate to `chrome://extensions`.
-3. Toggle **Developer mode** ON in the top-right corner.
-4. Click **Load unpacked** and select the extracted extension folder.
+Runthroo consists of two parts: the macOS desktop application (where you build demos) and the Chrome capture extension (how you clone pages).
 
-The Runthroo Capture icon will appear in your Chrome toolbar.
+**Desktop App:**
+Download the latest `.dmg` from the [Releases](https://github.com/AissaM7/Runthroo/releases) page and drag it to your Applications folder.
 
-### Usage
+**Chrome Extension:**
 
-1. Make sure the Runthroo desktop app is running.
-2. Navigate to any web page you want to capture.
-3. Click the Runthroo icon in the toolbar.
-4. Enter a platform name and label, then click **Capture This Page**.
-5. The captured page will appear in the desktop app's Capture Library within seconds.
+1. Download `runthroo-extension.zip` from the [Releases](https://github.com/AissaM7/Runthroo/releases) page and extract the folder.
+2. Open Google Chrome and go to `chrome://extensions`.
+3. Toggle **Developer mode** ON in the top right.
+4. Click **Load unpacked** and select the extracted folder.
 
-> Capture multiple pages to build multi-step demo flows. For example, capture a landing page, a dashboard, and a settings panel to create a complete product walkthrough.
+<p align="center">
+  <img src="https://github.com/AissaM7/Runthroo/raw/main/landing/install-guide.gif" alt="Extension Install Guide" width="100%">
+</p>
 
----
+### 2. Capturing Pages
 
-## How It Works
+With the desktop app running, you can capture full-fidelity replicas of any web page.
 
-Runthroo follows a simple four-step workflow:
+**Single Page Capture**  
+Navigate to any page, click the Runthroo extension icon, and select **Capture Current Page**. 
 
-### Step 1 — Capture Pages
-Use the Chrome extension to capture any number of web pages. Each capture preserves the full DOM structure and all computed CSS exactly as rendered in your browser. Fonts, images, and cross-origin assets are inlined automatically.
+<p align="center">
+  <img src="https://github.com/AissaM7/Runthroo/raw/main/landing/docs-ss-single-shot.png" alt="Single Page Capture" width="100%">
+</p>
 
-### Step 2 — Build a Flow
-In the desktop app, create a new demo and add your captured pages as sequential steps. Drag to reorder. Each step represents one screen the viewer will interact with.
+**Recording Multi-Step Demos**  
+To capture a full flow, click **Start Recording**. As you navigate your app normally, Runthroo will automatically capture every page you visit. Click **Stop Recording** when finished.
 
-### Step 3 — Add Interactions
-For each step, use the Flow Editor to:
-- Draw click zones over the elements you want viewers to click
-- Add blur overlays to redact sensitive data
-- Edit any on-screen text to personalize the demo
-- Configure cursor animations and transition timing
-- Set up branching paths for non-linear navigation
+<p align="center">
+  <img src="https://github.com/AissaM7/Runthroo/raw/main/landing/docs-ss-recording.png" alt="Multi-Step Recording" width="100%">
+</p>
 
-### Step 4 — Export and Share
-Click Export to generate a single `.html` file containing your entire interactive demo. Send it to anyone — they open it in their browser and click through the experience exactly as you designed it. No software installation required on their end.
+### 3. The Library & Editor
+
+**Library**  
+All your captured pages automatically appear in the desktop app's Library, organized by platform.
+
+<p align="center">
+  <img src="https://github.com/AissaM7/Runthroo/raw/main/landing/docs-ss-library.png" alt="Capture Library" width="100%">
+</p>
+
+**Interactive Editor**  
+Create a new Demo and add your captured pages. In the editor, you can:
+- **Draw Click Zones:** Define interactive areas that link to the next step
+- **Redact Data:** Add frosted glass blurs over sensitive PII
+- **Edit Text:** Change any names or values on the page to personalize the demo
+
+<p align="center">
+  <img src="https://github.com/AissaM7/Runthroo/raw/main/landing/docs-ss-editor.png" alt="Interactive Flow Editor" width="100%">
+</p>
+
+### 4. Branching Logic
+
+If your product flow isn't strictly linear, you can add multiple interactive paths to a single step so viewers can organically explore different features.
+
+<p align="center">
+  <img src="https://github.com/AissaM7/Runthroo/raw/main/landing/docs-ss-branching.png" alt="Branching Logic" width="100%">
+</p>
+
+### 5. Export and Share
+
+When your demo is ready, just click **Export**. 
+
+Runthroo generates a single, self-contained `.html` file containing the entire interactive replica of your app. Send it via email, Slack, or host it anywhere — viewers simply double-click to open it in their browser with zero dependencies required.
+
+<p align="center">
+  <img src="https://github.com/AissaM7/Runthroo/raw/main/landing/docs-ss-presentation.png" alt="Presentation Mode" width="100%">
+</p>
 
 ---
 
