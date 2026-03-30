@@ -31,7 +31,7 @@ export interface DemoStep {
   label: string;
   clickZone: ClickZone | null;
   cursorConfig: CursorConfig | null;
-  transition: 'fade' | 'slide-left' | 'instant';
+  transition: 'fade' | 'slide-left' | 'instant' | 'morph';
   // V2 features
   blurZones: BlurZone[];
   textEdits: TextEdit[];

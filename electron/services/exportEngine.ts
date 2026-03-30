@@ -5,10 +5,12 @@ import type { Demo, ExportOptions } from '../../src/types/index'
 
 const RUNTIME_CSS_RAW = `
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 100vw; height: 100vh; overflow: hidden; background: #fff; }
+html, body { width: 100vw; height: 100vh; overflow: hidden; background: #111; }
 #demo-root { width: 100%; height: 100%; position: relative; }
-#viewport-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; background: #fff; }
-#step-frame { width: 100%; height: 100%; border: none; }
+#viewport-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; background: #111; }
+.step-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+#frame-a { z-index: 2; }
+#frame-b { z-index: 1; }
 `.trim()
 
 // Presentation background themes
@@ -25,8 +27,10 @@ function getPresentationCSS(bgId: string): string {
     '* { margin: 0; padding: 0; box-sizing: border-box; }',
     'html, body { width: 100vw; height: 100vh; overflow: hidden; ' + bg + ' }',
     '#demo-root { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }',
-    '#viewport-container { position: relative; overflow: hidden; background: #fff; box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06); border-radius: 8px; }',
-    '#step-frame { width: 100%; height: 100%; border: none; }',
+    '#viewport-container { position: relative; overflow: hidden; background: #111; box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06); border-radius: 8px; }',
+    '.step-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }',
+    '#frame-a { z-index: 2; }',
+    '#frame-b { z-index: 1; }',
   ].join('\n')
 }
 
@@ -86,7 +90,11 @@ const RUNTIME_JS = `
   var currentWrongClickHandler = null;
 
   var viewport = document.getElementById('viewport-container');
-  var frame = document.getElementById('step-frame');
+  var frameA = document.getElementById('frame-a');
+  var frameB = document.getElementById('frame-b');
+  var frontFrame = frameA;   // currently visible
+  var backFrame = frameB;    // hidden, used for loading next step
+  var frame = frontFrame;    // alias used by legacy code (renderStep, onFrameReady, etc.)
   var cursorEl = document.getElementById('animated-cursor');
   var rippleEl = document.getElementById('click-ripple');
   var zoneOverlay = document.getElementById('click-zone-overlay');
@@ -242,7 +250,7 @@ const RUNTIME_JS = `
     setTimeout(run, 500);
   }
 
-  // ── Render step ──────────────────────────────────────────────────
+  // ── Render step (initial load only — subsequent steps use goToStep) ──
   function renderStep(index) {
     if (index < 0 || index >= steps.length) return;
     currentStep = index;
@@ -253,7 +261,6 @@ const RUNTIME_JS = `
     rippleEl.classList.remove('active');
     zoneOverlay.innerHTML = '';
     zoneOverlay.style.transform = '';
-    // Remove previous wrong-click handler to prevent duplicates
     if (currentWrongClickHandler) {
       viewport.removeEventListener('click', currentWrongClickHandler);
       currentWrongClickHandler = null;
@@ -269,16 +276,20 @@ const RUNTIME_JS = `
       counterEl.textContent = (index + 1) + ' / ' + steps.length;
     }
 
-    // ── Click zones: legacy (advances to next) + branch (navigates to specific step) ──
-    // Both can coexist on the same step!
+    setupStepInteractions(index);
+  }
+
+  // ── Set up click zones, scroll sync, cursor, autoplay for a step ──
+  function setupStepInteractions(index) {
+    var step = steps[index];
+
     var branchZones = step.clickZones || [];
     var hasLegacyZone = !!step.clickZone && index < steps.length - 1;
-    console.log('[Runthroo] Step ' + index + ': clickZone=' + !!step.clickZone + ' (notLast=' + (index < steps.length - 1) + '), branchZones=' + branchZones.length + ', rendering: legacy=' + hasLegacyZone + ' branch=' + (branchZones.length > 0));
     var hasBranchZones = branchZones.length > 0;
     var hasAnyZone = hasLegacyZone || hasBranchZones;
     var allClickableElements = [];
 
-    // ── Legacy click zone (blue — advances to next step) ──
+    // ── Legacy click zone ──
     if (hasLegacyZone) {
       var cz = step.clickZone;
       var vw = step.viewportWidth;
@@ -296,18 +307,16 @@ const RUNTIME_JS = `
       legacyZone.addEventListener('click', function(e) { e.stopPropagation(); goToStep(index + 1); });
       zoneOverlay.appendChild(legacyZone);
       allClickableElements.push(legacyZone);
-      console.log('[Runthroo] Legacy zone rendered at px: left=' + legacyZone.style.left + ' top=' + legacyZone.style.top + ' size=' + legacyZone.style.width);
     }
 
-    // ── Branch click zones (navigate to specific steps) ──
-    // Branch zones use viewportHeight as Y denominator (not scrollHeight like legacy zones)
+    // ── Branch click zones ──
     if (hasBranchZones) {
       for (var b = 0; b < branchZones.length; b++) {
         (function(bz) {
           var vw = step.viewportWidth;
-          var vh = step.viewportHeight;
+          var totalH = bz.scrollY || step.viewportHeight;
           var cxPx = (bz.x / 100) * vw;
-          var cyPx = (bz.y / 100) * vh;
+          var cyPx = (bz.y / 100) * totalH;
           var rPx = (bz.width / 100) * vw;
 
           var zone = document.createElement('div');
@@ -329,7 +338,6 @@ const RUNTIME_JS = `
           });
           zoneOverlay.appendChild(zone);
           allClickableElements.push(zone);
-          console.log('[Runthroo] Branch zone rendered at px: left=' + zone.style.left + ' top=' + zone.style.top + ' size=' + zone.style.width + ' target=' + bz.targetStepId);
         })(branchZones[b]);
       }
     }
@@ -364,13 +372,11 @@ const RUNTIME_JS = `
         syncOverlay();
         win.addEventListener('scroll', syncOverlay, true);
 
-        // Wrong click inside iframe: show ALL targets
         win.document.addEventListener('click', function(e) {
           showAllClickHints(step, index);
         });
       });
 
-      // Wrong click on viewport: show all targets (skip if clicking a zone)
       currentWrongClickHandler = function(e) {
         for (var i = 0; i < allClickableElements.length; i++) {
           if (e.target === allClickableElements[i] || allClickableElements[i].contains(e.target)) return;
@@ -379,7 +385,6 @@ const RUNTIME_JS = `
       };
       viewport.addEventListener('click', currentWrongClickHandler);
     } else {
-      // No click zones at all — still apply text edits, hidden elements, scroll sync
       onFrameReady(step, function() {
         try {
           var win = frame.contentWindow;
@@ -396,7 +401,7 @@ const RUNTIME_JS = `
       }, step.cursor.delayMs || 500);
     }
 
-    // Auto-play: schedule next step
+    // Auto-play
     if (config.autoPlay && !autoPlayPaused) {
       clearTimeout(autoPlayTimer);
       if (index < steps.length - 1 || config.autoPlayLoop) {
@@ -458,7 +463,8 @@ const RUNTIME_JS = `
     var branchZones = step.clickZones || [];
     for (var b = 0; b < branchZones.length; b++) {
       var bz = branchZones[b];
-      targets.push({ x: (bz.x / 100) * vw, y: (bz.y / 100) * vh });
+      var bzTotalH = bz.scrollY || vh;
+      targets.push({ x: (bz.x / 100) * vw, y: (bz.y / 100) * bzTotalH });
     }
 
     console.log('[Runthroo] showAllClickHints: ' + targets.length + ' hint(s) for step ' + index);
@@ -500,25 +506,102 @@ const RUNTIME_JS = `
     var step = steps[currentStep];
     var transition = step.transition || 'fade';
 
-    if (transition === 'instant') {
-      renderStep(index);
-    } else if (transition === 'fade') {
-      viewport.style.transition = 'opacity 0.3s';
-      viewport.style.opacity = '0';
+    // ── DUAL-IFRAME SWAP ──────────────────────────────────────────
+    // Load new content into the BACK frame (hidden behind front).
+    // Once loaded, play the transition effect, then swap roles.
+    var incoming = backFrame;
+    var outgoing = frontFrame;
+    var template = document.getElementById('step-' + index);
+
+    // Reset incoming frame state
+    incoming.style.opacity = '1';
+    incoming.style.clipPath = '';
+    incoming.style.transition = 'none';
+    incoming.style.zIndex = '1';  // behind
+    outgoing.style.zIndex = '2';  // in front
+
+    // Start loading the new content into the back frame
+    incoming.srcdoc = template.textContent;
+
+    // Update state for renderStep-adjacent logic
+    currentStep = index;
+    frame = incoming;
+
+    clearTimeout(animationTimer);
+    cursorEl.classList.remove('visible', 'animating');
+    rippleEl.classList.remove('active');
+    zoneOverlay.innerHTML = '';
+    zoneOverlay.style.transform = '';
+    if (currentWrongClickHandler) {
+      viewport.removeEventListener('click', currentWrongClickHandler);
+      currentWrongClickHandler = null;
+    }
+
+    scaleViewport();
+    renderBlurZones(steps[index]);
+    if (counterEl) counterEl.textContent = (index + 1) + ' / ' + steps.length;
+
+    // Set up click zones, frame-ready handlers, cursor, autoplay
+    setupStepInteractions(index);
+
+    // Wait for the incoming frame to be ready, then perform the transition
+    onFrameReady(steps[index], function() {
+      performTransition(transition, incoming, outgoing);
+
+      // Swap roles
+      frontFrame = incoming;
+      backFrame = outgoing;
+      frame = frontFrame;
+    });
+  }
+
+  function performTransition(type, incoming, outgoing) {
+    if (type === 'instant') {
+      // Immediate swap — no animation, no flash
+      incoming.style.zIndex = '2';
+      outgoing.style.zIndex = '1';
+    } else if (type === 'fade') {
+      // Crossfade: fade in the incoming on top
+      incoming.style.opacity = '0';
+      incoming.style.zIndex = '3';  // on top of outgoing
+      incoming.style.transition = 'none';
+      void incoming.offsetWidth;  // force reflow
+      incoming.style.transition = 'opacity 0.25s ease-in-out';
+      incoming.style.opacity = '1';
       setTimeout(function() {
-        renderStep(index);
-        viewport.style.opacity = '1';
-      }, 300);
-    } else if (transition === 'slide-left') {
-      viewport.style.transition = 'transform 0.3s ease-in-out, opacity 0.3s';
-      viewport.style.transform += ' translateX(-30px)';
-      viewport.style.opacity = '0';
+        incoming.style.zIndex = '2';
+        outgoing.style.zIndex = '1';
+        incoming.style.transition = 'none';
+      }, 280);
+    } else if (type === 'morph') {
+      // Morph reveal: circular clip-path expands from centre of viewport
+      // creating the illusion of navigating within a web application
+      incoming.style.zIndex = '3';
+      incoming.style.clipPath = 'circle(0% at 50% 50%)';
+      incoming.style.transition = 'none';
+      void incoming.offsetWidth;
+      incoming.style.transition = 'clip-path 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      incoming.style.clipPath = 'circle(150% at 50% 50%)';
       setTimeout(function() {
-        viewport.style.transition = 'none';
-        viewport.style.transform = '';
-        viewport.style.opacity = '';
-        renderStep(index);
-      }, 300);
+        incoming.style.zIndex = '2';
+        outgoing.style.zIndex = '1';
+        incoming.style.transition = 'none';
+        incoming.style.clipPath = '';
+      }, 450);
+    } else if (type === 'slide-left') {
+      // Slide: incoming slides in from the right
+      incoming.style.zIndex = '3';
+      incoming.style.transform = 'translateX(100%)';
+      incoming.style.transition = 'none';
+      void incoming.offsetWidth;
+      incoming.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+      incoming.style.transform = 'translateX(0)';
+      setTimeout(function() {
+        incoming.style.zIndex = '2';
+        outgoing.style.zIndex = '1';
+        incoming.style.transition = 'none';
+        incoming.style.transform = '';
+      }, 380);
     }
   }
 
@@ -636,7 +719,8 @@ ${RUNTIME_CSS_SHARED}
 <body>
 <div id="demo-root">
   <div id="viewport-container">
-    <iframe id="step-frame" sandbox="allow-same-origin allow-scripts"></iframe>
+    <iframe id="frame-a" class="step-frame" sandbox="allow-same-origin allow-scripts"></iframe>
+    <iframe id="frame-b" class="step-frame" sandbox="allow-same-origin allow-scripts"></iframe>
     <div id="blur-overlay"></div>
     <div id="click-zone-overlay"></div>
   </div>

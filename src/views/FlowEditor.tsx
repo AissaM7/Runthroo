@@ -227,7 +227,7 @@ function RightInspector({ step, allSteps, onUpdate, onRemove }: {
       <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <span className="text-[13px] text-white/40 block mb-3">Transition</span>
         <div className="flex flex-col gap-2">
-          {(['instant', 'slide-left', 'fade'] as DemoStep['transition'][]).map(t => {
+          {(['instant', 'slide-left', 'fade', 'morph'] as DemoStep['transition'][]).map(t => {
             const active = step.transition === t
             return (
               <button

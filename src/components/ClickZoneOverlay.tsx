@@ -17,7 +17,7 @@ interface Props {
 // the window. window.scrollY returns 0 in these cases. This helper
 // finds the ACTUAL element that scrolls by scanning for elements with
 // overflow:auto/scroll and scrollable content.
-function findScrollInfo(iframe: HTMLIFrameElement): {
+export function findScrollInfo(iframe: HTMLIFrameElement): {
   scrollX: number
   scrollY: number
   scrollWidth: number

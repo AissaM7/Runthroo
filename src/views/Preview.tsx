@@ -97,7 +97,7 @@ export function Preview() {
       try {
         const el = doc.querySelector(edit.selector)
         if (el) (el as HTMLElement).innerText = edit.newText
-      } catch {}
+      } catch { }
     }
 
     // ── Hidden elements ──
@@ -121,7 +121,7 @@ export function Preview() {
           zoneEl.style.background = z.color || '#333'
         } else {
           zoneEl.style.backdropFilter = `blur(${z.intensity || 8}px)`
-          ;(zoneEl.style as any).webkitBackdropFilter = `blur(${z.intensity || 8}px)`
+            ; (zoneEl.style as any).webkitBackdropFilter = `blur(${z.intensity || 8}px)`
           zoneEl.style.background = 'rgba(128,128,128,0.1)'
         }
         overlay.appendChild(zoneEl)
@@ -137,7 +137,7 @@ export function Preview() {
 
       doc.addEventListener('click', (e: Event) => {
         // Signal to parent that the user clicked inside the iframe (wrong-click hint)
-        try { window.parent.postMessage('runthroo-wrong-click', '*') } catch {}
+        try { window.parent.postMessage('runthroo-wrong-click', '*') } catch { }
 
         let target = e.target as HTMLElement | null
         while (target && target !== doc.documentElement) {
@@ -162,9 +162,9 @@ export function Preview() {
 
       const iframeWin = iframeRef.current?.contentWindow
       if (iframeWin) {
-        ;(iframeWin as any).open = () => null
+        ; (iframeWin as any).open = () => null
       }
-    } catch {}
+    } catch { }
   }
 
   // Show wrong-click animation hints at all click zone positions
@@ -252,7 +252,6 @@ export function Preview() {
         setTimeout(() => {
           renderStep(idx, data)
           if (viewportRef.current) viewportRef.current.style.opacity = '1'
-          // Update rect after transition completes
           setTimeout(updateVpRect, 350)
         }, 300)
       }
@@ -270,6 +269,35 @@ export function Preview() {
           renderStep(idx, data)
           setTimeout(updateVpRect, 50)
         }, 300)
+      }
+    } else if (transition === 'morph') {
+      if (viewportRef.current) {
+        // Circle clip-path reveal from center — morph transition
+        viewportRef.current.style.transition = 'none'
+        viewportRef.current.style.clipPath = 'circle(150% at 50% 50%)'
+        void viewportRef.current.offsetWidth
+        // Shrink circle to zero
+        viewportRef.current.style.transition = 'clip-path 0.2s ease-in'
+        viewportRef.current.style.clipPath = 'circle(0% at 50% 50%)'
+        setTimeout(() => {
+          // Swap content while hidden
+          renderStep(idx, data)
+          if (viewportRef.current) {
+            viewportRef.current.style.transition = 'none'
+            viewportRef.current.style.clipPath = 'circle(0% at 50% 50%)'
+            void viewportRef.current.offsetWidth
+            // Expand circle to reveal
+            viewportRef.current.style.transition = 'clip-path 0.35s cubic-bezier(0.4, 0, 0.2, 1)'
+            viewportRef.current.style.clipPath = 'circle(150% at 50% 50%)'
+          }
+          setTimeout(() => {
+            if (viewportRef.current) {
+              viewportRef.current.style.clipPath = ''
+              viewportRef.current.style.transition = ''
+            }
+            updateVpRect()
+          }, 400)
+        }, 220)
       }
     }
   }

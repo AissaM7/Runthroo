@@ -25,6 +25,12 @@
     // ─── Step 6: Snapshot <canvas> elements (Grafana charts, etc.) ─────
     const canvasSnapshots = snapshotCanvasElements()
 
+    // ─── Step 6b: Neutralize virtualized list spacers ───────────────────
+    // React-virtualized / TanStack Virtual insert massive spacer rows
+    // (e.g. height: 29225px) that push visible rows out of view in a
+    // static capture. Collapse them and unlock fixed-height containers.
+    const virtualCleanup = neutralizeVirtualizedLists()
+
     // ─── Step 7: Clone the DOM after all inlining is complete ───────────
     const clone = document.documentElement.cloneNode(true)
 
@@ -35,6 +41,9 @@
     document.querySelectorAll('canvas[data-df-canvas-id]').forEach(c =>
       c.removeAttribute('data-df-canvas-id')
     )
+
+    // Restore the live DOM after cloning (undo virtualisation fixes)
+    virtualCleanup()
 
     // ─── Step 8: Inject runtime CSS variables as a <style> tag ──────────
     if (runtimeVarsCSS) {
@@ -543,4 +552,97 @@ function replaceCanvasWithImages(clone, snapshots) {
   clone.querySelectorAll('canvas[data-df-canvas-id]').forEach(c => {
     c.removeAttribute('data-df-canvas-id')
   })
+}
+
+// ─── Neutralize virtualized list spacers ──────────────────────────────────────
+// React-virtualized, TanStack Virtual, and similar libraries only render a
+// small window of rows. They insert spacer elements with enormous heights
+// (e.g. 29,000px) to keep the scrollbar accurate. In a static capture the
+// scroll position resets to 0, so the actual data rows are pushed far below
+// the visible area. This function:
+//   1. Collapses spacer rows/divs (height → 0)
+//   2. Unlocks fixed-height scroll containers (height → auto, overflow → visible)
+// It returns a cleanup function that restores the original styles on the live DOM.
+function neutralizeVirtualizedLists() {
+  const SPACER_HEIGHT_THRESHOLD = 1000  // px – anything above this is a spacer
+  const restoreList = []
+
+  // ── 1. Collapse spacer <tr> rows ──────────────────────────────────────────
+  // Pattern: <tr><td style="height: 29225px;"></td></tr>  (top/bottom spacer)
+  // Also:    <tr style="height: 8131px;"><td colspan="5"></td></tr>
+  document.querySelectorAll('tr').forEach(tr => {
+    // Check inline height on the <tr> itself
+    const trHeight = parseFloat(tr.style.height)
+    if (trHeight > SPACER_HEIGHT_THRESHOLD) {
+      const cells = tr.querySelectorAll('td, th')
+      const isEmpty = [...cells].every(td => td.textContent.trim() === '' && td.children.length === 0)
+      if (isEmpty || cells.length <= 1) {
+        restoreList.push({ el: tr, prop: 'height', original: tr.style.height })
+        tr.style.height = '0px'
+        // Also collapse child tds
+        cells.forEach(td => {
+          if (parseFloat(td.style.height) > SPACER_HEIGHT_THRESHOLD) {
+            restoreList.push({ el: td, prop: 'height', original: td.style.height })
+            td.style.height = '0px'
+          }
+        })
+        return
+      }
+    }
+
+    // Check inline height on child <td> (single-cell spacer row)
+    const tds = tr.querySelectorAll('td')
+    if (tds.length === 1 && tds[0].textContent.trim() === '' && tds[0].children.length === 0) {
+      const tdHeight = parseFloat(tds[0].style.height)
+      if (tdHeight > SPACER_HEIGHT_THRESHOLD) {
+        restoreList.push({ el: tds[0], prop: 'height', original: tds[0].style.height })
+        tds[0].style.height = '0px'
+      }
+    }
+  })
+
+  // ── 2. Collapse spacer <div> elements (react-window / react-virtualized) ──
+  // Pattern: <div style="height: 29225px;"></div>  (empty div spacer)
+  document.querySelectorAll('div').forEach(div => {
+    const h = parseFloat(div.style.height)
+    if (h > SPACER_HEIGHT_THRESHOLD && div.textContent.trim() === '' && div.children.length === 0) {
+      restoreList.push({ el: div, prop: 'height', original: div.style.height })
+      div.style.height = '0px'
+    }
+  })
+
+  // ── 3. Unlock fixed-height scroll containers ─────────────────────────────
+  // If a container has overflow-y:auto/scroll AND an inline height AND it
+  // contains data rows, switch it to height:auto + overflow:visible so all
+  // rows are visible without scrolling.
+  document.querySelectorAll('[style]').forEach(el => {
+    const computed = getComputedStyle(el)
+    const overflowY = computed.overflowY
+    if (overflowY !== 'auto' && overflowY !== 'scroll') return
+
+    const inlineHeight = el.style.height
+    if (!inlineHeight) return
+    const h = parseFloat(inlineHeight)
+    if (!h || h < 100) return  // skip tiny containers
+
+    // Only unlock if the container has content children (real data rows)
+    const hasContent = el.querySelector('tr[data-index], [data-row-index], [role="row"]')
+    if (!hasContent) return
+
+    restoreList.push({ el, prop: 'height', original: el.style.height })
+    restoreList.push({ el, prop: 'overflowY', original: el.style.overflowY })
+    restoreList.push({ el, prop: 'maxHeight', original: el.style.maxHeight })
+    el.style.height = 'auto'
+    el.style.overflowY = 'visible'
+    el.style.maxHeight = 'none'
+  })
+
+  console.log('[Runthroo] neutralized', restoreList.length, 'virtualized list elements')
+
+  // Return a cleanup function to restore the live DOM
+  return function restoreVirtualizedLists() {
+    for (const entry of restoreList) {
+      entry.el.style[entry.prop] = entry.original
+    }
+  }
 }

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { v4 as uuidv4 } from 'uuid'
 import type { BranchClickZone, DemoStep } from '../types/index'
 import { useUIStore } from '../stores/uiStore'
+import { findScrollInfo } from './ClickZoneOverlay'
 
 interface Props {
   clickZones: BranchClickZone[]
@@ -31,26 +32,35 @@ export function BranchZoneOverlay({
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null)
-  const [iframeScrollY, setIframeScrollY] = useState(0)
+  const [scrollState, setScrollState] = useState({
+    scrollX: 0,
+    scrollY: 0,
+    scrollWidth: viewportWidth,
+    scrollHeight: viewportHeight,
+  })
 
   const isDrawMode = drawMode === 'branch-zone'
 
-  // ── Poll iframe scroll position ───────────
+  // ── Poll iframe scroll position (SPA-aware) ───────────
   useEffect(() => {
-    let animFrame: number | null = null
-    function pollScroll() {
-      try {
-        const iframe = document.getElementById('preview-iframe') as HTMLIFrameElement | null
-        const win = iframe?.contentWindow
-        if (win) {
-          const sy = win.scrollY || win.pageYOffset || 0
-          setIframeScrollY(prev => prev !== sy ? sy : prev)
+    const poll = () => {
+      const iframe = document.getElementById('preview-iframe') as HTMLIFrameElement | null
+      if (!iframe) return
+      const info = findScrollInfo(iframe)
+      setScrollState(prev => {
+        if (
+          prev.scrollX !== info.scrollX ||
+          prev.scrollY !== info.scrollY ||
+          prev.scrollHeight !== info.scrollHeight
+        ) {
+          return info
         }
-      } catch { }
-      animFrame = requestAnimationFrame(pollScroll)
+        return prev
+      })
     }
-    pollScroll()
-    return () => { if (animFrame !== null) cancelAnimationFrame(animFrame) }
+    poll()
+    const interval = setInterval(poll, 50)
+    return () => clearInterval(interval)
   }, [])
 
   // Close popover when clicking outside
@@ -94,8 +104,12 @@ export function BranchZoneOverlay({
     setDrawing(false)
     if (radius < 10) return
 
+    // ── DOCUMENT-PERCENTAGE ANCHORING ────────────────────────
+    // Uses scrollHeight (total document height) as denominator,
+    // not viewportHeight. This locks the zone to its position
+    // in the full document, not just the visible viewport.
     const centerXPct = (center.x / scale / viewportWidth) * 100
-    const centerYPct = ((center.y / scale + iframeScrollY) / viewportHeight) * 100
+    const centerYPct = ((center.y / scale + scrollState.scrollY) / scrollState.scrollHeight) * 100
     const radiusPctW = (radius / scale / viewportWidth) * 100
 
     const newZone: BranchClickZone = {
@@ -104,7 +118,7 @@ export function BranchZoneOverlay({
       y: centerYPct,
       width: radiusPctW,
       height: radiusPctW,
-      scrollY: iframeScrollY,
+      scrollY: scrollState.scrollHeight,  // store total height for export
       targetStepId: 'next',
       label: `Branch ${clickZones.length + 1}`,
     }
@@ -165,7 +179,7 @@ export function BranchZoneOverlay({
     return target ? getStepDisplayName(target) : 'Unknown Step'
   }
 
-  const scrollOffsetPx = iframeScrollY * scale
+  const scrollOffsetPx = scrollState.scrollY * scale
   const editingZone = editingId ? clickZones.find(z => z.id === editingId) : undefined
 
   const popover = editingId && popoverPos && editingZone ? createPortal(
@@ -340,7 +354,10 @@ export function BranchZoneOverlay({
         {/* Rendered branch zones */}
         {clickZones.map(zone => {
           const cx = (zone.x / 100) * viewportWidth * scale
-          const cy = (zone.y / 100) * viewportHeight * scale - scrollOffsetPx
+          // Reconstruct position from document-percentage using scrollHeight
+          const sh = scrollState.scrollHeight
+          const centerYdoc = (zone.y / 100) * sh
+          const cy = (centerYdoc - scrollState.scrollY) * scale
           const r = (zone.width / 100) * viewportWidth * scale
           const isEditing = editingId === zone.id
           const isHovered = hoveredId === zone.id
