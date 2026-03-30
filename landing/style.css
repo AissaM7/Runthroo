@@ -764,9 +764,25 @@ footer {
 
 /* ━━━ Responsive: Mobile ━━━ */
 @media (max-width: 600px) {
+    .nav-content {
+        padding: 0 16px;
+        gap: 20px;
+    }
+
     .nav-links {
-        gap: 16px;
+        gap: 20px;
         font-size: 13px;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding-bottom: 2px;
+        /* Slight padding to prevent clipping active states/descenders */
+    }
+
+    .nav-links::-webkit-scrollbar {
+        display: none;
     }
 
     .hero {
