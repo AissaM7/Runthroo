@@ -595,48 +595,52 @@ body {
 .bmc-card {
     max-width: 640px;
     margin: 0 auto;
-    padding: 36px 40px;
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    padding: 44px 48px;
+    background: radial-gradient(circle at top, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 20px;
-    box-shadow: 0 0 40px rgba(251, 191, 36, 0.06);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
 }
 
-.bmc-icon-box {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    background: rgba(251, 191, 36, 0.08);
-    border: 1px solid rgba(251, 191, 36, 0.15);
-    border-radius: 12px;
-    margin-bottom: 16px;
+.bmc-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.5), transparent);
+    opacity: 0.8;
 }
 
 .bmc-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid #FCD34D;
-    border-radius: 10px;
-    color: #FCD34D;
-    font-size: 14px;
+    gap: 10px;
+    padding: 12px 24px;
+    background: linear-gradient(180deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.02) 100%);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    border-top: 1px solid rgba(251, 191, 36, 0.4);
+    border-radius: 12px;
+    color: #FDE68A;
+    font-size: 15px;
     font-weight: 500;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .bmc-btn:hover {
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.02);
-    color: #FDE68A;
-    /* Slightly brighter white/amber */
+    box-shadow: 0 0 24px rgba(251, 191, 36, 0.15), 0 8px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: linear-gradient(180deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.04) 100%);
+    border-color: rgba(251, 191, 36, 0.5);
+    transform: translateY(-2px);
+    color: #FFF;
 }
 
 footer {
