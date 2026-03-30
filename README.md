@@ -14,7 +14,7 @@
 <br>
 
 <p align="center">
-  <img src="https://github.com/AissaM7/Runthroo/raw/main/landing/demo32.gif" alt="Runthroo Demo" width="850">
+  <img src="https://github.com/AissaM7/Runthroo/raw/main/demo32.gif" alt="Runthroo Demo" width="850">
 </p>
 
 <br>
