@@ -47,11 +47,11 @@ This guide covers everything from installing the capture extension to building a
 
 <br>
 
-### <img src="https://img.shields.io/badge/01_Setup-0A84FF?style=for-the-badge&labelColor=111113" alt="Setup"> Installs & Security
+### 1. Installs & Security
 
 Runthroo consists of two components: the **macOS desktop app** and the **Chrome capture extension**.
 
-#### <img src="https://img.shields.io/badge/macOS_Desktop_App-111113?style=flat&logo=apple&logoColor=white" alt="macOS"> Installation & Security Bypass
+**macOS Desktop App — Installation & Security Bypass**
 
 Download the newest `.dmg` from the [Releases](https://github.com/AissaM7/Runthroo/releases) and drag Runthroo to your Applications folder.
 
@@ -70,7 +70,7 @@ Download the newest `.dmg` from the [Releases](https://github.com/AissaM7/Runthr
 
 <br>
 
-#### <img src="https://img.shields.io/badge/Chrome_Extension-111113?style=flat&logo=googlechrome&logoColor=white" alt="Chrome"> Capture Extension
+**Chrome Capture Extension**
 
 The Chrome extension is required to clone web architectures in real-time.
 
@@ -85,7 +85,7 @@ The Chrome extension is required to clone web architectures in real-time.
   <br>
 </p>
 
-### <img src="https://img.shields.io/badge/02_Capture-0A84FF?style=for-the-badge&labelColor=111113" alt="Capture"> Capturing Pages
+### 2. Capturing Pages
 
 With the desktop app running, you can capture full-fidelity replicas of any web page.
 
@@ -105,7 +105,7 @@ To capture a full flow, click **Start Recording**. As you navigate your app norm
 
 <br>
 
-### <img src="https://img.shields.io/badge/03_Edit-0A84FF?style=for-the-badge&labelColor=111113" alt="Edit"> The Library & Editor
+### 3. The Library & Editor
 
 **Library**  
 All your captured pages automatically appear in the desktop app's Library, organized by platform.
@@ -130,7 +130,7 @@ Create a new Demo and add your captured pages. In the editor, you can:
 
 <br>
 
-### <img src="https://img.shields.io/badge/04_Branching-0A84FF?style=for-the-badge&labelColor=111113" alt="Branching"> Branching Logic
+### 4. Branching Logic
 
 If your product flow isn't strictly linear, you can add multiple interactive paths to a single step so viewers can organically explore different features.
 
@@ -142,7 +142,7 @@ If your product flow isn't strictly linear, you can add multiple interactive pat
 
 <br>
 
-### <img src="https://img.shields.io/badge/05_Export-0A84FF?style=for-the-badge&labelColor=111113" alt="Export"> Export and Share
+### 5. Export and Share
 
 When your demo is ready, just click **Export**. 
 
