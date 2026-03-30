@@ -10,12 +10,15 @@
 </p>
 
 <p align="center">
+  <video src="https://github.com/AissaM7/Runthroo/raw/main/landing/demo.webm" muted autoplay loop playsinline controls width="100%"></video>
+</p>
+
+<p align="center">
+  <a href="#what-is-runthroo">Overview</a> &middot;
   <a href="#quick-start">Quick Start</a> &middot;
   <a href="#how-it-works">How It Works</a> &middot;
-  <a href="#chrome-extension">Chrome Extension</a> &middot;
   <a href="#features">Features</a> &middot;
-  <a href="#building-from-source">Build from Source</a> &middot;
-  <a href="#creating-the-mac-installer">Create Installer</a>
+  <a href="#building-from-source">Build from Source</a>
 </p>
 
 ---
