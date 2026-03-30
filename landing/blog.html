@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runthroo — Blog</title>
+    <meta name="description"
+        content="Updates, stories, and behind-the-scenes from the Runthroo team. Learn about the open-source tool built for solutions engineers.">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0b0b0d;
+            --bg-card: #111114;
+            --glass-bg: rgba(18, 18, 22, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --accent: #0A84FF;
+            --accent-dim: rgba(10, 132, 255, 0.12);
+            --text-main: #f5f5f7;
+            --text-secondary: #86868b;
+            --text-tertiary: #6e6e73;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── Nav ─── */
+        .glass-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav-content {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 17px;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #fff, #a1a1a6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            font-size: 14px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-main);
+        }
+
+        /* ─── Blog Hero ─── */
+        .blog-hero {
+            padding: 140px 24px 60px;
+            text-align: center;
+        }
+
+        .blog-hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            background: linear-gradient(135deg, #fff 0%, #a1a1a6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .blog-hero p {
+            font-size: 17px;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* ─── Blog Feed ─── */
+        .blog-feed {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 24px 100px;
+        }
+
+        /* ─── Article Card (Featured) ─── */
+        .article-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .article-card:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .article-header-img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .article-body {
+            padding: 40px 40px 44px;
+        }
+
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .article-tag {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            background: var(--accent-dim);
+            padding: 5px 12px;
+            border-radius: 100px;
+        }
+
+        .article-date {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .article-body h2 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+
+        .article-body h2 a {
+            color: var(--text-main);
+            text-decoration: none;
+        }
+
+        .article-body h2 a:hover {
+            color: var(--accent);
+        }
+
+        .article-excerpt {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.75;
+            margin-bottom: 24px;
+        }
+
+        .read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--accent);
+            text-decoration: none;
+            transition: gap 0.2s;
+        }
+
+        .read-more:hover {
+            gap: 10px;
+        }
+
+        /* ─── Full Post ─── */
+        .full-post {
+            display: none;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 140px 24px 100px;
+        }
+
+        .full-post.active {
+            display: block;
+        }
+
+        .post-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-tertiary);
+            text-decoration: none;
+            margin-bottom: 40px;
+            transition: color 0.2s;
+        }
+
+        .post-back:hover {
+            color: var(--text-main);
+        }
+
+        .post-header {
+            margin-bottom: 48px;
+        }
+
+        .post-header .article-tag {
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .post-header h1 {
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: -0.035em;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .post-header .post-date {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        .post-content {
+            font-size: 16px;
+            color: #c8c8cc;
+            line-height: 1.85;
+        }
+
+        .post-content p {
+            margin-bottom: 24px;
+        }
+
+        .post-content h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 48px 0 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .post-content strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .post-content a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .post-content a:hover {
+            text-decoration: underline;
+        }
+
+        .post-content ul {
+            margin: 0 0 24px 20px;
+        }
+
+        .post-content ul li {
+            margin-bottom: 8px;
+            color: #a0a0a5;
+        }
+
+        .post-content ul li strong {
+            color: #d0d0d4;
+        }
+
+        .post-divider {
+            height: 1px;
+            background: var(--glass-border);
+            margin: 48px 0;
+        }
+
+        .post-cta {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.06) 0%, rgba(168, 85, 247, 0.04) 100%);
+            border: 1px solid rgba(10, 132, 255, 0.12);
+            border-radius: 16px;
+            margin-top: 48px;
+        }
+
+        .post-cta h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .post-cta p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .post-cta .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .post-cta .cta-btn:hover {
+            background: #0070e0;
+        }
+
+        /* ─── Author ─── */
+        .author-block {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .author-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .author-info .author-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .author-info .author-role {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        /* ─── Footer ─── */
+        footer {
+            border-top: 1px solid var(--glass-border);
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .footer-links a {
+            color: var(--text-tertiary);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-main);
+        }
+
+        .copyright {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 600px) {
+            .blog-hero h1 {
+                font-size: 32px;
+            }
+
+            .article-header-img {
+                height: 200px;
+            }
+
+            .article-body {
+                padding: 24px;
+            }
+
+            .article-body h2 {
+                font-size: 22px;
+            }
+
+            .post-header h1 {
+                font-size: 28px;
+            }
+
+            .nav-links {
+                gap: 16px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="glass-nav">
+        <div class="nav-content">
+            <a href="/" class="logo">
+                <img src="logo.png" alt="Runthroo" width="24" height="24" style="border-radius: 5px;">
+                <span>Runthroo</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#features">Features</a>
+                <a href="docs.html">User Guide</a>
+                <a href="index.html#installation">Install</a>
+                <a href="blog.html" style="color: var(--text-main);">Blog</a>
+                <a href="https://github.com/AissaM7/Runthroo" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Blog Index View -->
+    <div id="blog-index">
+        <div class="blog-hero">
+            <h1>Blog</h1>
+            <p>Updates, stories, and the thinking behind building Runthroo.</p>
+        </div>
+
+        <div class="blog-feed">
+            <div class="article-card" onclick="showPost()">
+                <div
+                    style="width: 100%; height: 320px; background: linear-gradient(135deg, #0b0b0d 0%, #111128 40%, #0A84FF15 100%); display: flex; align-items: center; justify-content: center;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 56px; margin-bottom: 16px;">
+                            <img src="logo.png" alt="Runthroo" width="64" height="64"
+                                style="border-radius: 14px; box-shadow: 0 8px 32px rgba(10,132,255,0.3);">
+                        </div>
+                        <div
+                            style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: #0A84FF;">
+                            Introducing Runthroo V2</div>
+                    </div>
+                </div>
+                <div class="article-body">
+                    <div class="article-meta">
+                        <span class="article-tag">Launch</span>
+                        <span class="article-date">March 29, 2025</span>
+                    </div>
+                    <h2><a href="javascript:showPost()">Why I Built a Free, Offline Demo Tool for Solutions
+                            Engineers</a></h2>
+                    <p class="article-excerpt">
+                        Every demo platform I tried was either $500/month, cloud-locked, or missing basic features.
+                        So I built my own — and open-sourced it for the community.
+                    </p>
+                    <a href="javascript:showPost()" class="read-more">
+                        Read the full story
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Post View -->
+    <div id="blog-post" class="full-post">
+        <a href="javascript:showIndex()" class="post-back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Blog
+        </a>
+
+        <div class="post-header">
+            <span class="article-tag">Launch</span>
+            <h1>Why I Built a Free, Offline Demo Tool for Solutions Engineers</h1>
+            <span class="post-date">March 29, 2025</span>
+        </div>
+
+        <div class="post-content">
+            <p>
+                I'm a Solutions Engineer. My job is to show prospects how our product solves their problems —
+                usually through live demos, proof-of-concept builds, and carefully tailored walkthroughs. A good
+                demo can close a deal. A bad one can lose it.
+            </p>
+
+            <p>
+                For years, I relied on a mix of screen recordings, annotated screenshots, and live environments
+                to build these demos. But every approach had the same problems: recordings go stale the moment the
+                UI changes, live environments break at the worst possible time, and screenshots don't click.
+            </p>
+
+            <h3>The Problem with Existing Tools</h3>
+
+            <p>
+                When interactive demo platforms started gaining traction, I was excited. Tools like Navattic, Reprise,
+                and Storylane promised exactly what I needed — click-through replicas of real products that prospects
+                can explore on their own.
+            </p>
+
+            <p>
+                But the reality was frustrating:
+            </p>
+
+            <ul>
+                <li><strong>Expensive subscriptions</strong> — most platforms start at $500/month and scale up from
+                    there, making it impossible for individual contributors or small teams to justify.</li>
+                <li><strong>Cloud-locked</strong> — your demos live on someone else's servers. You can't use them
+                    offline, you can't send them as standalone files, and you're dependent on uptime you don't control.
+                </li>
+                <li><strong>Limited editing</strong> — want to blur out customer data? Change a name on screen? Add a
+                    branching path so the prospect can choose their own journey? Most tools either don't support it or
+                    lock it behind enterprise tiers.</li>
+                <li><strong>Capture quality</strong> — many platforms use screenshots or browser automation that miss
+                    CSS details, custom fonts, or dynamic state. The demos end up looking "close enough" — which isn't
+                    good enough when you're trying to sell the quality of your product.</li>
+            </ul>
+
+            <p>
+                I wanted something different. Something that was <strong>free</strong>, ran <strong>entirely
+                    offline</strong>,
+                let me <strong>edit anything on the page</strong>, and exported demos as <strong>simple files I could
+                    email to anyone</strong>.
+            </p>
+
+            <h3>So I Built Runthroo</h3>
+
+            <p>
+                Runthroo is an open-source macOS application paired with a Chrome extension. The extension
+                captures any web page by serializing the actual DOM and CSS — not a screenshot, not a recording,
+                but the real HTML structure with all the styling, fonts, and images preserved at full fidelity.
+            </p>
+
+            <p>
+                Once you've captured your pages, the desktop app lets you stitch them into interactive flows.
+                You draw invisible click zones over buttons, links, and UI elements. When someone clicks
+                the right spot, they advance to the next screen. Click the wrong spot, and a subtle animation
+                guides them to where they should go.
+            </p>
+
+            <p>
+                But the features that really set it apart are the ones I couldn't find anywhere else:
+            </p>
+
+            <ul>
+                <li><strong>Non-linear branching</strong> — build demos where prospects choose their own path. One click
+                    zone can go to the pricing page, another to the dashboard, another to settings. It's their journey.
+                </li>
+                <li><strong>Native data redaction</strong> — apply frosted-glass blur overlays directly in the editor to
+                    hide PII, dollar amounts, or proprietary data. No external image editor needed.</li>
+                <li><strong>Inline text editing</strong> — change any visible text on any captured page. Swap "Acme
+                    Corp" for your prospect's company name. Turn $10,000 into $50,000. Personalize everything.</li>
+                <li><strong>Single-file HTML export</strong> — your entire demo compiles into one .html file. All pages,
+                    all styling, all click logic, all transitions — embedded inline. No server. No dependencies. Just
+                    double-click and it opens in any browser.</li>
+            </ul>
+
+            <h3>Who This Is For</h3>
+
+            <p>
+                If you're a <strong>Solutions Engineer</strong>, <strong>Sales Engineer</strong>, or <strong>Account
+                    Executive</strong>
+                who needs to put product demos in front of prospects — whether in a conference room with no WiFi,
+                embedded in a follow-up email, or shared in a Slack thread — Runthroo was built for you.
+            </p>
+
+            <p>
+                It's also useful for <strong>Product Managers</strong> documenting new feature flows,
+                <strong>Support teams</strong> creating guided walkthroughs, and <strong>Founders</strong>
+                who want to showcase their product without giving access to a staging environment.
+            </p>
+
+            <h3>Free and Open Source Forever</h3>
+
+            <p>
+                Runthroo is completely free. No trials, no usage limits, no feature gates. The entire codebase
+                is on <a href="https://github.com/AissaM7/Runthroo">GitHub</a> — you can read every line, fork it,
+                and contribute to it. It runs 100% offline on your machine. Your data never touches a server.
+            </p>
+
+            <p>
+                I built this because I needed it. I open-sourced it because I know other SEs and AEs need it too.
+                If it saves you time, helps you close a deal, or just makes your life a little easier —
+                that's the whole point.
+            </p>
+
+            <div class="post-divider"></div>
+
+            <div class="post-cta">
+                <h3>Try Runthroo Today</h3>
+                <p>Download the macOS app and Chrome extension. Build your first demo in under 5 minutes.</p>
+                <a href="https://github.com/AissaM7/Runthroo/releases/download/v2.0.0/Runthroo-2.0.0-arm64.dmg"
+                    class="cta-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download for Mac
+                </a>
+            </div>
+
+            <div class="author-block">
+                <div class="author-avatar">AM</div>
+                <div class="author-info">
+                    <div class="author-name">Aissa Mamdouh</div>
+                    <div class="author-role">Solutions Engineer & Creator of Runthroo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-logo">Runthroo Platform</div>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="docs.html">User Guide</a>
+            <a href="https://github.com/AissaM7/Runthroo">GitHub</a>
+        </div>
+        <p class="copyright">&copy; 2025 Runthroo Open Source. Built for the modern web.</p>
+    </footer>
+
+    <script>
+        function showPost() {
+            document.getElementById('blog-index').style.display = 'none';
+            document.getElementById('blog-post').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function showIndex() {
+            document.getElementById('blog-post').classList.remove('active');
+            document.getElementById('blog-index').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        // Deep-link support
+        if (window.location.hash === '#launching-runthroo') {
+            showPost();
+        }
+    </script>
+</body>
+
+</html>
