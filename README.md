@@ -47,27 +47,45 @@ This guide covers everything from installing the capture extension to building a
 
 <br>
 
-### 1. Installation
+### <img src="https://img.shields.io/badge/01_Setup-0A84FF?style=for-the-badge&labelColor=111113" alt="Setup"> Installs & Security
 
-Runthroo consists of two parts: the **macOS desktop application** (where you build demos) and the **Chrome capture extension** (how you clone pages).
+Runthroo consists of two components: the **macOS desktop app** and the **Chrome capture extension**.
 
-**Desktop App:**
-Download the latest `.dmg` from the [Releases](https://github.com/AissaM7/Runthroo/releases) page and drag it to your Applications folder.
+#### <img src="https://img.shields.io/badge/macOS_Desktop_App-111113?style=flat&logo=apple&logoColor=white" alt="macOS"> Installation & Security Bypass
 
-**Chrome Extension:**
+Download the newest `.dmg` from the [Releases](https://github.com/AissaM7/Runthroo/releases) and drag Runthroo to your Applications folder.
 
-1. Download `runthroo-extension.zip` from the [Releases](https://github.com/AissaM7/Runthroo/releases) page and extract the folder.
+> **macOS Security Warning**  
+> Because Runthroo is not distributed through the Mac App Store, macOS will block it on the first launch. You will see a dialog stating **"Runthroo" Not Opened**. This is completely normal for open-source apps. 
+
+**How to bypass Gatekeeper:**
+1. Click **Done** on the warning dialog.
+2. Open **System Settings &rarr; Privacy & Security** and scroll down.
+3. Click the **Open Anyway** button next to the blocked message.
+4. Click **Open Anyway** on the final confirmation.
+
+<p align="center">
+  <img src="https://github.com/AissaM7/Runthroo/raw/main/landing/step2-privacy-security.png" alt="macOS Privacy and Security Open Anyway" width="600" style="border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+</p>
+
+<br>
+
+#### <img src="https://img.shields.io/badge/Chrome_Extension-111113?style=flat&logo=googlechrome&logoColor=white" alt="Chrome"> Capture Extension
+
+The Chrome extension is required to clone web architectures in real-time.
+
+1. Download `runthroo-extension.zip` from the [Releases](https://github.com/AissaM7/Runthroo/releases) and tightly extract it.
 2. Open Google Chrome and go to `chrome://extensions`.
-3. Toggle **Developer mode** ON in the top right.
-4. Click **Load unpacked** and select the extracted folder.
+3. Toggle **Developer mode** ON in the top right corner.
+4. Click **Load unpacked** and select the unpacked extension folder.
 
 <p align="center">
   <br>
-  <img src="https://github.com/AissaM7/Runthroo/raw/main/landing/install-guide.gif" alt="Extension Install Guide" width="850">
+  <img src="https://github.com/AissaM7/Runthroo/raw/main/landing/install-guide.gif" alt="Extension Install Guide" width="850" style="border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
   <br>
 </p>
 
-### 2. Capturing Pages
+### <img src="https://img.shields.io/badge/02_Capture-0A84FF?style=for-the-badge&labelColor=111113" alt="Capture"> Capturing Pages
 
 With the desktop app running, you can capture full-fidelity replicas of any web page.
 
@@ -87,7 +105,7 @@ To capture a full flow, click **Start Recording**. As you navigate your app norm
 
 <br>
 
-### 3. The Library & Editor
+### <img src="https://img.shields.io/badge/03_Edit-0A84FF?style=for-the-badge&labelColor=111113" alt="Edit"> The Library & Editor
 
 **Library**  
 All your captured pages automatically appear in the desktop app's Library, organized by platform.
@@ -112,7 +130,7 @@ Create a new Demo and add your captured pages. In the editor, you can:
 
 <br>
 
-### 4. Branching Logic
+### <img src="https://img.shields.io/badge/04_Branching-0A84FF?style=for-the-badge&labelColor=111113" alt="Branching"> Branching Logic
 
 If your product flow isn't strictly linear, you can add multiple interactive paths to a single step so viewers can organically explore different features.
 
@@ -124,7 +142,7 @@ If your product flow isn't strictly linear, you can add multiple interactive pat
 
 <br>
 
-### 5. Export and Share
+### <img src="https://img.shields.io/badge/05_Export-0A84FF?style=for-the-badge&labelColor=111113" alt="Export"> Export and Share
 
 When your demo is ready, just click **Export**. 
 
