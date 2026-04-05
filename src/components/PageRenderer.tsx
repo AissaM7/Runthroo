@@ -46,7 +46,7 @@ export function PageRenderer({
       style={{
         width: scaledW,
         height: scaledH,
-        background: '#fff',
+        background: 'transparent',
         boxShadow: '0 0 0 1px rgba(255,255,255,0.05)',
         borderRadius: 2,
         overflow: 'hidden',

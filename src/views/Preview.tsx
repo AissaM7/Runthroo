@@ -353,8 +353,8 @@ export function Preview() {
       )}
 
       {/* Viewport */}
-      <div ref={viewportRef} className="relative bg-white overflow-hidden" style={{ position: 'absolute', boxShadow: '0 8px 48px rgba(0,0,0,0.6)' }}>
-        <iframe ref={iframeRef} sandbox="allow-same-origin allow-scripts" style={{ width: '100%', height: '100%', border: 'none' }} />
+      <div ref={viewportRef} className="relative overflow-hidden" style={{ position: 'absolute', boxShadow: '0 8px 48px rgba(0,0,0,0.6)', background: 'transparent' }}>
+        <iframe ref={iframeRef} sandbox="allow-same-origin allow-scripts" style={{ width: '100%', height: '100%', border: 'none', background: 'transparent' }} />
       </div>
 
       {/* Cursor layer */}
