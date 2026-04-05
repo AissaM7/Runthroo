@@ -16,6 +16,18 @@
     // ─── Step 3: Capture runtime CSS custom properties ──────────────────
     const runtimeVarsCSS = captureRuntimeCSSVars()
 
+    // ─── Step 3b: Capture color-scheme for dark mode fidelity ──────────
+    const colorSchemeCSS = captureColorScheme()
+
+    // ─── Step 3c: Tag elements & capture computed backgrounds ──────────
+    // This ensures that background colors applied by JS frameworks,
+    // CSS-in-JS, or class-based styles survive serialization even if
+    // the corresponding CSS rules are lost during CSSOM extraction.
+    const computedVisuals = captureComputedVisuals()
+
+    // ─── Step 3d: Analyze scroll containers for background harmonization ─
+    const scrollContainerFixes = analyzeScrollContainerBackgrounds()
+
     // ─── Step 4: Inline all images on the LIVE DOM ──────────────────────
     await inlineImages()
 
@@ -37,9 +49,32 @@
     // ─── Step 7b: Replace cloned <canvas> with <img> snapshots ──────────
     replaceCanvasWithImages(clone, canvasSnapshots)
 
+    // ─── Step 7c: Apply captured computed visuals to clone ──────────────
+    applyComputedVisuals(clone, computedVisuals)
+
+    // ─── Step 7d: Harmonize scroll container & page backgrounds ─────────
+    // Many apps (Embrace, Grafana, etc.) have transparent scroll containers
+    // with colored content panels inside. When the Runthroo viewer allows
+    // scrolling past the content, the page background (often near-black)
+    // bleeds through, creating a visible color division. This step:
+    //   1. Fills transparent scroll containers with their content's bg
+    //   2. Sets html/body to the dominant content background as a fallback
+    applyScrollContainerFixes(clone, scrollContainerFixes)
+
+    // ─── Step 7e: Clean up data-df-idx markers from the clone ───────────
+    clone.querySelectorAll('[data-df-idx]').forEach(el =>
+      el.removeAttribute('data-df-idx')
+    )
+
     // Clean up temp markers from the live DOM
     document.querySelectorAll('canvas[data-df-canvas-id]').forEach(c =>
       c.removeAttribute('data-df-canvas-id')
+    )
+    document.querySelectorAll('[data-df-idx]').forEach(el =>
+      el.removeAttribute('data-df-idx')
+    )
+    document.querySelectorAll('[data-df-scroll-idx]').forEach(el =>
+      el.removeAttribute('data-df-scroll-idx')
     )
 
     // Restore the live DOM after cloning (undo virtualisation fixes)
@@ -52,6 +87,30 @@
       varStyle.textContent = runtimeVarsCSS
       const head = clone.querySelector('head')
       if (head) head.insertBefore(varStyle, head.firstChild)
+    }
+
+    // ─── Step 8b: Inject color-scheme CSS ───────────────────────────────
+    if (colorSchemeCSS) {
+      const csStyle = clone.ownerDocument.createElement('style')
+      csStyle.setAttribute('data-demoforge', 'color-scheme')
+      csStyle.textContent = colorSchemeCSS
+      const head = clone.querySelector('head')
+      if (head) head.insertBefore(csStyle, head.firstChild)
+    }
+
+    // ─── Step 8c: Inject viewport width lock ────────────────────────────
+    {
+      const vwStyle = clone.ownerDocument.createElement('style')
+      vwStyle.setAttribute('data-demoforge', 'viewport-lock')
+      vwStyle.textContent =
+        'html { width: ' + window.innerWidth + 'px; ' +
+        'min-width: ' + window.innerWidth + 'px; ' +
+        'max-width: ' + window.innerWidth + 'px; ' +
+        'overflow-x: hidden; }\n' +
+        'body { width: 100%; max-width: ' + window.innerWidth + 'px; ' +
+        'overflow-x: hidden; }'
+      const head = clone.querySelector('head')
+      if (head) head.appendChild(vwStyle)
     }
 
     // ─── Step 9: Force structural elements to be visible ────────────────
@@ -118,6 +177,15 @@
     // Inject viewport meta tag
     const vpMeta = '<meta name="viewport" content="width=' + window.innerWidth + ', initial-scale=1">'
     htmlString = htmlString.replace('</head>', vpMeta + '</head>')
+
+    // Inject color-scheme meta tag to match the original page
+    const computedCS = getComputedStyle(document.documentElement).colorScheme
+    const metaCS = document.querySelector('meta[name="color-scheme"]')
+    const csValue = (metaCS && metaCS.content) || computedCS || ''
+    if (csValue && csValue !== 'normal') {
+      const csMeta = '<meta name="color-scheme" content="' + csValue + '">'
+      htmlString = htmlString.replace('</head>', csMeta + '</head>')
+    }
 
     console.log('[Runthroo] capture ready, HTML size:', htmlString.length, 'bytes')
 
@@ -315,6 +383,7 @@ function captureRuntimeCSSVars() {
     }
   }
 
+  // Capture CSS variables from [data-theme] elements
   document.querySelectorAll('[data-theme]').forEach(el => {
     if (el === document.documentElement || el === document.body) return
     const style = getComputedStyle(el)
@@ -324,6 +393,37 @@ function captureRuntimeCSSVars() {
       blocks.push(selector + ' {\n' + vars.join(';\n') + ';\n}')
     }
   })
+
+  // Also capture CSS variables from elements with data-color-mode, data-color-scheme,
+  // class-based themes (e.g., .theme-dark, .dark-theme), and Grafana's theme containers
+  const themeSelectors = [
+    '[data-color-mode]',
+    '[data-color-scheme]',
+    '[data-grafana-theme]',
+    '.theme-dark', '.theme-light',
+    '[class*="theme-"]',
+    '[data-mode]',
+  ]
+  const themeQuery = themeSelectors.join(', ')
+  try {
+    document.querySelectorAll(themeQuery).forEach(el => {
+      if (el === document.documentElement || el === document.body) return
+      const style = getComputedStyle(el)
+      const vars = extractCSSVars(style)
+      if (vars.length > 0) {
+        // Build a unique selector for this element
+        let selector = el.tagName.toLowerCase()
+        if (el.id) {
+          selector = '#' + el.id
+        } else if (el.className && typeof el.className === 'string') {
+          selector += '.' + el.className.trim().split(/\s+/).join('.')
+        }
+        blocks.push(selector + ' {\n' + vars.join(';\n') + ';\n}')
+      }
+    })
+  } catch (e) {
+    // Selector might fail on some pages — not critical
+  }
 
   return blocks.join('\n\n')
 }
@@ -340,6 +440,349 @@ function extractCSSVars(computedStyle) {
     }
   }
   return vars
+}
+
+// ─── Capture color-scheme for dark mode fidelity ───────────────────────────
+// Many modern UIs (Embrace, Grafana, etc.) use `color-scheme: dark` which
+// tells the browser to render scrollbars, form controls, and default
+// backgrounds in dark mode. Without preserving this, captures render with
+// light-mode defaults, causing subtle but visible color shifts.
+function captureColorScheme() {
+  const blocks = []
+
+  // Check <html> element
+  const htmlCS = getComputedStyle(document.documentElement).colorScheme
+  if (htmlCS && htmlCS !== 'normal') {
+    blocks.push(':root { color-scheme: ' + htmlCS + '; }')
+  }
+
+  // Check <body>
+  if (document.body) {
+    const bodyCS = getComputedStyle(document.body).colorScheme
+    if (bodyCS && bodyCS !== 'normal' && bodyCS !== htmlCS) {
+      blocks.push('body { color-scheme: ' + bodyCS + '; }')
+    }
+  }
+
+  return blocks.length > 0 ? blocks.join('\n') : ''
+}
+
+// ─── Capture computed visual properties on all visible elements ────────────
+// This is the key fix for the "bottom half turns black" and color accuracy
+// issues. CSS-in-JS frameworks, class-based themes, and CSSOM serialization
+// artifacts can cause background colors to be lost during capture. By
+// reading the LIVE computed styles and baking them into the clone, we
+// guarantee pixel-perfect color fidelity regardless of stylesheet issues.
+function captureComputedVisuals() {
+  const visuals = []
+  const allEls = document.querySelectorAll('*')
+  let idx = 0
+
+  for (const el of allEls) {
+    try {
+      const computed = getComputedStyle(el)
+      const bg = computed.backgroundColor
+      const bgImage = computed.backgroundImage
+
+      // Skip fully transparent backgrounds (nothing to preserve)
+      const isTransparent = !bg || bg === 'transparent' ||
+        bg === 'rgba(0, 0, 0, 0)' || bg === 'hsla(0, 0%, 0%, 0)'
+      const hasBgImage = bgImage && bgImage !== 'none'
+
+      if (isTransparent && !hasBgImage) continue
+
+      // Tag the element so we can find its clone counterpart
+      const id = '__df_vis_' + (idx++)
+      el.setAttribute('data-df-idx', id)
+
+      const entry = { id }
+
+      if (!isTransparent) {
+        entry.backgroundColor = bg
+      }
+      if (hasBgImage && !bgImage.startsWith('url("data:')) {
+        // Only capture non-data-url backgrounds (data URLs are already inline)
+        entry.backgroundImage = bgImage
+      }
+
+      // Also capture background-related properties for completeness
+      const bgSize = computed.backgroundSize
+      const bgPos = computed.backgroundPosition
+      const bgRepeat = computed.backgroundRepeat
+      if (bgSize && bgSize !== 'auto') entry.backgroundSize = bgSize
+      if (bgPos && bgPos !== '0% 0%') entry.backgroundPosition = bgPos
+      if (bgRepeat && bgRepeat !== 'repeat') entry.backgroundRepeat = bgRepeat
+
+      // ── Color-accuracy properties ──────────────────────────────────
+      // Foreground (text) color — CSS-in-JS / class-based themes set this
+      // dynamically and it can be lost during serialization.
+      const fg = computed.color
+      if (fg) entry.color = fg
+
+      // Opacity — if set via a CSS class that gets lost in serialization,
+      // the element becomes fully opaque, shifting perceived brightness.
+      const opacity = computed.opacity
+      if (opacity && opacity !== '1') entry.opacity = opacity
+
+      // Filter — brightness()/contrast()/etc. applied by JS frameworks;
+      // losing these makes dark themes appear lighter.
+      const filter = computed.filter
+      if (filter && filter !== 'none') entry.filter = filter
+
+      // Per-element color-scheme — frameworks like Grafana may set
+      // color-scheme on containers, not just :root.
+      const elCS = computed.colorScheme
+      if (elCS && elCS !== 'normal') entry.colorScheme = elCS
+
+      visuals.push(entry)
+    } catch (e) {
+      // Skip elements that can't be computed (e.g., disconnected nodes)
+    }
+  }
+
+  console.log('[Runthroo] captured computed visuals for', visuals.length, 'elements')
+  return visuals
+}
+
+// ─── Apply captured computed visuals to the cloned DOM ─────────────────────
+function applyComputedVisuals(clone, visuals) {
+  for (const entry of visuals) {
+    const el = clone.querySelector('[data-df-idx="' + entry.id + '"]')
+    if (!el) continue
+
+    // Read existing inline style to avoid overwriting explicit styles
+    const existing = el.getAttribute('style') || ''
+
+    const parts = []
+
+    // Only set background-color if not already explicitly set inline
+    if (entry.backgroundColor && !existing.includes('background-color')) {
+      parts.push('background-color: ' + entry.backgroundColor)
+    }
+
+    // Only set background-image if not already explicitly set inline
+    if (entry.backgroundImage && !existing.includes('background-image')) {
+      parts.push('background-image: ' + entry.backgroundImage)
+    }
+
+    if (entry.backgroundSize && !existing.includes('background-size')) {
+      parts.push('background-size: ' + entry.backgroundSize)
+    }
+    if (entry.backgroundPosition && !existing.includes('background-position')) {
+      parts.push('background-position: ' + entry.backgroundPosition)
+    }
+    if (entry.backgroundRepeat && !existing.includes('background-repeat')) {
+      parts.push('background-repeat: ' + entry.backgroundRepeat)
+    }
+
+    // ── Color-accuracy properties ──────────────────────────────────
+    if (entry.color && !existing.includes('color:') && !existing.includes('color :')) {
+      parts.push('color: ' + entry.color)
+    }
+    if (entry.opacity && !existing.includes('opacity')) {
+      parts.push('opacity: ' + entry.opacity)
+    }
+    if (entry.filter && !existing.includes('filter')) {
+      parts.push('filter: ' + entry.filter)
+    }
+    if (entry.colorScheme && !existing.includes('color-scheme')) {
+      parts.push('color-scheme: ' + entry.colorScheme)
+    }
+
+    if (parts.length > 0) {
+      const newStyle = existing
+        ? existing.replace(/;?\s*$/, '; ') + parts.join('; ')
+        : parts.join('; ')
+      el.setAttribute('style', newStyle)
+    }
+  }
+}
+
+// ─── Analyze scroll containers on the LIVE DOM ────────────────────────────
+// Reads computed styles from the live DOM before cloning. Identifies scroll
+// containers with transparent backgrounds and finds the dominant background
+// color of their visible content children. Also determines a page-level
+// fallback background by sampling the most common content background color.
+function analyzeScrollContainerBackgrounds() {
+  const fixes = {
+    containers: [],     // { idx, bgColor } — scroll containers to fill
+    pageBg: '',         // dominant content background for html/body fallback
+  }
+
+  // Helper: is a color effectively transparent?
+  function isTransparent(c) {
+    return !c || c === 'transparent' || c === 'rgba(0, 0, 0, 0)' || c === 'hsla(0, 0%, 0%, 0)'
+  }
+
+  // Collect background colors from CONTENT elements (excluding html/body)
+  // to find the dominant content background for page-level fallback
+  const bgColorCounts = {}
+
+  // Find all scroll containers
+  const allEls = document.querySelectorAll('*')
+  let idx = 0
+
+  for (const el of allEls) {
+    try {
+      const cs = getComputedStyle(el)
+      const ovY = cs.overflowY
+      const bg = cs.backgroundColor
+
+      // Count non-transparent backgrounds for page-level fallback,
+      // EXCLUDING html and body (those are what we want to override)
+      if (!isTransparent(bg) &&
+          el !== document.documentElement && el !== document.body) {
+        const rect = el.getBoundingClientRect()
+        // Only count elements visible in the viewport with meaningful size
+        if (rect.width > 50 && rect.height > 50 &&
+            rect.top < window.innerHeight && rect.bottom > 0 &&
+            rect.left < window.innerWidth && rect.right > 0) {
+          const area = Math.min(rect.width, window.innerWidth) *
+                       Math.min(rect.height, window.innerHeight)
+          bgColorCounts[bg] = (bgColorCounts[bg] || 0) + area
+        }
+      }
+
+      // Is this a scroll container?
+      if (ovY !== 'auto' && ovY !== 'scroll') continue
+      if (el.scrollHeight <= el.clientHeight + 10) continue // not actually scrollable
+
+      // Is the scroll container's background transparent?
+      if (!isTransparent(bg)) continue
+
+      // Search up to 5 levels deep within the scroll container to find
+      // the dominant content background. Many apps (Embrace, Grafana) have
+      // several layers of transparent wrappers before reaching colored content.
+      let contentBg = ''
+      let maxContentArea = 0
+      const contentColorCounts = {}
+
+      function searchDescendants(parent, depth) {
+        if (depth > 5) return
+        for (const child of parent.children) {
+          try {
+            const childCs = getComputedStyle(child)
+            const childColor = childCs.backgroundColor
+            if (!isTransparent(childColor)) {
+              const childRect = child.getBoundingClientRect()
+              if (childRect.width > 30 && childRect.height > 30) {
+                const area = childRect.width * childRect.height
+                contentColorCounts[childColor] =
+                  (contentColorCounts[childColor] || 0) + area
+              }
+            }
+            // Keep searching deeper even if this element has a background
+            searchDescendants(child, depth + 1)
+          } catch (e) { /* skip */ }
+        }
+      }
+
+      searchDescendants(el, 0)
+
+      // Pick the color with the most total area within this scroll container
+      for (const [color, area] of Object.entries(contentColorCounts)) {
+        if (area > maxContentArea) {
+          maxContentArea = area
+          contentBg = color
+        }
+      }
+
+      if (contentBg) {
+        const id = '__df_scroll_' + (idx++)
+        el.setAttribute('data-df-scroll-idx', id)
+        fixes.containers.push({ id, bgColor: contentBg })
+      }
+    } catch (e) { /* skip */ }
+  }
+
+  // Determine the dominant CONTENT background (most area-weighted color,
+  // excluding html/body backgrounds)
+  let maxArea = 0
+  for (const [color, area] of Object.entries(bgColorCounts)) {
+    if (area > maxArea) {
+      maxArea = area
+      fixes.pageBg = color
+    }
+  }
+
+  console.log('[Runthroo] scroll container analysis:',
+    fixes.containers.length, 'transparent containers found,',
+    'page bg:', fixes.pageBg)
+
+  return fixes
+}
+
+// ─── Apply scroll container fixes to the cloned DOM ───────────────────────
+function applyScrollContainerFixes(clone, fixes) {
+  // 1. Fill transparent scroll containers with their content's background
+  for (const { id, bgColor } of fixes.containers) {
+    const el = clone.querySelector('[data-df-scroll-idx="' + id + '"]')
+    if (!el) continue
+
+    const existing = el.getAttribute('style') || ''
+    if (!existing.includes('background-color') && !existing.includes('background:')) {
+      const newStyle = existing
+        ? existing.replace(/;?\s*$/, '; ') + 'background-color: ' + bgColor
+        : 'background-color: ' + bgColor
+      el.setAttribute('style', newStyle)
+    }
+    el.removeAttribute('data-df-scroll-idx')
+  }
+
+  // Also walk UP from each scroll container and fill any transparent
+  // ancestors between the scroll container and the html/body. This prevents
+  // the html background from bleeding through intermediate transparent divs.
+
+  // 2. Set page-level background ONLY on transparent html/body/ancestors.
+  //    Do NOT override existing non-transparent backgrounds — the original
+  //    page may intentionally use different shades (e.g. near-black html vs
+  //    slightly lighter content panels) and overriding them homogenises the
+  //    colors, making the capture appear washed-out / lighter.
+  if (fixes.pageBg) {
+    function isTransparentBg(el) {
+      const style = el.getAttribute('style') || ''
+      // If there's an explicit background-color or background shorthand,
+      // the element already has a color — leave it alone.
+      if (style.includes('background-color') || style.includes('background:')) {
+        return false
+      }
+      return true
+    }
+
+    // Helper: set background-color only if the element has none
+    function setBgIfTransparent(el, color) {
+      if (!isTransparentBg(el)) return
+      let style = el.getAttribute('style') || ''
+      style = style
+        ? style.replace(/;?\s*$/, '; ') + 'background-color: ' + color
+        : 'background-color: ' + color
+      el.setAttribute('style', style)
+    }
+
+    // Apply to <html> only if it has no explicit background
+    setBgIfTransparent(clone, fixes.pageBg)
+
+    // Apply to <body> only if it has no explicit background
+    const body = clone.querySelector('body')
+    if (body) setBgIfTransparent(body, fixes.pageBg)
+
+    // Fill intermediate transparent ancestors between scroll containers and body
+    for (const { id } of fixes.containers) {
+      const el = clone.querySelector('[data-df-scroll-idx="' + id + '"]')
+      if (!el) continue
+
+      let parent = el.parentElement
+      while (parent && parent !== clone && parent.tagName !== 'BODY') {
+        setBgIfTransparent(parent, fixes.pageBg)
+        parent = parent.parentElement
+      }
+    }
+  }
+
+  // Clean up remaining markers
+  clone.querySelectorAll('[data-df-scroll-idx]').forEach(el =>
+    el.removeAttribute('data-df-scroll-idx')
+  )
 }
 
 // ─── Rebase relative url() references ───────────────────────────────────────
